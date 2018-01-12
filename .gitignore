@@ -1,3 +1,7 @@
 *.o
 cscope.*
 tags
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile
