@@ -5,7 +5,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "picture.h"
-#include "Oled.h"
+#include "oled.h"
 #include "types.h"
 
 using namespace std;
@@ -42,17 +42,14 @@ int main (int argc, char *argv[]) {
 	if (oled.isValid())
 		oled.showString("image show");
 
-	Image *image = new Image(*filename);
-	if (!image->showImage()) {
+	Image image(*filename);
+	if (!image.showImage()) {
 		cerr << "image show error" << endl;
 		return IMAGE_ERROR;
 	}
 
 	oled.showString("good image");
-
-	image->exitImage();
-
-	delete image;
+	image.exitImage();
 
 	return SUCCESS;
 }
