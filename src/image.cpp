@@ -1,40 +1,39 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <string>
 
-#include "picture.h"
+#include "image.h"
 
 using namespace std;
 using namespace cv;
 
 Image::Image(const string &filename) {
 	image_filename = filename;
-	img = imread(filename);
+	image = imread(filename);
 }
 
 Image::Image(const string &filename, int flags) {
 	image_filename = filename;
-	img = imread(filename, flags);
+	image = imread(filename, flags);
+}
+
+Image::Image(Mat frame) {
+	image = frame;
 }
 
 Image::~Image() {}
 
-Size Image::size() {
-	return img.size();
+Size Image::getSize() {
+	return image.size();
 }
 
-bool Image::isEmpty() {
-	return img.empty();
+bool Image::isValid() {
+	return !image.empty();
 }
 
-bool Image::showImage(const string &window_name, int flags) {
-	if (isEmpty())
-		return false;
-
+void Image::showImage(const string &window_name, int flags, int wait_key) {
 	namedWindow(window_name, flags);
-	imshow(window_name, img);
-	waitKey(0);
-
-	return true;
+	imshow(window_name, image);
+	waitKey(wait_key);
 }
 
 

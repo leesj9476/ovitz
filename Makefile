@@ -2,7 +2,7 @@ CC=g++
 CFLAGS=-g -Wall -Wpedantic -Wextra --std=c++11
 SRCS_DIR=src
 OBJS_DIR=obj
-OBJS=$(addprefix $(OBJS_DIR)/, main.o picture.o oled.o)
+OBJS=$(addprefix $(OBJS_DIR)/, main.o image.o video.o oled.o)
 DEST=ovitz
 
 OPENCV=`pkg-config opencv --cflags --libs`
@@ -19,8 +19,11 @@ $(DEST): dummy $(OBJS_DIR) $(OBJS)
 $(OBJS_DIR)/main.o:
 	$(CC) $(CFLAGS) -I $(SSD1306_INCLUDE) -c $(SRCS_DIR)/main.cpp -o $(OBJS_DIR)/main.o
 
-$(OBJS_DIR)/picture.o:
-	$(CC) $(CFLAGS) $(OPENCV_LIBS) -c $(SRCS_DIR)/picture.cpp -o $(OBJS_DIR)/picture.o
+$(OBJS_DIR)/image.o:
+	$(CC) $(CFLAGS) $(OPENCV_LIBS) -c $(SRCS_DIR)/image.cpp -o $(OBJS_DIR)/image.o
+
+$(OBJS_DIR)/video.o:
+	$(CC) $(CFLAGS) $(OPENCV_LIBS) -c $(SRCS_DIR)/video.cpp -o $(OBJS_DIR)/video.o
 
 $(OBJS_DIR)/oled.o:
 	$(CC) $(CFLAGS) -I $(SSD1306_INCLUDE) -c $(SRCS_DIR)/oled.cpp -o $(OBJS_DIR)/oled.o

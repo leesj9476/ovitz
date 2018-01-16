@@ -1,5 +1,5 @@
-#ifndef __PICTURE_H__
-#define __PICTURE_H__
+#ifndef __IMAGE_H__
+#define __IMAGE_H__
 
 #include <string>
 
@@ -9,16 +9,18 @@ class Image {
 public:
 	Image(const std::string &);
 	Image(const std::string &, int);
+	Image(cv::Mat);
 	~Image();
 
-	cv::Size size();	
-	bool isEmpty();
-	bool showImage(const std::string & = "window", int = CV_WINDOW_AUTOSIZE);
+	void showImage(const std::string & = "window", int = CV_WINDOW_AUTOSIZE, int = 0);
 	void exitImage(const std::string & = "window");
+
+	cv::Size getSize();	
+	bool isValid();
 
 private:
 	std::string image_filename;
-	cv::Mat img;
+	cv::Mat image;
 };
 
 #endif

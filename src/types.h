@@ -4,7 +4,8 @@
 #define SUCCESS			0
 
 #define ARGUMENT_ERROR -1
-#define FILENAME_ERROR -2
+#define OLED_ERROR	   -2
 #define IMAGE_ERROR	   -3
+#define VIDEO_ERROR	   -4
 
 #endif
