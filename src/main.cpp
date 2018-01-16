@@ -13,10 +13,7 @@ using namespace cv;
 
 int main (int argc, char *argv[]) {
 	int opt;
-
 	string *filename = NULL;
-	int color_flags = 1;
-
 	Oled oled;
 
 	while ((opt = getopt(argc, argv, "hf:")) != -1) {
@@ -45,6 +42,8 @@ int main (int argc, char *argv[]) {
 	Image image(*filename);
 	if (!image.showImage()) {
 		cerr << "image show error" << endl;
+		oled.clear();
+		oled.update();
 		return IMAGE_ERROR;
 	}
 

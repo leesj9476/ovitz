@@ -16,6 +16,8 @@ Image::Image(const string &filename, int flags) {
 	img = imread(filename, flags);
 }
 
+Image::~Image() {}
+
 Size Image::size() {
 	return img.size();
 }
