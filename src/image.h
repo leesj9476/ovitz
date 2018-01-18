@@ -11,7 +11,7 @@
 #define UNIT_HEIGHT_NUM 5
 
 typedef struct Point_t {
-	Point_t(double, double);
+	Point_t(double = 0, double = 0);
 
 	double x;
 	double y;
@@ -29,11 +29,10 @@ public:
 	cv::Size getSize();	
 	bool isValid();
 
-	Point_t* getCentreOfMass(Point_t &);
-	void calcCentrePoints();
-	std::vector<Point_t *> getCentrePoints();
+	Point_t getCentreOfMass(Point_t &);
+	bool calcCentrePoints();
 
-	std::vector<double> calcCentrePointsDistance();
+	double* calcCentrePointsDistance();
 
 private:
 	std::string image_filename;
@@ -43,8 +42,8 @@ private:
 	int unit_width;
 	int unit_height;
 
-	std::vector<Point_t *> unit_centre_points;
-	std::vector<Point_t *> unit_std_points;
+	Point_t *unit_centre_points;
+	Point_t *unit_std_points;
 };
 
 #endif

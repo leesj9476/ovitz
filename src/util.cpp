@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 #include <cmath>
 
 #include "util.h"
@@ -16,19 +15,15 @@ void help() {
 	cout << "    -h         asdf" << endl;
 }
 
-vector<double> calcVecDistance(vector<Point_t *> &v1, vector<Point_t *> v2) {
-	if (v1.size() != v2.size())
-		return {};
-
+double* calcVecDistance(Point_t *p1, Point_t *p2) {
 	double x_dist;
 	double y_dist;
 
-	vector<double> dist;
-	for (uint i = 0; i < v1.size(); i++) {
-		x_dist = (v1[i]->x - v2[i]->x);
-		y_dist = (v1[i]->y - v2[i]->y);
-
-		dist.push_back(sqrt(x_dist * x_dist + y_dist * y_dist));
+	double *dist = new double[UNIT_WIDTH_NUM * UNIT_HEIGHT_NUM];
+	for (uint i = 0; i < UNIT_WIDTH_NUM * UNIT_HEIGHT_NUM; i++) {
+		x_dist = (p1[i].x - p2[i].x);
+		y_dist = (p1[i].y - p2[i].y);
+		dist[i] = sqrt(x_dist * x_dist + y_dist * y_dist);
 	}
 
 	return dist;

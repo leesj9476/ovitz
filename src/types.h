@@ -6,6 +6,6 @@
 #define ARGUMENT_ERROR -1
 #define OLED_ERROR	   -2
 #define IMAGE_ERROR	   -3
-#define VIDEO_ERROR	   -4
+#define CALC_ERROR	   -4
 
 #endif

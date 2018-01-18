@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-g -Wall -Wpedantic -Wextra --std=c++11
+CFLAGS=-g -Wall -Wpedantic -Wextra --std=c++11 -Wno-psabi
 SRCS_DIR=src
 OBJS_DIR=obj
 OBJS=$(addprefix $(OBJS_DIR)/, main.o image.o oled.o util.o)

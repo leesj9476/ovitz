@@ -56,9 +56,14 @@ int main (int argc, char *argv[]) {
 			return IMAGE_ERROR;
 		}
 
-		vector<double> d = image.calcCentrePointsDistance();
-		for (double x : d) {
-			cout << x << endl;
+		if (!image.calcCentrePoints()) {
+			cerr << "calculate centre point error" << endl;
+			return CALC_ERROR;
+		}
+
+		double *d = image.calcCentrePointsDistance();
+		for (int i = 0; i < UNIT_WIDTH_NUM * UNIT_HEIGHT_NUM; i++) {
+			cout << d[i] << endl;
 		}
 	}
 
