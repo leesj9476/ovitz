@@ -13,4 +13,11 @@
 #define CALC_ERROR	   -4
 #define SUCCESS			0
 
+#define BLACK_PIXEL	0
+
+#define UP		0
+#define RIGHT	1
+#define DOWN	2
+#define LEFT	3
+
 #endif

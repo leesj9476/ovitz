@@ -3,6 +3,7 @@
 #include <string>
 #include <cmath>
 
+#include "types.h"
 #include "image.h"
 #include "util.h"
 
@@ -19,6 +20,11 @@ Point_t Point_t::operator=(const Point_t &p) {
 	return *this;
 }
 
+ostream& operator<<(ostream &os, const Point_t &p) {
+	cout << "( " << p.x << ", " << p.y << " ) ";
+	return os;
+}
+
 Image::Image(const string &filename, int flags) 
 	: image_filename(filename), flag(flags),
 	  unit_centre_points(NULL), unit_basic_points(NULL) {
@@ -26,13 +32,13 @@ Image::Image(const string &filename, int flags)
 	image = imread(filename, flags);
 	
 	// TODO hardcoded standard center point
-	////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	unit_basic_points = new Point_t[COL_POINT_NUM * ROW_POINT_NUM];
 	Point_t (*p)[ROW_POINT_NUM] = (Point_t(*)[COL_POINT_NUM])unit_basic_points;
 
 	// hard coded center point dot
-	int row_magic_point[ROW_POINT_NUM] = {52, 147, 252, 357, 452}; 
-	int col_magic_point[COL_POINT_NUM] = {52, 147, 252, 357, 452};
+	int row_magic_point[ROW_POINT_NUM] = { 52, 147, 252, 357, 452 }; 
+	int col_magic_point[COL_POINT_NUM] = { 52, 147, 252, 357, 452 };
 	for (int row_i = 0; row_i < ROW_POINT_NUM; row_i++) {
 		for (int col_j = 0; col_j < COL_POINT_NUM; col_j++) {
 			p[row_i][col_j].x = col_magic_point[col_j];
@@ -56,7 +62,7 @@ Image::Image(const string &filename, int flags)
 		else
 			col_distance[i] = static_cast<double>(col_distance[i - 1]) * REDUCE_RATIO;
 	}
-	////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 Image::~Image() {
@@ -81,8 +87,9 @@ bool Image::isValid() {
 //        unit_width
 //  -----------------------
 // |                       |
-// |          ..           | unit_height
-// |          .. mass      |
+// |          ...          | unit_height
+// |          ... mass     |
+// |          ...          |
 // |                       |
 //  -----------------------
 //
@@ -95,17 +102,30 @@ Point_t Image::getCentreOfMass(const Point_t &p, int unit_width, int unit_height
 	// Get pixel data to 1-st array.
 	uchar *data = (uchar *)image.data;
 
-	// Calculate start index.
-	// TODO change access method to 2-nd array -> availability check
-	int idx = p.y * image.cols + p.x;
-
 	// Sum weight(pixel value), x, y for calculation.
 	int weight = 0;
 	double x = 0;
 	double y = 0;
-	for (int row_i = 0; row_i < unit_height; row_i++) {
 
-		for (int col_j = 0; col_j < unit_width; col_j++) {
+	int start_y = p.y;
+	if (start_y < 0)
+		start_y = 0;
+
+	int end_y = p.y + unit_height;
+	if (end_y > image.cols)
+		end_y = image.cols;
+
+	int start_x = p.x;
+	if (start_x < 0)
+		start_x = 0;
+
+	int end_x = p.x + unit_width;
+	if (end_x > image.rows)
+		end_x = image.rows;
+
+	int idx = start_y * image.cols + start_x;
+	for (int row_i = start_y; row_i < end_y; row_i++) {
+		for (int col_j = start_x; col_j < end_x; col_j++) {
 			if (data[idx]) {
 				int w = data[idx];
 
@@ -117,14 +137,14 @@ Point_t Image::getCentreOfMass(const Point_t &p, int unit_width, int unit_height
 			idx++;
 		}
 
-		idx += (image.cols - unit_width);
+		idx += (image.cols - (end_x - start_x));
 	}
 
 	// Calculate x, y coordinate value.
 	x /= weight;
 	y /= weight;
 
-	return Point_t(p.x + x, p.y + y);
+	return Point_t(x, y);
 }
 
 // Calculate center point of whole image by using centre of mass.
@@ -132,28 +152,220 @@ Point_t Image::getCentreOfMass(const Point_t &p, int unit_width, int unit_height
 //
 //         image.cols
 //  -----------------------
+// |    .      .      .    |
+// |                       | image.rows
+// |    .      .      .    |
 // |                       |
-// |   .      .      .   . | image.rows
-// |   .      .      .   . |
-// |                       |
+// |    .      .      .    |
 //  -----------------------
 //
 // @return	center point though adjustment
 Point_t Image::getCenterPoint() {
 	Point_t p(0, 0);
+	Point_t centre_of_mass_p = getCentreOfMass(p, image.cols, image.rows);
 
-	return getCentreOfMass(p, image.cols, image.rows);
+	return adjustCenterPoint(centre_of_mass_p);
+}
+
+// If the result of centre of mass by whole image is black pixel
+// find the closest point(not balck pixel) to calculate real center point.
+//
+// @arg		Point_t &p	the result of centre of mass from whole image
+//
+// @return	the closest white point(pixel value > 0)
+//
+// TODO check avilability coordinate values
+Point_t Image::getClosestWhitePoint(const Point_t &p) {
+	uchar *data = (uchar *)image.data;
+
+	int d = 0;
+	int idx = p.y * image.cols + p.x;
+	while (true) {
+		d += 2;
+		idx -= (image.cols + 1);
+
+		// UP
+		for (int i = 0; i < d; i++) {
+			if (data[idx])
+				goto FINDWHITEPOINT;
+
+			idx += 1;
+		}
+
+		// RIGHT
+		for (int i = 0; i < d; i++) {
+			if (data[idx])
+				goto FINDWHITEPOINT;
+
+			idx += image.cols;
+		}
+
+		// DOWN
+		for (int i = 0; i < d; i++) {
+			if (data[idx])
+				goto FINDWHITEPOINT;
+
+			idx -= 1;
+		}
+
+		// LEFT
+		for (int i = 0; i < d; i++) {
+			if (data[idx])
+				goto FINDWHITEPOINT;
+
+			idx -= image.cols;
+		}
+	}
+
+FINDWHITEPOINT:
+	int x = idx % image.cols;
+	int y = idx / image.cols;
+
+	return Point_t(x, y);
 }
 
 // Adjust center point(result of upper function, getCentreOfMassByWhole).
 // If lazer image is biased, the result of centre of mass can be different
 // with the real center point slightly.
 //
-// @arg		Point_t p // TODO can be Point_t &??
+//         image.cols
+//  -----------------------
+// | .   .   .             |
+// | .   .   .             | image.rows
+// | .   .   .             |
+// |                       |
+// |                       |
+//  -----------------------
+//
+// @arg		Point_t &p	the result of centre of mass or
+// 						the closest white point from the result
 //
 // @return	the result of adjustment of centre of mass
-Point_t Image::adjustCenterPoint(Point_t p) {
-	
+Point_t Image::adjustCenterPoint(const Point_t &p) {
+	uchar *data = (uchar *)image.data;
+	int idx = p.y * image.cols + p.x;
+
+	// [UP, RIGHT, DOWN, LEFT] direction -> expanding
+	bool search[4] = { true, true, true, true };
+
+	// find closest white point from the calculated centre of mass point p
+	Point_t basic_p = p;
+	if (data[idx] == BLACK_PIXEL) {
+		basic_p = getClosestWhitePoint(p);
+	}
+
+	// 0       1
+	//   -----
+	//  |     |
+	//  |     |
+	//   -----
+	// 3       2
+	//
+	// TODO need to add availability about coordinate values///////////////////////////////////////////////////////////////
+	Point_t std_p[4] = { {basic_p.x - 1, basic_p.y - 1}, {basic_p.x + 1, basic_p.y - 1},
+						 {basic_p.x + 1, basic_p.y + 1}, {basic_p.x - 1, basic_p.y + 1} };
+
+	int white = 0;
+	while (search[UP] || search[RIGHT] || search[DOWN] || search[LEFT]) {
+		// search lines, excluding vertex
+		// UP
+		white = 0;
+		if (search[UP]) {
+			idx = std_p[0].y * image.cols + std_p[0].x + 1;
+			for (int i = std_p[0].x + 1; i < std_p[1].x; i++) {
+				if (data[idx])
+					white++;
+
+				idx += 1;
+			}
+
+			if (white == 0)
+				search[UP] = false;
+		}
+
+		// RIGHT
+		white = 0;
+		if (search[RIGHT]) {
+			idx = (std_p[1].y + 1) * image.cols + std_p[1].x;
+			for (int i = std_p[1].y + 1; i < std_p[2].y; i++) {
+				if (data[idx])
+					white++;
+
+				idx += image.cols;
+			}
+				
+			if (white == 0)
+				search[RIGHT] = false;
+		}
+
+		// DOWN
+		white = 0;
+		if (search[DOWN]) {
+			idx = std_p[3].y * image.cols + std_p[3].x + 1;
+			for (int i = std_p[3].x + 1; i < std_p[2].x; i++) {
+				if (data[idx])
+					white++;
+
+				idx += 1;
+			}
+
+			if (white == 0)
+				search[DOWN] = false;
+		}
+
+		// LEFT
+		white = 0;
+		if (search[LEFT]) {
+			idx = (std_p[0].y + 1) * image.cols + std_p[0].x;
+			for (int i = std_p[0].y + 1; i < std_p[3].y; i++) {
+				if (data[idx])
+					white++;
+
+				idx += image.cols;
+			}
+
+			if (white == 0)
+				search[LEFT] = false;
+		}
+
+		// vertex check
+		// point 0
+		idx = std_p[0].y * image.cols + std_p[0].x;
+		if (data[idx]) {
+			search[LEFT] = true; search[UP] = true;
+		}
+		// point 1
+		idx = std_p[1].y * image.cols + std_p[1].x;
+		if (data[idx]) {
+			search[UP] = true; search[RIGHT] = true;
+		}
+		// point 2
+		idx = std_p[2].y * image.cols + std_p[2].x;
+		if (data[idx]) {
+			search[RIGHT] = true; search[DOWN] = true;
+		}
+		// point 3
+		idx = std_p[3].y * image.cols + std_p[3].x;
+		if (data[idx]) {
+			search[DOWN] = true; search[LEFT] = true;
+		}
+
+		// adjust point x, y
+		if (search[UP]) {
+			std_p[0].y--; std_p[1].y--;
+		}
+		if (search[RIGHT]) {
+			std_p[1].x++; std_p[2].x++;
+		}
+		if (search[DOWN]) {
+			std_p[2].y++; std_p[3].y++;
+		}
+		if (search[LEFT]) {
+			std_p[3].x--; std_p[0].x--;
+		}
+	}
+
+	return getCentreOfMass(std_p[0], std_p[2].x - std_p[0].x + 1, std_p[2].y - std_p[0].y + 1);
 }
 
 // Calculate all centre of mass points
@@ -248,10 +460,7 @@ bool Image::calcCentrePoints() {
 			// Calculate centre of mass -> our short-term goal is finished!!///
 			Point_t start_p(start_calc_x, start_calc_y);
 			p[row_i][col_j] = getCentreOfMass(start_p, calc_width, calc_height);
-
-			cout << "(" << p[row_i][col_j].x << ", " << p[row_i][col_j].y << ") ";
 		}
-		cout << endl;
 	}
 
 	return true;

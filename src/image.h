@@ -1,6 +1,7 @@
 #ifndef __IMAGE_H__
 #define __IMAGE_H__
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,8 @@ typedef struct Point_t {
 	double y;
 } Point_t;
 
+std::ostream& operator<<(std::ostream &, const Point_t &);
+
 class Image {
 public:
 	Image(const std::string &, int = CV_LOAD_IMAGE_GRAYSCALE);
@@ -33,8 +36,9 @@ public:
 	bool isValid();
 
 	Point_t getCentreOfMass(const Point_t &, int, int);
-	Point_t getCentreOfMassByWhole();
-	Point_t adjustCenterPoint(Point_t);
+	Point_t getCenterPoint();
+	Point_t getClosestWhitePoint(const Point_t &);
+	Point_t adjustCenterPoint(const Point_t &);
 	bool calcCentrePoints();
 
 	double* calcCentrePointsDistance();

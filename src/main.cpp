@@ -97,8 +97,21 @@ int main (int argc, char *argv[]) {
 			return IMAGE_ERROR;
 		}
 
-		Point_t p = image.getCentreOfMassByWhole();
-		cout << "( " << p.x << ", " << p.y << " )" << endl;
+		Point_t p = image.getCenterPoint();
+		cout << p << endl;
+
+		if (!image.calcCentrePoints()) {
+			cerr << "<error> calculation centre point is failed" << endl;
+			return CALC_ERROR;
+		}
+
+		double *result = image.calcCentrePointsDistance();
+		for (int i = 0; i < COL_POINT_NUM * ROW_POINT_NUM; i++) {
+			cout << result[i] << " ";
+			if (i % COL_POINT_NUM == (COL_POINT_NUM - 1))
+				cout << endl;
+		}
+
 		cout << image.getSize() << endl;
 	}
 
