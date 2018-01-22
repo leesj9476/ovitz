@@ -13,58 +13,93 @@
 using namespace std;
 using namespace cv;
 
+bool option[OPTION_NUM];
+
 //TODO: change c-style exception state to OOP-style(try - catch)
 int main (int argc, char *argv[]) {
 	int opt;
 	string image_filename = "";
 	Oled oled;
 
-	int image_opt = 0;
-	int help_opt  = 0;
+	int exposure_time = 0;
+	int gain = 0;
+	bool opt_valid = true;
 
-	while ((opt = getopt(argc, argv, "i:ph")) != -1) {
+	// change to getopt_long function
+	while ((opt = getopt(argc, argv, "f:e:g:h")) != -1) {
 		switch (opt) {
-		case 'i':
+		case 'f':
+			if (option[IMAGE_FILE]) {
+				cout << "<error> 'f' option is duplicated" << endl;
+				return ARGUMENT_ERROR;
+			}
+
+			option[IMAGE_FILE] = true;
 			image_filename = string(optarg);
-			image_opt = 1;
+			break;
+
+		case 'e':
+			if (option[EXPOSURE]) {
+				cout << "<error> 'e' option is duplicated" << endl;
+				return ARGUMENT_ERROR;
+			}
+
+			option[EXPOSURE] = true;
+			opt_valid = isInt(optarg);
+			if (!opt_valid) {
+				cout << "<error> 'e' option's argument is not int" << endl;
+				return ARGUMENT_ERROR;
+			}
+
+			exposure_time = atoi(optarg);
+			break;
+
+		case 'g':
+			if (option[GAIN]) {
+				cout << "<error> 'g' option is duplicated" << endl;
+				return ARGUMENT_ERROR;
+			}
+
+			option[GAIN] = true;
+			opt_valid = isInt(optarg);
+			if (!opt_valid) {
+				cout << "<error> 'g' option's argument is not int" << endl;
+				return ARGUMENT_ERROR;
+			}
+
+			gain = atoi(optarg);
 			break;
 
 		case 'h':
-			help_opt = 1;
+			option[HELP] = true;
 			break;
 
 		default:
-			cerr << "argument error" << endl;
+			cerr << "<error> argument error" << endl;
 			return ARGUMENT_ERROR;
 		}
 	}
 
-	if (help_opt) {
+	if (option[HELP]) {
 		help();
 		return SUCCESS;
 	}
 
 	if (!oled.isValid()) {
-		cerr << "oled is invalid" << endl;
+		cerr << "<error> oled is invalid" << endl;
 		return OLED_ERROR;
 	}
 
-	if (image_opt) {
+	if (option[IMAGE_FILE]) {
 		Image image(image_filename);
 		if (!image.isValid()) {
-			cerr << "image open error" << endl;
+			cerr << "<error> image open is failed" << endl;
 			return IMAGE_ERROR;
 		}
 
-		if (!image.calcCentrePoints()) {
-			cerr << "calculate centre point error" << endl;
-			return CALC_ERROR;
-		}
-
-		double *d = image.calcCentrePointsDistance();
-		for (int i = 0; i < UNIT_WIDTH_NUM * UNIT_HEIGHT_NUM; i++) {
-			cout << d[i] << endl;
-		}
+		Point_t p = image.getCentreOfMassByWhole();
+		cout << "( " << p.x << ", " << p.y << " )" << endl;
+		cout << image.getSize() << endl;
 	}
 
 	return SUCCESS;

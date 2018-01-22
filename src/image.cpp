@@ -1,6 +1,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 #include <string>
+#include <cmath>
 
 #include "image.h"
 #include "util.h"
@@ -11,106 +12,255 @@ using namespace cv;
 Point_t::Point_t(double x, double y)
 	: x(x), y(y) {}
 
+Point_t Point_t::operator=(const Point_t &p) {
+	this->x = p.x;
+	this->y = p.y;
+
+	return *this;
+}
+
 Image::Image(const string &filename, int flags) 
-	: image_filename(filename), flag(flags), unit_centre_points(NULL), unit_std_points(NULL) {
+	: image_filename(filename), flag(flags),
+	  unit_centre_points(NULL), unit_basic_points(NULL) {
 
 	image = imread(filename, flags);
 	
-	// hardcoded standard center point
-	/////////////////////////////////////////////////////////////
-	unit_width = image.cols / UNIT_WIDTH_NUM;
-	unit_height = image.rows / UNIT_HEIGHT_NUM;
-	unit_std_points = new Point_t[UNIT_WIDTH_NUM * UNIT_HEIGHT_NUM];
+	// TODO hardcoded standard center point
+	////////////////////////////////////////////////////////////
+	unit_basic_points = new Point_t[COL_POINT_NUM * ROW_POINT_NUM];
+	Point_t (*p)[ROW_POINT_NUM] = (Point_t(*)[COL_POINT_NUM])unit_basic_points;
 
-	int i = 0;
-	double x = 0;
-	double y = 0;
-	for (int row_i = 0; row_i < UNIT_HEIGHT_NUM; row_i++) {
-		y = (2 * row_i + 1) * unit_height / 2;
-
-		for (int col_j = 0; col_j < UNIT_WIDTH_NUM; col_j++) {
-			x = (2 * col_j + 1) * unit_width / 2;
-
-			unit_std_points[i].x = x;
-			unit_std_points[i].y = y;
-			i++;
+	// hard coded center point dot
+	int row_magic_point[ROW_POINT_NUM] = {52, 147, 252, 357, 452}; 
+	int col_magic_point[COL_POINT_NUM] = {52, 147, 252, 357, 452};
+	for (int row_i = 0; row_i < ROW_POINT_NUM; row_i++) {
+		for (int col_j = 0; col_j < COL_POINT_NUM; col_j++) {
+			p[row_i][col_j].x = col_magic_point[col_j];
+			p[row_i][col_j].y = row_magic_point[row_i];
 		}
-	}		
+	}
+
+	// hard coded distance
+	row_distance = new int[(ROW_POINT_NUM + 1) / 2];
+	for (int i = 0; i < (ROW_POINT_NUM + 1) / 2; i++) {
+		if (i == 0)
+			row_distance[0] = ROW_BASIC_DISTANCE;
+		else
+			row_distance[i] = static_cast<double>(row_distance[i - 1]) * REDUCE_RATIO;
+	}
+
+	col_distance = new int[(COL_POINT_NUM + 1) / 2];
+	for (int i = 0; i < (COL_POINT_NUM + 1) / 2; i++) {
+		if (i == 0)
+			col_distance[0] = COL_BASIC_DISTANCE;
+		else
+			col_distance[i] = static_cast<double>(col_distance[i - 1]) * REDUCE_RATIO;
+	}
 	////////////////////////////////////////////////////////////
 }
 
-Image::~Image() {}
-
-void Image::showImage(const string &window_name, int flags, int wait_key) {
-	namedWindow(window_name, flags);
-	imshow(window_name, image);
-	waitKey(wait_key);
+Image::~Image() {
+	delete unit_centre_points;
+	delete unit_basic_points;
+	delete row_distance;
+	delete col_distance;
 }
 
-void Image::exitImage(const string &window_name) {
-	destroyWindow(window_name);
-}
-
+// @return	size of image(<width> x <height>)
 Size Image::getSize() {
 	return image.size();
 }
 
+// @return	whether image is valid(opened)
 bool Image::isValid() {
 	return !image.empty();
 }
 
-// TODO need to check availability of array
-Point_t Image::getCentreOfMass(Point_t &p) {
+// Calculate centre of mass point in unit image.
+//
+//        unit_width
+//  -----------------------
+// |                       |
+// |          ..           | unit_height
+// |          .. mass      |
+// |                       |
+//  -----------------------
+//
+// @arg		Point_t p		starting point
+// @arg		int unit_width	unit image width
+// @arg		int unit_height	unit image height
+//
+// @return	centre of mass point by unit
+Point_t Image::getCentreOfMass(const Point_t &p, int unit_width, int unit_height) {
+	// Get pixel data to 1-st array.
 	uchar *data = (uchar *)image.data;
+
+	// Calculate start index.
+	// TODO change access method to 2-nd array -> availability check
 	int idx = p.y * image.cols + p.x;
 
+	// Sum weight(pixel value), x, y for calculation.
 	int weight = 0;
 	double x = 0;
 	double y = 0;
-
 	for (int row_i = 0; row_i < unit_height; row_i++) {
-		for (int col_j = 0; col_j < unit_width; col_j++) {
-			int w = data[idx];
 
-			weight += w;
-			x += col_j * w;
-			y += row_i * w;
+		for (int col_j = 0; col_j < unit_width; col_j++) {
+			if (data[idx]) {
+				int w = data[idx];
+
+				weight += w;
+				x += col_j * w;
+				y += row_i * w;
+			}
 
 			idx++;
 		}
 
 		idx += (image.cols - unit_width);
 	}
+
+	// Calculate x, y coordinate value.
 	x /= weight;
 	y /= weight;
 
 	return Point_t(p.x + x, p.y + y);
 }
 
-// before calculate centre point, must delete unit_centre_points(Point_t *)
+// Calculate center point of whole image by using centre of mass.
+// If points of image is biased, need to be adjusted slightly.
+//
+//         image.cols
+//  -----------------------
+// |                       |
+// |   .      .      .   . | image.rows
+// |   .      .      .   . |
+// |                       |
+//  -----------------------
+//
+// @return	center point though adjustment
+Point_t Image::getCenterPoint() {
+	Point_t p(0, 0);
+
+	return getCentreOfMass(p, image.cols, image.rows);
+}
+
+// Adjust center point(result of upper function, getCentreOfMassByWhole).
+// If lazer image is biased, the result of centre of mass can be different
+// with the real center point slightly.
+//
+// @arg		Point_t p // TODO can be Point_t &??
+//
+// @return	the result of adjustment of centre of mass
+Point_t Image::adjustCenterPoint(Point_t p) {
+	
+}
+
+// Calculate all centre of mass points
+//
+// @return	only when not initiated unit_centre_points return false
+// 
+// @lemma	point-to-point distance
+// = BASIC_DISTANCE*(REDUCE_RATIO^0 + ... + REDUCE_RATIO^(abs_deviation - 1)) + POINT_SIZE*ABS(DEVIATION)
+// = (BASIC_DISTANCE - BASIC_DISTANCE*(REDUCE_RATIO^abs_deviation)) / (1 - REDUCE_RATIO) + POINT_SIZE*ABS(DEVIATION)
+//
+// @warning	need to clean unit_centre_points(Point_t *) before calculate centre point
 bool Image::calcCentrePoints() {
+	// Point_t *unit_centre_points is needed to be cleaned
 	if (unit_centre_points != NULL)
 		return false;
 
-	int x = 0;
-	int y = 0;
+	// Dynamically allocate array and make 2nd-access-method
+	unit_centre_points = new Point_t[ROW_POINT_NUM * COL_POINT_NUM];
+	Point_t (*p)[ROW_POINT_NUM] = (Point_t(*)[COL_POINT_NUM])unit_centre_points;
 
-	int i = 0;
-	unit_centre_points = new Point_t[UNIT_WIDTH_NUM * UNIT_HEIGHT_NUM];
-	for (int row_i = 0; row_i < UNIT_HEIGHT_NUM; row_i++) {
-		for (int col_j = 0; col_j < UNIT_WIDTH_NUM; col_j++) {
-			Point_t cur_p(x + col_j * unit_width, y + row_i * unit_height);
-			Point_t centre_p = getCentreOfMass(cur_p);
+	// Calculate center point
+	int center_x = COL_POINT_NUM / 2;
+	int center_y = ROW_POINT_NUM / 2;
+	p[center_x][center_y] = getCenterPoint();
 
-			unit_centre_points[i].x = centre_p.x;
-			unit_centre_points[i].y = centre_p.y;
-			i++;
+	// column -> y
+	for (int row_i = 0; row_i < ROW_POINT_NUM; row_i++) {
+		// The n-th point from center point
+		int deviation_y = row_i - center_y;
+		int abs_deviation_y = abs(deviation_y);
+
+		// Calculate point-to-point distance.
+		int distance_deviation_y = (ROW_BASIC_DISTANCE - row_distance[abs_deviation_y]) / (1 - REDUCE_RATIO) + POINT_SIZE * abs_deviation_y;
+		if (deviation_y < 0)
+			distance_deviation_y *= -1;
+
+		// Calculate search height for centre of mass.
+		int expected_y = p[center_x][center_y].y + distance_deviation_y;
+		int search_y_up, search_y_down;
+		if (deviation_y < 0) {
+			search_y_up = row_distance[abs_deviation_y] / 2;
+			search_y_down = row_distance[abs_deviation_y - 1] / 2;
 		}
+		else if (deviation_y > 0) {
+			search_y_up = row_distance[abs_deviation_y - 1] / 2;
+			search_y_down = row_distance[abs_deviation_y] / 2;
+		}
+		else {
+			search_y_up = search_y_down = row_distance[0] / 2;
+		}
+
+		// Result argument of y(required for calculating centre of mass)
+		int start_calc_y = expected_y - search_y_up - POINT_SIZE / 2;
+		int calc_height = search_y_up + search_y_down + POINT_SIZE;
+
+		// column -> x
+		for (int col_j = 0; col_j < COL_POINT_NUM; col_j++) {
+			// The center point is already calculated
+			if (row_i == center_y && col_j == center_x){
+				continue;
+			}
+
+			// The n-th point from center point
+			int deviation_x = col_j - center_x;
+			int abs_deviation_x = abs(deviation_x);
+
+			
+			// Calculate point-to-point distance
+			int distance_deviation_x = (COL_BASIC_DISTANCE - col_distance[abs_deviation_x]) / (1 - REDUCE_RATIO) + POINT_SIZE * abs_deviation_x;
+			if (deviation_x < 0)
+				distance_deviation_x *= -1;
+
+			// Calculate search width for centre of mass
+			int expected_x = p[center_x][center_y].x + distance_deviation_x;
+			int search_x_left, search_x_right;
+			if (deviation_x < 0) {
+				search_x_left = col_distance[abs_deviation_x] / 2;
+				search_x_right = col_distance[abs_deviation_x - 1] / 2;
+			}
+			else if (deviation_x > 0) {
+				search_x_left = col_distance[abs_deviation_x - 1] / 2;
+				search_x_right = col_distance[abs_deviation_x] / 2;
+			}
+			else {
+				search_x_left = search_x_right = col_distance[0] / 2;
+			}
+
+			// Result argument of x(required for calculating centre of mass)
+			int start_calc_x = expected_x - search_x_left - POINT_SIZE / 2;
+			int calc_width = search_x_left + search_x_right + POINT_SIZE;
+
+			// Calculate centre of mass -> our short-term goal is finished!!///
+			Point_t start_p(start_calc_x, start_calc_y);
+			p[row_i][col_j] = getCentreOfMass(start_p, calc_width, calc_height);
+
+			cout << "(" << p[row_i][col_j].x << ", " << p[row_i][col_j].y << ") ";
+		}
+		cout << endl;
 	}
 
 	return true;
 }
 
+// Calculate distance between basic and centre points
+//
+// @return	distance array
 double* Image::calcCentrePointsDistance() {
-	return calcVecDistance(unit_centre_points, unit_std_points);
+	// Calculate distance 1-by-1
+	return calcVecDistance(unit_centre_points, unit_basic_points);
 }

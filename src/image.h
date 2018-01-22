@@ -6,12 +6,18 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
-// TODO 5 is hard-coded -> change it to automallycally select number.
-#define UNIT_WIDTH_NUM 5
-#define UNIT_HEIGHT_NUM 5
+#define COL_POINT_NUM	5
+#define ROW_POINT_NUM	5
+
+#define REDUCE_RATIO	0.9
+#define POINT_SIZE		5
+
+#define COL_BASIC_DISTANCE	100
+#define ROW_BASIC_DISTANCE	100
 
 typedef struct Point_t {
 	Point_t(double = 0, double = 0);
+	Point_t operator=(const Point_t &);
 
 	double x;
 	double y;
@@ -23,13 +29,12 @@ public:
 	Image(cv::Mat);
 	~Image();
 
-	void showImage(const std::string & = "window", int = CV_WINDOW_AUTOSIZE, int = 0);
-	void exitImage(const std::string & = "window");
-
 	cv::Size getSize();	
 	bool isValid();
 
-	Point_t getCentreOfMass(Point_t &);
+	Point_t getCentreOfMass(const Point_t &, int, int);
+	Point_t getCentreOfMassByWhole();
+	Point_t adjustCenterPoint(Point_t);
 	bool calcCentrePoints();
 
 	double* calcCentrePointsDistance();
@@ -39,11 +44,11 @@ private:
 	cv::Mat image;
 	int flag;
 
-	int unit_width;
-	int unit_height;
-
 	Point_t *unit_centre_points;
-	Point_t *unit_std_points;
+	Point_t *unit_basic_points;
+
+	int *row_distance;
+	int *col_distance;
 };
 
 #endif

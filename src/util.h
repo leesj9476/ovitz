@@ -3,6 +3,8 @@
 
 #include "image.h"
 
+bool isInt(const char *);
+
 void help();
 
 double* calcVecDistance(Point_t *, Point_t *);
