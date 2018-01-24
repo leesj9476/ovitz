@@ -143,20 +143,16 @@ int main (int argc, char *argv[]) {
 		Point_t p = image.getCenterPoint();
 		cout << p << endl;
 
-		/*
 		if (!image.calcCentrePoints()) {
 			cerr << "<error> calculation centre point is failed" << endl;
 			return CALC_ERROR;
 		}
 
-		double *result = image.calcCentrePointsDistance();
+		Variance_t *result = image.calcVecVariance();
 		for (int i = 0; i < COL_POINT_NUM * ROW_POINT_NUM; i++) {
-			cout << result[i] << " ";
-			if (i % COL_POINT_NUM == (COL_POINT_NUM - 1))
-				cout << endl;
+			cout << result[i] << endl;
 		}
 		delete result;
-		*/
 
 		cout << image.getSize() << endl;
 	}

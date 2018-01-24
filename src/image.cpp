@@ -36,15 +36,15 @@ Image::Image(const string &filename, int flags)
 	
 	// reference dot data
 	// center dot -> (0, 0)
-	int col_ref_idx = COL_POINT_NUM / 2;
-	int row_ref_idx = ROW_POINT_NUM / 2;
+	int col_center = COL_POINT_NUM / 2;
+	int row_center = ROW_POINT_NUM / 2;
 
 	unit_ref_points = new Point_t[COL_POINT_NUM * ROW_POINT_NUM];
 	Point_t (*p)[ROW_POINT_NUM] = (Point_t(*)[COL_POINT_NUM])unit_ref_points;
 	for (int row_i = 0; row_i < ROW_POINT_NUM; row_i++) {
 		for (int col_j = 0; col_j < COL_POINT_NUM; col_j++) {
-			p[row_i][col_j].x = COL_BASIC_DISTANCE * (col_j - col_ref_idx);
-			p[row_i][col_j].y = ROW_BASIC_DISTANCE * (row_i - row_ref_idx);
+			p[row_i][col_j].x = COL_BASIC_DISTANCE * (col_j - col_center);
+			p[row_i][col_j].y = ROW_BASIC_DISTANCE * (row_i - row_center);
 		}
 	}
 }
@@ -367,10 +367,55 @@ bool Image::calcCentrePoints() {
 	Point_t (*p)[ROW_POINT_NUM] = (Point_t(*)[COL_POINT_NUM])unit_centre_points;
 
 	// Calculate center point
-	p[ROW_POINT_NUM / 2][COL_POINT_NUM / 2] = getCenterPoint();
+	int col_center = COL_POINT_NUM / 2;
+	int row_center = ROW_POINT_NUM / 2;
+	p[row_center][col_center] = getCenterPoint();
 
-	// calc other points
+	// calc x-axis points
+	int x_distance = ROW_BASIC_DISTANCE;
+	Point_t expected_right_p;
+	Point_t expected_left_p;
+	for (int i = 0; i < col_center; i++) {
+		expected_right_p = p[row_center][col_center + i];
+		expected_right_p.x += x_distance;
+		p[row_center][col_center + i + 1] = adjustCenterPoint(expected_right_p);
+
+		expected_left_p = p[row_center][col_center - i];
+		expected_left_p.y -= x_distance;
+		p[row_center][col_center - i - 1] = adjustCenterPoint(expected_left_p);
+
+		x_distance *= REDUCE_RATIO;
+	}
+
+	// calc y-axis points
+	int y_distance = COL_BASIC_DISTANCE;
+	Point_t expected_up_p;
+	Point_t expected_down_p;
+	for (int i = 0; i < row_center; i++) {
+		expected_up_p = p[row_center - i][col_center];
+		expected_up_p.y -= y_distance;
+		p[row_center - i - 1][col_center] = adjustCenterPoint(expected_up_p);
+
+		expected_down_p = p[row_center + i][col_center];
+		expected_down_p.y += y_distance;
+		p[row_center + i + 1][col_center] = adjustCenterPoint(expected_down_p);
+
+		y_distance *= REDUCE_RATIO;
+	}
 	
+	// calc other points
+	Point_t expected_p;
+	for (int row_i = 0; row_i < ROW_POINT_NUM; row_i++) {
+		for (int col_j = 0; col_j < COL_POINT_NUM; col_j++) {
+			if (p[row_i][col_j].x != 0 && p[row_i][col_j].y != 0)
+				continue;
+
+			expected_p.x = p[row_center][col_j].x;
+			expected_p.y = p[row_i][col_center].y;
+
+			p[row_i][col_j] = adjustCenterPoint(expected_p);
+		}
+	}
 	
 	for (int i = 0; i < ROW_POINT_NUM * COL_POINT_NUM; i++) {
 		unit_centre_points[i].x -= center_point.x;
