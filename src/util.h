@@ -7,6 +7,6 @@ bool isInt(const char *);
 
 void help();
 
-double* calcVecDistance(Point_t *, Point_t *);
+Variance_t* calcVecVariance(Point_t *, Point_t *);
 
 #endif

@@ -16,6 +16,8 @@
 #define COL_BASIC_DISTANCE	100
 #define ROW_BASIC_DISTANCE	100
 
+#define Variance_t	Point_t
+
 typedef struct Point_t {
 	Point_t(double = 0, double = 0);
 	Point_t operator=(const Point_t &);
@@ -41,18 +43,17 @@ public:
 	Point_t adjustCenterPoint(const Point_t &);
 	bool calcCentrePoints();
 
-	double* calcCentrePointsDistance();
+	Variance_t* calcVariance();
 
 private:
 	std::string image_filename;
 	cv::Mat image;
 	int flag;
 
+	Point_t center_point;
+
 	Point_t *unit_centre_points;
 	Point_t *unit_ref_points;
-
-	int *row_distance;
-	int *col_distance;
 };
 
 #endif

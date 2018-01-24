@@ -31,16 +31,12 @@ void help() {
 	cout << "    -h                    print help messages" << endl;
 }
 
-double* calcVecDistance(Point_t *p1, Point_t *p2) {
-	double x_dist;
-	double y_dist;
-
-	double *dist = new double[ROW_POINT_NUM * COL_POINT_NUM];
+Variance_t* calcVecVariance(Point_t *p1, Point_t *p2) {
+	Variance_t *variance = new Variance_t[ROW_POINT_NUM * COL_POINT_NUM];
 	for (uint i = 0; i < ROW_POINT_NUM * COL_POINT_NUM; i++) {
-		x_dist = (p1[i].x - p2[i].x);
-		y_dist = (p1[i].y - p2[i].y);
-		dist[i] = sqrt(x_dist * x_dist + y_dist * y_dist);
+		variance[i].x = (p1[i].x - p2[i].x);
+		variance[i].y = (p1[i].y - p2[i].y);
 	}
 
-	return dist;
+	return variance;
 }
