@@ -44,7 +44,7 @@ Image::Image(const string &filename, int flags)
 	for (int row_i = 0; row_i < ROW_POINT_NUM; row_i++) {
 		for (int col_j = 0; col_j < COL_POINT_NUM; col_j++) {
 			p[row_i][col_j].x = COL_BASIC_DISTANCE * (col_j - col_center);
-			p[row_i][col_j].y = ROW_BASIC_DISTANCE * (row_i - row_center);
+			p[row_i][col_j].y = ROW_BASIC_DISTANCE * (row_center - row_i);
 		}
 	}
 }
@@ -381,7 +381,7 @@ bool Image::calcCentrePoints() {
 		p[row_center][col_center + i + 1] = adjustCenterPoint(expected_right_p);
 
 		expected_left_p = p[row_center][col_center - i];
-		expected_left_p.y -= x_distance;
+		expected_left_p.x -= x_distance;
 		p[row_center][col_center - i - 1] = adjustCenterPoint(expected_left_p);
 
 		x_distance *= REDUCE_RATIO;
@@ -402,7 +402,7 @@ bool Image::calcCentrePoints() {
 
 		y_distance *= REDUCE_RATIO;
 	}
-	
+
 	// calc other points
 	Point_t expected_p;
 	for (int row_i = 0; row_i < ROW_POINT_NUM; row_i++) {
@@ -416,19 +416,27 @@ bool Image::calcCentrePoints() {
 			p[row_i][col_j] = adjustCenterPoint(expected_p);
 		}
 	}
-	
+
+	// center point -> (0, 0)
+	// x,y-axis coordinate
 	for (int i = 0; i < ROW_POINT_NUM * COL_POINT_NUM; i++) {
 		unit_centre_points[i].x -= center_point.x;
-		unit_centre_points[i].y -= center_point.y;
+		unit_centre_points[i].y = center_point.y - unit_centre_points[i].y;
+
+		cout << unit_centre_points[i];
+		if (i % COL_POINT_NUM == COL_POINT_NUM - 1)
+			cout << endl;
 	}
 
 	return true;
 }
 
 // Calculate variance of x and y between basic and centre points
-//
-// @return	distance array
-Variance_t* Image::calcVariance() {
+void Image::calcVariance() {
 	// Calculate variance point-by-point
-	return calcVecVariance(unit_centre_points, unit_ref_points);
+	variance = new Variance_t[ROW_POINT_NUM][COL_POINT_NUM];
+	for (int i = 0; i < ROW_POINT_NUM * COL_POINT_NUM; i++) {
+		variance[i].x = unit_centre_points[i].x - unit_ref_points[i].x;
+		variance[i].y = unit_centre_points[i].y - unit_ref_points[i].y;
+	}
 }

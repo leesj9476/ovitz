@@ -131,6 +131,9 @@ int main (int argc, char *argv[]) {
 		return OLED_ERROR;
 	}
 
+	//////////////////////////////////
+	//          image mode          //
+	//////////////////////////////////
 	if (option[IMAGE_FILE]) {
 		cout << "image mode" << endl;
 
@@ -141,21 +144,20 @@ int main (int argc, char *argv[]) {
 		}
 
 		Point_t p = image.getCenterPoint();
-		cout << p << endl;
+		cout << "center point: " << p << endl;
 
 		if (!image.calcCentrePoints()) {
 			cerr << "<error> calculation centre point is failed" << endl;
 			return CALC_ERROR;
 		}
 
-		Variance_t *result = image.calcVecVariance();
-		for (int i = 0; i < COL_POINT_NUM * ROW_POINT_NUM; i++) {
-			cout << result[i] << endl;
-		}
-		delete result;
+		image.calcVariance();
 
-		cout << image.getSize() << endl;
+		cout << "image size: " << image.getSize() << endl;
 	}
+	//////////////////////////////////
+	//         capture mode         //
+	//////////////////////////////////
 	else {
 		cout << "capture mode" << endl;
 

@@ -7,6 +7,4 @@ bool isInt(const char *);
 
 void help();
 
-Variance_t* calcVecVariance(Point_t *, Point_t *);
-
 #endif

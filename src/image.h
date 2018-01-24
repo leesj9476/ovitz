@@ -13,8 +13,8 @@
 #define REDUCE_RATIO	0.7
 #define POINT_SIZE		5
 
-#define COL_BASIC_DISTANCE	100
-#define ROW_BASIC_DISTANCE	100
+#define COL_BASIC_DISTANCE	500
+#define ROW_BASIC_DISTANCE	500
 
 #define Variance_t	Point_t
 
@@ -54,6 +54,8 @@ private:
 
 	Point_t *unit_centre_points;
 	Point_t *unit_ref_points;
+
+	Variance_t *variance;
 };
 
 #endif
