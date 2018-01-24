@@ -30,22 +30,26 @@ Image::Image(const string &filename, int flags)
 	  unit_centre_points(NULL), unit_ref_points(NULL) {
 
 	image = imread(filename, flags);
+
+	// TODO only just for odd number of point
+	//       -> if even number of point, maybe error!!!!!!!!
 	
-	// TODO hardcoded standard center point
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// reference dot data
+	// center dot -> (0, 0)
+	int col_ref_idx = COL_POINT_NUM / 2;
+	int row_ref_idx = ROW_POINT_NUM / 2;
+
 	unit_ref_points = new Point_t[COL_POINT_NUM * ROW_POINT_NUM];
 	Point_t (*p)[ROW_POINT_NUM] = (Point_t(*)[COL_POINT_NUM])unit_ref_points;
-
-	// hard coded center point dot
-	int row_magic_point[ROW_POINT_NUM] = { 52, 147, 252, 357, 452 }; 
-	int col_magic_point[COL_POINT_NUM] = { 52, 147, 252, 357, 452 };
 	for (int row_i = 0; row_i < ROW_POINT_NUM; row_i++) {
 		for (int col_j = 0; col_j < COL_POINT_NUM; col_j++) {
-			p[row_i][col_j].x = col_magic_point[col_j];
-			p[row_i][col_j].y = row_magic_point[row_i];
+			p[row_i][col_j].x = COL_BASIC_DISTANCE * (col_j - col_ref_idx);
+			p[row_i][col_j].y = ROW_BASIC_DISTANCE * (row_i - row_ref_idx);
 		}
 	}
 
+	// TODO hardcoded standard center point
+	////////////////////////////////////////////////////////////////////////////
 	// hard coded distance
 	row_distance = new int[(ROW_POINT_NUM + 1) / 2];
 	for (int i = 0; i < (ROW_POINT_NUM + 1) / 2; i++) {
@@ -62,7 +66,7 @@ Image::Image(const string &filename, int flags)
 		else
 			col_distance[i] = static_cast<double>(col_distance[i - 1]) * REDUCE_RATIO;
 	}
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 }
 
 Image::~Image() {
@@ -262,7 +266,7 @@ Point_t Image::adjustCenterPoint(const Point_t &p) {
 	//   -----
 	// 3       2
 	//
-	// TODO need to add availability about coordinate values///////////////////////////////////////////////////////////////
+	// TODO need to add availability about coordinate values////////////////////
 	Point_t std_p[4] = { {basic_p.x - 1, basic_p.y - 1}, {basic_p.x + 1, basic_p.y - 1},
 						 {basic_p.x + 1, basic_p.y + 1}, {basic_p.x - 1, basic_p.y + 1} };
 
