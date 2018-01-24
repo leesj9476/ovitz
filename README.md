@@ -14,4 +14,4 @@
 
  7. the case of the even number of point
 
- 8. when calculate closest white point : 1-by-1 -> n-by-n
+ 8. when calculate closest white point : 1 pixel-> n pixel
