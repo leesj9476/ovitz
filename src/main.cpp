@@ -5,6 +5,7 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
+#include "capture.h"
 #include "image.h"
 #include "oled.h"
 #include "types.h"
@@ -18,19 +19,22 @@ bool option[OPTION_NUM];
 //TODO: change c-style exception state to OOP-style(try - catch)
 int main (int argc, char *argv[]) {
 	int opt;
-	string image_filename = "";
+	string image_filename;
+	string output_filename;
 	Oled oled;
 
 	int exposure_time = 0;
 	int gain = 0;
+	int wait_sec = 0;
 	bool opt_valid = true;
 
-	// change to getopt_long function
-	while ((opt = getopt(argc, argv, "f:e:g:h")) != -1) {
+	// TODO change to getopt_long function
+	// TODO add width, height option
+	while ((opt = getopt(argc, argv, "f:e:g:co:s:w:h:")) != -1) {
 		switch (opt) {
 		case 'f':
 			if (option[IMAGE_FILE]) {
-				cout << "<error> 'f' option is duplicated" << endl;
+				cerr << "<error> 'f' option is duplicated" << endl;
 				return ARGUMENT_ERROR;
 			}
 
@@ -40,14 +44,14 @@ int main (int argc, char *argv[]) {
 
 		case 'e':
 			if (option[EXPOSURE]) {
-				cout << "<error> 'e' option is duplicated" << endl;
+				cerr << "<error> 'e' option is duplicated" << endl;
 				return ARGUMENT_ERROR;
 			}
 
 			option[EXPOSURE] = true;
 			opt_valid = isInt(optarg);
 			if (!opt_valid) {
-				cout << "<error> 'e' option's argument is not int" << endl;
+				cerr << "<error> 'e' option's argument is not int" << endl;
 				return ARGUMENT_ERROR;
 			}
 
@@ -56,23 +60,60 @@ int main (int argc, char *argv[]) {
 
 		case 'g':
 			if (option[GAIN]) {
-				cout << "<error> 'g' option is duplicated" << endl;
+				cerr << "<error> 'g' option is duplicated" << endl;
 				return ARGUMENT_ERROR;
 			}
 
 			option[GAIN] = true;
 			opt_valid = isInt(optarg);
 			if (!opt_valid) {
-				cout << "<error> 'g' option's argument is not int" << endl;
+				cerr << "<error> 'g' option's argument is not int" << endl;
 				return ARGUMENT_ERROR;
 			}
 
 			gain = atoi(optarg);
 			break;
 
+		case 'c':
+			if (option[COLOR]) {
+				cerr << "<error> 'c' option is duplicated" << endl;
+				return ARGUMENT_ERROR;
+			}
+
+			option[COLOR] = true;
+			break;
+
+		case 'o':
+			if (option[OUTPUT_FILE]) {
+				cerr << "<error> 'o' option is duplicated" << endl;
+				return ARGUMENT_ERROR;
+			}
+
+			option[OUTPUT_FILE] = true;
+			output_filename = string(optarg);
+			break;
+
+		case 's':
+			if (option[WAIT_SEC]) {
+				cerr << "<error> 's' option is duplicated" << endl;
+				return ARGUMENT_ERROR;
+			}
+
+			option[WAIT_SEC] = true;
+			opt_valid = isInt(optarg);
+			if (!opt_valid) {
+				cerr << "<error> 's' option's argument is not int" << endl;
+				return ARGUMENT_ERROR;
+			}
+
+			wait_sec = atoi(optarg);
+			break;
+
+		/*
 		case 'h':
 			option[HELP] = true;
 			break;
+		*/
 
 		default:
 			cerr << "<error> argument error" << endl;
@@ -91,6 +132,8 @@ int main (int argc, char *argv[]) {
 	}
 
 	if (option[IMAGE_FILE]) {
+		cout << "image mode" << endl;
+
 		Image image(image_filename);
 		if (!image.isValid()) {
 			cerr << "<error> image open is failed" << endl;
@@ -100,6 +143,7 @@ int main (int argc, char *argv[]) {
 		Point_t p = image.getCenterPoint();
 		cout << p << endl;
 
+		/*
 		if (!image.calcCentrePoints()) {
 			cerr << "<error> calculation centre point is failed" << endl;
 			return CALC_ERROR;
@@ -111,8 +155,60 @@ int main (int argc, char *argv[]) {
 			if (i % COL_POINT_NUM == (COL_POINT_NUM - 1))
 				cout << endl;
 		}
+		delete result;
+		*/
 
 		cout << image.getSize() << endl;
+	}
+	else {
+		cout << "capture mode" << endl;
+
+		Capture cam;
+		if (!cam.isValid()) {
+			cerr << "<error> camera open is failed" << endl;
+			return CAM_ERROR;
+		}
+
+		if (option[EXPOSURE]) {
+			if (!cam.setOption(CV_CAP_PROP_EXPOSURE, exposure_time)) {
+				cerr << "<error> exposure time option error([1, 100], shutter speed 0 to 33ms)" << endl;
+				return OPTION_ERROR;
+			}
+		}
+
+		if (option[GAIN]) {
+			if (!cam.setOption(CV_CAP_PROP_GAIN, gain)) {
+				cerr << "<error> gain option error([0, 100])" << endl;
+				return OPTION_ERROR;
+			}
+		}
+
+		if (option[COLOR]) {
+			if (!cam.setOption(CV_CAP_PROP_FORMAT, CV_8UC3)) {
+				cerr << "<error> color option error" << endl;
+				return OPTION_ERROR;
+			}
+		}
+
+		if (option[OUTPUT_FILE]) {
+			if (output_filename.length() == 0) {
+				cerr << "<error> output filename argument error" << endl;
+				return OPTION_ERROR;
+			}
+
+			cam.setOutputFilename(output_filename);
+		}
+
+		if (option[WAIT_SEC]) {
+			if (wait_sec < 1 || wait_sec > 10) {
+				cerr << "<error> wait second option error(3sec default. [1, 10])" << endl;
+				return OPTION_ERROR;
+			}
+		
+			cam.setWaitSec(wait_sec);
+		}
+
+		cam.shot();
 	}
 
 	return SUCCESS;

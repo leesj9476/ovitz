@@ -27,14 +27,14 @@ ostream& operator<<(ostream &os, const Point_t &p) {
 
 Image::Image(const string &filename, int flags) 
 	: image_filename(filename), flag(flags),
-	  unit_centre_points(NULL), unit_basic_points(NULL) {
+	  unit_centre_points(NULL), unit_ref_points(NULL) {
 
 	image = imread(filename, flags);
 	
 	// TODO hardcoded standard center point
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
-	unit_basic_points = new Point_t[COL_POINT_NUM * ROW_POINT_NUM];
-	Point_t (*p)[ROW_POINT_NUM] = (Point_t(*)[COL_POINT_NUM])unit_basic_points;
+	unit_ref_points = new Point_t[COL_POINT_NUM * ROW_POINT_NUM];
+	Point_t (*p)[ROW_POINT_NUM] = (Point_t(*)[COL_POINT_NUM])unit_ref_points;
 
 	// hard coded center point dot
 	int row_magic_point[ROW_POINT_NUM] = { 52, 147, 252, 357, 452 }; 
@@ -67,7 +67,7 @@ Image::Image(const string &filename, int flags)
 
 Image::~Image() {
 	delete unit_centre_points;
-	delete unit_basic_points;
+	delete unit_ref_points;
 	delete row_distance;
 	delete col_distance;
 }
@@ -174,6 +174,7 @@ Point_t Image::getCenterPoint() {
 //
 // @return	the closest white point(pixel value > 0)
 //
+// TODO 1-pass-1 search -> n-pass-n search
 // TODO check avilability coordinate values
 Point_t Image::getClosestWhitePoint(const Point_t &p) {
 	uchar *data = (uchar *)image.data;
@@ -471,5 +472,5 @@ bool Image::calcCentrePoints() {
 // @return	distance array
 double* Image::calcCentrePointsDistance() {
 	// Calculate distance 1-by-1
-	return calcVecDistance(unit_centre_points, unit_basic_points);
+	return calcVecDistance(unit_centre_points, unit_ref_points);
 }

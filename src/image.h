@@ -7,10 +7,10 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
-#define COL_POINT_NUM	5
-#define ROW_POINT_NUM	5
+#define COL_POINT_NUM	13
+#define ROW_POINT_NUM	13
 
-#define REDUCE_RATIO	0.9
+#define REDUCE_RATIO	0.7
 #define POINT_SIZE		5
 
 #define COL_BASIC_DISTANCE	100
@@ -49,7 +49,7 @@ private:
 	int flag;
 
 	Point_t *unit_centre_points;
-	Point_t *unit_basic_points;
+	Point_t *unit_ref_points;
 
 	int *row_distance;
 	int *col_distance;

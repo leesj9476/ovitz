@@ -8,6 +8,9 @@
 using namespace std;
 
 bool isInt(const char *str) {
+	if (*str == '-')
+		str++;
+
 	while (*str) {
 		if (!isdigit(*str))
 			return false;
