@@ -1,4 +1,10 @@
- TODO list
+INFO list
+
+1. test_dot_prop_big_gaussian.png -> dot(13, 13), distance(500, 500)
+
+2. test_dot_my_shot.png -> dot(7, 7), distance(110, 110)
+
+TODO list
 
  1. ROW_POINT_NUM, COL_POINT_NUM -> hard-coded
 

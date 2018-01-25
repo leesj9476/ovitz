@@ -19,7 +19,7 @@
 #define OPTION_ERROR	-6
 #define SUCCESS			0
 
-#define BLACK_PIXEL	0
+#define BLACK_PIXEL	41
 
 #define UP		0
 #define RIGHT	1

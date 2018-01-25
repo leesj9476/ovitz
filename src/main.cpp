@@ -153,6 +153,7 @@ int main (int argc, char *argv[]) {
 
 		image.calcVariance();
 
+		cout << "1000" << endl;
 		cout << "image size: " << image.getSize() << endl;
 	}
 	//////////////////////////////////

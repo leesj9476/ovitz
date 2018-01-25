@@ -1,0 +1,2547 @@
+make clean
+make[1]: Entering directory '/home/pi/workspace/ovitz'
+rm -f ovitz
+rm -f obj/main.o obj/image.o obj/capture.o obj/oled.o obj/util.o
+rm -f libSSD1306.a
+rm -rf obj
+make[1]: Leaving directory '/home/pi/workspace/ovitz'
+mkdir obj
+g++ -g -Wall -Wpedantic -Wextra --std=c++11 -I include -c src/main.cpp -o obj/main.o
+g++ -g -Wall -Wpedantic -Wextra --std=c++11 `pkg-config opencv --cflags --libs` -c src/image.cpp -o obj/image.o
+src/image.cpp: In member function ‘Point_t Image::getClosestWhitePoint(const Point_t&)’:
+src/image.cpp:209:20: error: no match for ‘operator+’ (operand types are ‘Point_t’ and ‘int’)
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                     
+In file included from /usr/local/include/opencv2/core/base.hpp:58:0,
+                 from /usr/local/include/opencv2/core.hpp:54,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/cvstd.hpp:959:8: note: candidate: cv::String cv::operator+(const cv::String&, const cv::String&)
+ String operator + (const String& lhs, const String& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:959:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::String&’
+/usr/local/include/opencv2/core/cvstd.hpp:969:8: note: candidate: cv::String cv::operator+(const cv::String&, const char*)
+ String operator + (const String& lhs, const char* rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:969:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::String&’
+/usr/local/include/opencv2/core/cvstd.hpp:980:8: note: candidate: cv::String cv::operator+(const char*, const cv::String&)
+ String operator + (const char* lhs, const String& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:980:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const char*’
+/usr/local/include/opencv2/core/cvstd.hpp:991:8: note: candidate: cv::String cv::operator+(const cv::String&, char)
+ String operator + (const String& lhs, char rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:991:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::String&’
+/usr/local/include/opencv2/core/cvstd.hpp:1001:8: note: candidate: cv::String cv::operator+(char, const cv::String&)
+ String operator + (char lhs, const String& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:1001:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘char’
+In file included from /usr/local/include/opencv2/core.hpp:3281:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/cvstd.inl.hpp:124:8: note: candidate: cv::String cv::operator+(const cv::String&, const string&)
+ String operator + (const String& lhs, const std::string& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.inl.hpp:124:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::String&’
+/usr/local/include/opencv2/core/cvstd.inl.hpp:135:8: note: candidate: cv::String cv::operator+(const string&, const cv::String&)
+ String operator + (const std::string& lhs, const String& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.inl.hpp:135:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const string& {aka const std::__cxx11::basic_string<char>&}’
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1206:17: note: candidate: template<class _Tp, int m, int n> cv::Matx<_Tp, m, n> cv::operator+(const cv::Matx<_Tp, m, n>&, const cv::Matx<_Tp, m, n>&)
+ Matx<_Tp, m, n> operator + (const Matx<_Tp, m, n>& a, const Matx<_Tp, m, n>& b)
+                 ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1206:17: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Matx<_Tp, m, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1334:14: note: candidate: template<class _Tp, int cn> cv::Vec<_Tp, m> cv::operator+(const cv::Vec<_Tp, m>&, const cv::Vec<_Tp, m>&)
+ Vec<_Tp, cn> operator + (const Vec<_Tp, cn>& a, const Vec<_Tp, cn>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1334:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Vec<_Tp, m>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1014:14: note: candidate: template<class _Tp> cv::Complex<_Tp> cv::operator+(const cv::Complex<_Tp>&, const cv::Complex<_Tp>&)
+ Complex<_Tp> operator + (const Complex<_Tp>& a, const Complex<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1014:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1064:14: note: candidate: template<class _Tp> cv::Complex<_Tp> cv::operator+(const cv::Complex<_Tp>&, _Tp)
+ Complex<_Tp> operator + (const Complex<_Tp>& a, _Tp b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1064:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1074:14: note: candidate: template<class _Tp> cv::Complex<_Tp> cv::operator+(_Tp, const cv::Complex<_Tp>&)
+ Complex<_Tp> operator + (_Tp b, const Complex<_Tp>& a)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1074:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const cv::Complex<_Tp>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1295:13: note: candidate: template<class _Tp> cv::Point_<_Tp> cv::operator+(const cv::Point_<_Tp>&, const cv::Point_<_Tp>&)
+ Point_<_Tp> operator + (const Point_<_Tp>& a, const Point_<_Tp>& b)
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1295:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Point_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1547:14: note: candidate: template<class _Tp> cv::Point3_<_Tp> cv::operator+(const cv::Point3_<_Tp>&, const cv::Point3_<_Tp>&)
+ Point3_<_Tp> operator + (const Point3_<_Tp>& a, const Point3_<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1547:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Point3_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1727:12: note: candidate: template<class _Tp> cv::Size_<_Tp> cv::operator+(const cv::Size_<_Tp>&, const cv::Size_<_Tp>&)
+ Size_<_Tp> operator + (const Size_<_Tp>& a, const Size_<_Tp>& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1727:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Size_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1923:12: note: candidate: template<class _Tp> cv::Rect_<_Tp> cv::operator+(const cv::Rect_<_Tp>&, const cv::Point_<_Tp>&)
+ Rect_<_Tp> operator + (const Rect_<_Tp>& a, const Point_<_Tp>& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1923:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1935:12: note: candidate: template<class _Tp> cv::Rect_<_Tp> cv::operator+(const cv::Rect_<_Tp>&, const cv::Size_<_Tp>&)
+ Rect_<_Tp> operator + (const Rect_<_Tp>& a, const Size_<_Tp>& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1935:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:2050:7: note: candidate: cv::Range cv::operator+(const cv::Range&, int)
+ Range operator + (const Range& r1, int delta)
+       ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2050:7: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Range&’
+/usr/local/include/opencv2/core/types.hpp:2056:7: note: candidate: cv::Range cv::operator+(int, const cv::Range&)
+ Range operator + (int delta, const Range& r1)
+       ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2056:7: note:   no known conversion for argument 1 from ‘Point_t’ to ‘int’
+/usr/local/include/opencv2/core/types.hpp:2190:14: note: candidate: template<class _Tp> cv::Scalar_<_Tp> cv::operator+(const cv::Scalar_<_Tp>&, const cv::Scalar_<_Tp>&)
+ Scalar_<_Tp> operator + (const Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2190:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Scalar_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:59:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.hpp:3535:20: note: candidate: cv::MatExpr cv::operator+(const cv::Mat&, const cv::Mat&)
+ CV_EXPORTS MatExpr operator + (const Mat& a, const Mat& b);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3535:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.hpp:3536:20: note: candidate: cv::MatExpr cv::operator+(const cv::Mat&, const Scalar&)
+ CV_EXPORTS MatExpr operator + (const Mat& a, const Scalar& s);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3536:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.hpp:3537:20: note: candidate: cv::MatExpr cv::operator+(const Scalar&, const cv::Mat&)
+ CV_EXPORTS MatExpr operator + (const Scalar& s, const Mat& a);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3537:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const Scalar& {aka const cv::Scalar_<double>&}’
+/usr/local/include/opencv2/core/mat.hpp:3538:20: note: candidate: cv::MatExpr cv::operator+(const cv::MatExpr&, const cv::Mat&)
+ CV_EXPORTS MatExpr operator + (const MatExpr& e, const Mat& m);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3538:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::MatExpr&’
+/usr/local/include/opencv2/core/mat.hpp:3539:20: note: candidate: cv::MatExpr cv::operator+(const cv::Mat&, const cv::MatExpr&)
+ CV_EXPORTS MatExpr operator + (const Mat& m, const MatExpr& e);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3539:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.hpp:3540:20: note: candidate: cv::MatExpr cv::operator+(const cv::MatExpr&, const Scalar&)
+ CV_EXPORTS MatExpr operator + (const MatExpr& e, const Scalar& s);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3540:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::MatExpr&’
+/usr/local/include/opencv2/core/mat.hpp:3541:20: note: candidate: cv::MatExpr cv::operator+(const Scalar&, const cv::MatExpr&)
+ CV_EXPORTS MatExpr operator + (const Scalar& s, const MatExpr& e);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3541:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const Scalar& {aka const cv::Scalar_<double>&}’
+/usr/local/include/opencv2/core/mat.hpp:3542:20: note: candidate: cv::MatExpr cv::operator+(const cv::MatExpr&, const cv::MatExpr&)
+ CV_EXPORTS MatExpr operator + (const MatExpr& e1, const MatExpr& e2);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3542:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::MatExpr&’
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:2724:18: note: candidate: cv::MatConstIterator cv::operator+(const cv::MatConstIterator&, ptrdiff_t)
+ MatConstIterator operator + (const MatConstIterator& a, ptrdiff_t ofs)
+                  ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:2724:18: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::MatConstIterator&’
+/usr/local/include/opencv2/core/mat.inl.hpp:2731:18: note: candidate: cv::MatConstIterator cv::operator+(ptrdiff_t, const cv::MatConstIterator&)
+ MatConstIterator operator + (ptrdiff_t ofs, const MatConstIterator& a)
+                  ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:2731:18: note:   no known conversion for argument 1 from ‘Point_t’ to ‘ptrdiff_t {aka int}’
+/usr/local/include/opencv2/core/mat.inl.hpp:2872:24: note: candidate: template<class _Tp> cv::MatConstIterator_<_Tp> cv::operator+(const cv::MatConstIterator_<_Tp>&, ptrdiff_t)
+ MatConstIterator_<_Tp> operator + (const MatConstIterator_<_Tp>& a, ptrdiff_t ofs)
+                        ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:2872:24: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::MatConstIterator_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:2879:24: note: candidate: template<class _Tp> cv::MatConstIterator_<_Tp> cv::operator+(ptrdiff_t, const cv::MatConstIterator_<_Tp>&)
+ MatConstIterator_<_Tp> operator + (ptrdiff_t ofs, const MatConstIterator_<_Tp>& a)
+                        ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:2879:24: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const cv::MatConstIterator_<_Tp>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3009:19: note: candidate: template<class _Tp> cv::MatIterator_<_Tp> cv::operator+(const cv::MatIterator_<_Tp>&, ptrdiff_t)
+ MatIterator_<_Tp> operator + (const MatIterator_<_Tp>& a, ptrdiff_t ofs)
+                   ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3009:19: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::MatIterator_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3016:19: note: candidate: template<class _Tp> cv::MatIterator_<_Tp> cv::operator+(ptrdiff_t, const cv::MatIterator_<_Tp>&)
+ MatIterator_<_Tp> operator + (ptrdiff_t ofs, const MatIterator_<_Tp>& a)
+                   ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3016:19: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const cv::MatIterator_<_Tp>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/cvstd.inl.hpp:47:0,
+                 from /usr/local/include/opencv2/core.hpp:3281,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/complex:445:5: note: candidate: template<class _Tp> std::complex<_Tp> std::operator+(const std::complex<_Tp>&)
+     operator+(const complex<_Tp>& __x)
+     ^~~~~~~~
+/usr/include/c++/6/complex:445:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/cvstd.inl.hpp:47:0,
+                 from /usr/local/include/opencv2/core.hpp:3281,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/complex:344:5: note: candidate: template<class _Tp> std::complex<_Tp> std::operator+(const _Tp&, const std::complex<_Tp>&)
+     operator+(const _Tp& __x, const complex<_Tp>& __y)
+     ^~~~~~~~
+/usr/include/c++/6/complex:344:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const std::complex<_Tp>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/cvstd.inl.hpp:47:0,
+                 from /usr/local/include/opencv2/core.hpp:3281,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/complex:335:5: note: candidate: template<class _Tp> std::complex<_Tp> std::operator+(const std::complex<_Tp>&, const _Tp&)
+     operator+(const complex<_Tp>& __x, const _Tp& __y)
+     ^~~~~~~~
+/usr/include/c++/6/complex:335:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/cvstd.inl.hpp:47:0,
+                 from /usr/local/include/opencv2/core.hpp:3281,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/complex:326:5: note: candidate: template<class _Tp> std::complex<_Tp> std::operator+(const std::complex<_Tp>&, const std::complex<_Tp>&)
+     operator+(const complex<_Tp>& __x, const complex<_Tp>& __y)
+     ^~~~~~~~
+/usr/include/c++/6/complex:326:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/vector:65:0,
+                 from /usr/local/include/opencv2/core/types.hpp:53,
+                 from /usr/local/include/opencv2/core.hpp:58,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/stl_bvector.h:387:3: note: candidate: std::_Bit_const_iterator std::operator+(std::ptrdiff_t, const std::_Bit_const_iterator&)
+   operator+(ptrdiff_t __n, const _Bit_const_iterator& __x)
+   ^~~~~~~~
+/usr/include/c++/6/bits/stl_bvector.h:387:3: note:   no known conversion for argument 1 from ‘Point_t’ to ‘std::ptrdiff_t {aka int}’
+/usr/include/c++/6/bits/stl_bvector.h:297:3: note: candidate: std::_Bit_iterator std::operator+(std::ptrdiff_t, const std::_Bit_iterator&)
+   operator+(ptrdiff_t __n, const _Bit_iterator& __x)
+   ^~~~~~~~
+/usr/include/c++/6/bits/stl_bvector.h:297:3: note:   no known conversion for argument 1 from ‘Point_t’ to ‘std::ptrdiff_t {aka int}’
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5051:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)
+     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5051:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5045:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)
+     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5045:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5039:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&)
+     operator+(_CharT __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5039:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5033:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const _CharT*, std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&)
+     operator+(const _CharT* __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5033:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const _CharT*’ and ‘Point_t’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5021:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&)
+     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5021:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5015:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&)
+     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5015:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5009:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5009:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:4997:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, _CharT)
+     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:4997:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:4981:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const _CharT*)
+     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:4981:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:53:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.tcc:1163:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator+(_CharT __lhs, const basic_string<_CharT, _Traits, _Alloc>& __rhs)
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.tcc:1163:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:53:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.tcc:1147:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const _CharT*, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator+(const _CharT* __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.tcc:1147:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const _CharT*’ and ‘Point_t’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:4944:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:4944:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/6/bits/char_traits.h:39,
+                 from /usr/include/c++/6/string:40,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/stl_iterator.h:1200:5: note: candidate: template<class _Iterator> std::move_iterator<_IteratorL> std::operator+(typename std::move_iterator<_IteratorL>::difference_type, const std::move_iterator<_IteratorL>&)
+     operator+(typename move_iterator<_Iterator>::difference_type __n,
+     ^~~~~~~~
+/usr/include/c++/6/bits/stl_iterator.h:1200:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/6/bits/char_traits.h:39,
+                 from /usr/include/c++/6/string:40,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/stl_iterator.h:341:5: note: candidate: template<class _Iterator> std::reverse_iterator<_Iterator> std::operator+(typename std::reverse_iterator<_Iterator>::difference_type, const std::reverse_iterator<_Iterator>&)
+     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+     ^~~~~~~~
+/usr/include/c++/6/bits/stl_iterator.h:341:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:209:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+src/image.cpp:210:17: error: no match for ‘operator+=’ (operand types are ‘Point_t’ and ‘int’)
+     search_p[2] += SEARCH_GAP;
+                  
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1190:19: note: candidate: template<class _Tp1, class _Tp2, int m, int n> cv::Matx<_Tp, m, n>& cv::operator+=(cv::Matx<_Tp, m, n>&, const cv::Matx<_Tp2, m, n>&)
+ Matx<_Tp1, m, n>& operator += (Matx<_Tp1, m, n>& a, const Matx<_Tp2, m, n>& b)
+                   ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1190:19: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Matx<_Tp, m, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1318:16: note: candidate: template<class _Tp1, class _Tp2, int cn> cv::Vec<_Tp, n>& cv::operator+=(cv::Vec<_Tp, n>&, const cv::Vec<_Tp2, cn>&)
+ Vec<_Tp1, cn>& operator += (Vec<_Tp1, cn>& a, const Vec<_Tp2, cn>& b)
+                ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1318:16: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Vec<_Tp, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1020:15: note: candidate: template<class _Tp> cv::Complex<_Tp>& cv::operator+=(cv::Complex<_Tp>&, const cv::Complex<_Tp>&)
+ Complex<_Tp>& operator += (Complex<_Tp>& a, const Complex<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1020:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1086:15: note: candidate: template<class _Tp> cv::Complex<_Tp>& cv::operator+=(cv::Complex<_Tp>&, _Tp)
+ Complex<_Tp>& operator += (Complex<_Tp>& a, _Tp b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1086:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1213:14: note: candidate: template<class _Tp> cv::Point_<_Tp>& cv::operator+=(cv::Point_<_Tp>&, const cv::Point_<_Tp>&)
+ Point_<_Tp>& operator += (Point_<_Tp>& a, const Point_<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1213:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Point_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1457:15: note: candidate: template<class _Tp> cv::Point3_<_Tp>& cv::operator+=(cv::Point3_<_Tp>&, const cv::Point3_<_Tp>&)
+ Point3_<_Tp>& operator += (Point3_<_Tp>& a, const Point3_<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1457:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Point3_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1719:13: note: candidate: template<class _Tp> cv::Size_<_Tp>& cv::operator+=(cv::Size_<_Tp>&, const cv::Size_<_Tp>&)
+ Size_<_Tp>& operator += (Size_<_Tp>& a, const Size_<_Tp>& b)
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1719:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Size_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1848:13: note: candidate: template<class _Tp> cv::Rect_<_Tp>& cv::operator+=(cv::Rect_<_Tp>&, const cv::Point_<_Tp>&)
+ Rect_<_Tp>& operator += ( Rect_<_Tp>& a, const Point_<_Tp>& b )
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1848:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1864:13: note: candidate: template<class _Tp> cv::Rect_<_Tp>& cv::operator+=(cv::Rect_<_Tp>&, const cv::Size_<_Tp>&)
+ Rect_<_Tp>& operator += ( Rect_<_Tp>& a, const Size_<_Tp>& b )
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1864:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:2146:15: note: candidate: template<class _Tp> cv::Scalar_<_Tp>& cv::operator+=(cv::Scalar_<_Tp>&, const cv::Scalar_<_Tp>&)
+ Scalar_<_Tp>& operator += (Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2146:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Scalar_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3420:6: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const cv::MatExpr&)
+ Mat& operator += (Mat& a, const MatExpr& b)
+      ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3420:6: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/mat.inl.hpp:3427:12: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const cv::MatExpr&)
+ const Mat& operator += (const Mat& a, const MatExpr& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3427:12: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.inl.hpp:3434:12: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::MatExpr&)
+ Mat_<_Tp>& operator += (Mat_<_Tp>& a, const MatExpr& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3434:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3441:18: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::MatExpr&)
+ const Mat_<_Tp>& operator += (const Mat_<_Tp>& a, const MatExpr& b)
+                  ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3441:18: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:239:1: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:239:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:239:1: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:239:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:240:1: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const Scalar&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:240:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:240:1: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const Scalar&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:240:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:241:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:241:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:241:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:241:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:242:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const Scalar&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:242:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:242:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const Scalar&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:242:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:243:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::Mat_<_Tp>&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat_<_Tp>)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:243:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:243:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::Mat_<_Tp>&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat_<_Tp>)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:243:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:210:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+src/image.cpp:211:17: error: no match for ‘operator+=’ (operand types are ‘Point_t’ and ‘int’)
+     search_p[1] += SEARCH_GAP;
+                  
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1190:19: note: candidate: template<class _Tp1, class _Tp2, int m, int n> cv::Matx<_Tp, m, n>& cv::operator+=(cv::Matx<_Tp, m, n>&, const cv::Matx<_Tp2, m, n>&)
+ Matx<_Tp1, m, n>& operator += (Matx<_Tp1, m, n>& a, const Matx<_Tp2, m, n>& b)
+                   ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1190:19: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Matx<_Tp, m, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1318:16: note: candidate: template<class _Tp1, class _Tp2, int cn> cv::Vec<_Tp, n>& cv::operator+=(cv::Vec<_Tp, n>&, const cv::Vec<_Tp2, cn>&)
+ Vec<_Tp1, cn>& operator += (Vec<_Tp1, cn>& a, const Vec<_Tp2, cn>& b)
+                ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1318:16: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Vec<_Tp, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1020:15: note: candidate: template<class _Tp> cv::Complex<_Tp>& cv::operator+=(cv::Complex<_Tp>&, const cv::Complex<_Tp>&)
+ Complex<_Tp>& operator += (Complex<_Tp>& a, const Complex<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1020:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1086:15: note: candidate: template<class _Tp> cv::Complex<_Tp>& cv::operator+=(cv::Complex<_Tp>&, _Tp)
+ Complex<_Tp>& operator += (Complex<_Tp>& a, _Tp b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1086:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1213:14: note: candidate: template<class _Tp> cv::Point_<_Tp>& cv::operator+=(cv::Point_<_Tp>&, const cv::Point_<_Tp>&)
+ Point_<_Tp>& operator += (Point_<_Tp>& a, const Point_<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1213:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Point_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1457:15: note: candidate: template<class _Tp> cv::Point3_<_Tp>& cv::operator+=(cv::Point3_<_Tp>&, const cv::Point3_<_Tp>&)
+ Point3_<_Tp>& operator += (Point3_<_Tp>& a, const Point3_<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1457:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Point3_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1719:13: note: candidate: template<class _Tp> cv::Size_<_Tp>& cv::operator+=(cv::Size_<_Tp>&, const cv::Size_<_Tp>&)
+ Size_<_Tp>& operator += (Size_<_Tp>& a, const Size_<_Tp>& b)
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1719:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Size_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1848:13: note: candidate: template<class _Tp> cv::Rect_<_Tp>& cv::operator+=(cv::Rect_<_Tp>&, const cv::Point_<_Tp>&)
+ Rect_<_Tp>& operator += ( Rect_<_Tp>& a, const Point_<_Tp>& b )
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1848:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1864:13: note: candidate: template<class _Tp> cv::Rect_<_Tp>& cv::operator+=(cv::Rect_<_Tp>&, const cv::Size_<_Tp>&)
+ Rect_<_Tp>& operator += ( Rect_<_Tp>& a, const Size_<_Tp>& b )
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1864:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:2146:15: note: candidate: template<class _Tp> cv::Scalar_<_Tp>& cv::operator+=(cv::Scalar_<_Tp>&, const cv::Scalar_<_Tp>&)
+ Scalar_<_Tp>& operator += (Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2146:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Scalar_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3420:6: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const cv::MatExpr&)
+ Mat& operator += (Mat& a, const MatExpr& b)
+      ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3420:6: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/mat.inl.hpp:3427:12: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const cv::MatExpr&)
+ const Mat& operator += (const Mat& a, const MatExpr& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3427:12: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.inl.hpp:3434:12: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::MatExpr&)
+ Mat_<_Tp>& operator += (Mat_<_Tp>& a, const MatExpr& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3434:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3441:18: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::MatExpr&)
+ const Mat_<_Tp>& operator += (const Mat_<_Tp>& a, const MatExpr& b)
+                  ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3441:18: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:239:1: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:239:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:239:1: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:239:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:240:1: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const Scalar&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:240:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:240:1: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const Scalar&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:240:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:241:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:241:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:241:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:241:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:242:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const Scalar&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:242:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:242:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const Scalar&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:242:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:243:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::Mat_<_Tp>&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat_<_Tp>)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:243:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:243:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::Mat_<_Tp>&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat_<_Tp>)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:243:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:211:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[1] += SEARCH_GAP;
+                    ^~~~~~~~~~
+src/image.cpp:218:20: error: no match for ‘operator+’ (operand types are ‘Point_t’ and ‘int’)
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                     
+In file included from /usr/local/include/opencv2/core/base.hpp:58:0,
+                 from /usr/local/include/opencv2/core.hpp:54,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/cvstd.hpp:959:8: note: candidate: cv::String cv::operator+(const cv::String&, const cv::String&)
+ String operator + (const String& lhs, const String& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:959:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::String&’
+/usr/local/include/opencv2/core/cvstd.hpp:969:8: note: candidate: cv::String cv::operator+(const cv::String&, const char*)
+ String operator + (const String& lhs, const char* rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:969:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::String&’
+/usr/local/include/opencv2/core/cvstd.hpp:980:8: note: candidate: cv::String cv::operator+(const char*, const cv::String&)
+ String operator + (const char* lhs, const String& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:980:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const char*’
+/usr/local/include/opencv2/core/cvstd.hpp:991:8: note: candidate: cv::String cv::operator+(const cv::String&, char)
+ String operator + (const String& lhs, char rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:991:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::String&’
+/usr/local/include/opencv2/core/cvstd.hpp:1001:8: note: candidate: cv::String cv::operator+(char, const cv::String&)
+ String operator + (char lhs, const String& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.hpp:1001:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘char’
+In file included from /usr/local/include/opencv2/core.hpp:3281:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/cvstd.inl.hpp:124:8: note: candidate: cv::String cv::operator+(const cv::String&, const string&)
+ String operator + (const String& lhs, const std::string& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.inl.hpp:124:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::String&’
+/usr/local/include/opencv2/core/cvstd.inl.hpp:135:8: note: candidate: cv::String cv::operator+(const string&, const cv::String&)
+ String operator + (const std::string& lhs, const String& rhs)
+        ^~~~~~~~
+/usr/local/include/opencv2/core/cvstd.inl.hpp:135:8: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const string& {aka const std::__cxx11::basic_string<char>&}’
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1206:17: note: candidate: template<class _Tp, int m, int n> cv::Matx<_Tp, m, n> cv::operator+(const cv::Matx<_Tp, m, n>&, const cv::Matx<_Tp, m, n>&)
+ Matx<_Tp, m, n> operator + (const Matx<_Tp, m, n>& a, const Matx<_Tp, m, n>& b)
+                 ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1206:17: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Matx<_Tp, m, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1334:14: note: candidate: template<class _Tp, int cn> cv::Vec<_Tp, m> cv::operator+(const cv::Vec<_Tp, m>&, const cv::Vec<_Tp, m>&)
+ Vec<_Tp, cn> operator + (const Vec<_Tp, cn>& a, const Vec<_Tp, cn>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1334:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Vec<_Tp, m>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1014:14: note: candidate: template<class _Tp> cv::Complex<_Tp> cv::operator+(const cv::Complex<_Tp>&, const cv::Complex<_Tp>&)
+ Complex<_Tp> operator + (const Complex<_Tp>& a, const Complex<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1014:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1064:14: note: candidate: template<class _Tp> cv::Complex<_Tp> cv::operator+(const cv::Complex<_Tp>&, _Tp)
+ Complex<_Tp> operator + (const Complex<_Tp>& a, _Tp b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1064:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1074:14: note: candidate: template<class _Tp> cv::Complex<_Tp> cv::operator+(_Tp, const cv::Complex<_Tp>&)
+ Complex<_Tp> operator + (_Tp b, const Complex<_Tp>& a)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1074:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const cv::Complex<_Tp>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1295:13: note: candidate: template<class _Tp> cv::Point_<_Tp> cv::operator+(const cv::Point_<_Tp>&, const cv::Point_<_Tp>&)
+ Point_<_Tp> operator + (const Point_<_Tp>& a, const Point_<_Tp>& b)
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1295:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Point_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1547:14: note: candidate: template<class _Tp> cv::Point3_<_Tp> cv::operator+(const cv::Point3_<_Tp>&, const cv::Point3_<_Tp>&)
+ Point3_<_Tp> operator + (const Point3_<_Tp>& a, const Point3_<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1547:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Point3_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1727:12: note: candidate: template<class _Tp> cv::Size_<_Tp> cv::operator+(const cv::Size_<_Tp>&, const cv::Size_<_Tp>&)
+ Size_<_Tp> operator + (const Size_<_Tp>& a, const Size_<_Tp>& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1727:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Size_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1923:12: note: candidate: template<class _Tp> cv::Rect_<_Tp> cv::operator+(const cv::Rect_<_Tp>&, const cv::Point_<_Tp>&)
+ Rect_<_Tp> operator + (const Rect_<_Tp>& a, const Point_<_Tp>& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1923:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1935:12: note: candidate: template<class _Tp> cv::Rect_<_Tp> cv::operator+(const cv::Rect_<_Tp>&, const cv::Size_<_Tp>&)
+ Rect_<_Tp> operator + (const Rect_<_Tp>& a, const Size_<_Tp>& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1935:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:2050:7: note: candidate: cv::Range cv::operator+(const cv::Range&, int)
+ Range operator + (const Range& r1, int delta)
+       ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2050:7: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Range&’
+/usr/local/include/opencv2/core/types.hpp:2056:7: note: candidate: cv::Range cv::operator+(int, const cv::Range&)
+ Range operator + (int delta, const Range& r1)
+       ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2056:7: note:   no known conversion for argument 1 from ‘Point_t’ to ‘int’
+/usr/local/include/opencv2/core/types.hpp:2190:14: note: candidate: template<class _Tp> cv::Scalar_<_Tp> cv::operator+(const cv::Scalar_<_Tp>&, const cv::Scalar_<_Tp>&)
+ Scalar_<_Tp> operator + (const Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2190:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Scalar_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:59:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.hpp:3535:20: note: candidate: cv::MatExpr cv::operator+(const cv::Mat&, const cv::Mat&)
+ CV_EXPORTS MatExpr operator + (const Mat& a, const Mat& b);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3535:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.hpp:3536:20: note: candidate: cv::MatExpr cv::operator+(const cv::Mat&, const Scalar&)
+ CV_EXPORTS MatExpr operator + (const Mat& a, const Scalar& s);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3536:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.hpp:3537:20: note: candidate: cv::MatExpr cv::operator+(const Scalar&, const cv::Mat&)
+ CV_EXPORTS MatExpr operator + (const Scalar& s, const Mat& a);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3537:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const Scalar& {aka const cv::Scalar_<double>&}’
+/usr/local/include/opencv2/core/mat.hpp:3538:20: note: candidate: cv::MatExpr cv::operator+(const cv::MatExpr&, const cv::Mat&)
+ CV_EXPORTS MatExpr operator + (const MatExpr& e, const Mat& m);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3538:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::MatExpr&’
+/usr/local/include/opencv2/core/mat.hpp:3539:20: note: candidate: cv::MatExpr cv::operator+(const cv::Mat&, const cv::MatExpr&)
+ CV_EXPORTS MatExpr operator + (const Mat& m, const MatExpr& e);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3539:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.hpp:3540:20: note: candidate: cv::MatExpr cv::operator+(const cv::MatExpr&, const Scalar&)
+ CV_EXPORTS MatExpr operator + (const MatExpr& e, const Scalar& s);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3540:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::MatExpr&’
+/usr/local/include/opencv2/core/mat.hpp:3541:20: note: candidate: cv::MatExpr cv::operator+(const Scalar&, const cv::MatExpr&)
+ CV_EXPORTS MatExpr operator + (const Scalar& s, const MatExpr& e);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3541:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const Scalar& {aka const cv::Scalar_<double>&}’
+/usr/local/include/opencv2/core/mat.hpp:3542:20: note: candidate: cv::MatExpr cv::operator+(const cv::MatExpr&, const cv::MatExpr&)
+ CV_EXPORTS MatExpr operator + (const MatExpr& e1, const MatExpr& e2);
+                    ^~~~~~~~
+/usr/local/include/opencv2/core/mat.hpp:3542:20: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::MatExpr&’
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:2724:18: note: candidate: cv::MatConstIterator cv::operator+(const cv::MatConstIterator&, ptrdiff_t)
+ MatConstIterator operator + (const MatConstIterator& a, ptrdiff_t ofs)
+                  ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:2724:18: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::MatConstIterator&’
+/usr/local/include/opencv2/core/mat.inl.hpp:2731:18: note: candidate: cv::MatConstIterator cv::operator+(ptrdiff_t, const cv::MatConstIterator&)
+ MatConstIterator operator + (ptrdiff_t ofs, const MatConstIterator& a)
+                  ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:2731:18: note:   no known conversion for argument 1 from ‘Point_t’ to ‘ptrdiff_t {aka int}’
+/usr/local/include/opencv2/core/mat.inl.hpp:2872:24: note: candidate: template<class _Tp> cv::MatConstIterator_<_Tp> cv::operator+(const cv::MatConstIterator_<_Tp>&, ptrdiff_t)
+ MatConstIterator_<_Tp> operator + (const MatConstIterator_<_Tp>& a, ptrdiff_t ofs)
+                        ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:2872:24: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::MatConstIterator_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:2879:24: note: candidate: template<class _Tp> cv::MatConstIterator_<_Tp> cv::operator+(ptrdiff_t, const cv::MatConstIterator_<_Tp>&)
+ MatConstIterator_<_Tp> operator + (ptrdiff_t ofs, const MatConstIterator_<_Tp>& a)
+                        ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:2879:24: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const cv::MatConstIterator_<_Tp>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3009:19: note: candidate: template<class _Tp> cv::MatIterator_<_Tp> cv::operator+(const cv::MatIterator_<_Tp>&, ptrdiff_t)
+ MatIterator_<_Tp> operator + (const MatIterator_<_Tp>& a, ptrdiff_t ofs)
+                   ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3009:19: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::MatIterator_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3016:19: note: candidate: template<class _Tp> cv::MatIterator_<_Tp> cv::operator+(ptrdiff_t, const cv::MatIterator_<_Tp>&)
+ MatIterator_<_Tp> operator + (ptrdiff_t ofs, const MatIterator_<_Tp>& a)
+                   ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3016:19: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const cv::MatIterator_<_Tp>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/cvstd.inl.hpp:47:0,
+                 from /usr/local/include/opencv2/core.hpp:3281,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/complex:445:5: note: candidate: template<class _Tp> std::complex<_Tp> std::operator+(const std::complex<_Tp>&)
+     operator+(const complex<_Tp>& __x)
+     ^~~~~~~~
+/usr/include/c++/6/complex:445:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/cvstd.inl.hpp:47:0,
+                 from /usr/local/include/opencv2/core.hpp:3281,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/complex:344:5: note: candidate: template<class _Tp> std::complex<_Tp> std::operator+(const _Tp&, const std::complex<_Tp>&)
+     operator+(const _Tp& __x, const complex<_Tp>& __y)
+     ^~~~~~~~
+/usr/include/c++/6/complex:344:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const std::complex<_Tp>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/cvstd.inl.hpp:47:0,
+                 from /usr/local/include/opencv2/core.hpp:3281,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/complex:335:5: note: candidate: template<class _Tp> std::complex<_Tp> std::operator+(const std::complex<_Tp>&, const _Tp&)
+     operator+(const complex<_Tp>& __x, const _Tp& __y)
+     ^~~~~~~~
+/usr/include/c++/6/complex:335:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/cvstd.inl.hpp:47:0,
+                 from /usr/local/include/opencv2/core.hpp:3281,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/complex:326:5: note: candidate: template<class _Tp> std::complex<_Tp> std::operator+(const std::complex<_Tp>&, const std::complex<_Tp>&)
+     operator+(const complex<_Tp>& __x, const complex<_Tp>& __y)
+     ^~~~~~~~
+/usr/include/c++/6/complex:326:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/vector:65:0,
+                 from /usr/local/include/opencv2/core/types.hpp:53,
+                 from /usr/local/include/opencv2/core.hpp:58,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/stl_bvector.h:387:3: note: candidate: std::_Bit_const_iterator std::operator+(std::ptrdiff_t, const std::_Bit_const_iterator&)
+   operator+(ptrdiff_t __n, const _Bit_const_iterator& __x)
+   ^~~~~~~~
+/usr/include/c++/6/bits/stl_bvector.h:387:3: note:   no known conversion for argument 1 from ‘Point_t’ to ‘std::ptrdiff_t {aka int}’
+/usr/include/c++/6/bits/stl_bvector.h:297:3: note: candidate: std::_Bit_iterator std::operator+(std::ptrdiff_t, const std::_Bit_iterator&)
+   operator+(ptrdiff_t __n, const _Bit_iterator& __x)
+   ^~~~~~~~
+/usr/include/c++/6/bits/stl_bvector.h:297:3: note:   no known conversion for argument 1 from ‘Point_t’ to ‘std::ptrdiff_t {aka int}’
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5051:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)
+     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5051:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5045:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)
+     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5045:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5039:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&)
+     operator+(_CharT __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5039:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5033:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const _CharT*, std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&)
+     operator+(const _CharT* __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5033:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const _CharT*’ and ‘Point_t’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5021:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&)
+     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5021:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5015:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&)
+     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5015:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:5009:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:5009:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:4997:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, _CharT)
+     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:4997:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:4981:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const _CharT*)
+     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:4981:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:53:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.tcc:1163:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator+(_CharT __lhs, const basic_string<_CharT, _Traits, _Alloc>& __rhs)
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.tcc:1163:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:53:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.tcc:1147:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const _CharT*, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator+(const _CharT* __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.tcc:1147:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const _CharT*’ and ‘Point_t’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/string:52:0,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/basic_string.h:4944:5: note: candidate: template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)
+     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+/usr/include/c++/6/bits/basic_string.h:4944:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/6/bits/char_traits.h:39,
+                 from /usr/include/c++/6/string:40,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/stl_iterator.h:1200:5: note: candidate: template<class _Iterator> std::move_iterator<_IteratorL> std::operator+(typename std::move_iterator<_IteratorL>::difference_type, const std::move_iterator<_IteratorL>&)
+     operator+(typename move_iterator<_Iterator>::difference_type __n,
+     ^~~~~~~~
+/usr/include/c++/6/bits/stl_iterator.h:1200:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+In file included from /usr/include/c++/6/bits/stl_algobase.h:67:0,
+                 from /usr/include/c++/6/bits/char_traits.h:39,
+                 from /usr/include/c++/6/string:40,
+                 from /usr/include/c++/6/stdexcept:39,
+                 from /usr/include/c++/6/array:39,
+                 from /usr/local/include/opencv2/core/cvdef.h:438,
+                 from /usr/local/include/opencv2/core.hpp:52,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/include/c++/6/bits/stl_iterator.h:341:5: note: candidate: template<class _Iterator> std::reverse_iterator<_Iterator> std::operator+(typename std::reverse_iterator<_Iterator>::difference_type, const std::reverse_iterator<_Iterator>&)
+     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+     ^~~~~~~~
+/usr/include/c++/6/bits/stl_iterator.h:341:5: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:218:22: note: in expansion of macro ‘SEARCH_GAP’
+    if (search_p[2] + SEARCH_GAP < image.cols) {
+                      ^~~~~~~~~~
+src/image.cpp:219:17: error: no match for ‘operator+=’ (operand types are ‘Point_t’ and ‘int’)
+     search_p[2] += SEARCH_GAP;
+                  
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1190:19: note: candidate: template<class _Tp1, class _Tp2, int m, int n> cv::Matx<_Tp, m, n>& cv::operator+=(cv::Matx<_Tp, m, n>&, const cv::Matx<_Tp2, m, n>&)
+ Matx<_Tp1, m, n>& operator += (Matx<_Tp1, m, n>& a, const Matx<_Tp2, m, n>& b)
+                   ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1190:19: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Matx<_Tp, m, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1318:16: note: candidate: template<class _Tp1, class _Tp2, int cn> cv::Vec<_Tp, n>& cv::operator+=(cv::Vec<_Tp, n>&, const cv::Vec<_Tp2, cn>&)
+ Vec<_Tp1, cn>& operator += (Vec<_Tp1, cn>& a, const Vec<_Tp2, cn>& b)
+                ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1318:16: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Vec<_Tp, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1020:15: note: candidate: template<class _Tp> cv::Complex<_Tp>& cv::operator+=(cv::Complex<_Tp>&, const cv::Complex<_Tp>&)
+ Complex<_Tp>& operator += (Complex<_Tp>& a, const Complex<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1020:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1086:15: note: candidate: template<class _Tp> cv::Complex<_Tp>& cv::operator+=(cv::Complex<_Tp>&, _Tp)
+ Complex<_Tp>& operator += (Complex<_Tp>& a, _Tp b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1086:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1213:14: note: candidate: template<class _Tp> cv::Point_<_Tp>& cv::operator+=(cv::Point_<_Tp>&, const cv::Point_<_Tp>&)
+ Point_<_Tp>& operator += (Point_<_Tp>& a, const Point_<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1213:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Point_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1457:15: note: candidate: template<class _Tp> cv::Point3_<_Tp>& cv::operator+=(cv::Point3_<_Tp>&, const cv::Point3_<_Tp>&)
+ Point3_<_Tp>& operator += (Point3_<_Tp>& a, const Point3_<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1457:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Point3_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1719:13: note: candidate: template<class _Tp> cv::Size_<_Tp>& cv::operator+=(cv::Size_<_Tp>&, const cv::Size_<_Tp>&)
+ Size_<_Tp>& operator += (Size_<_Tp>& a, const Size_<_Tp>& b)
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1719:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Size_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1848:13: note: candidate: template<class _Tp> cv::Rect_<_Tp>& cv::operator+=(cv::Rect_<_Tp>&, const cv::Point_<_Tp>&)
+ Rect_<_Tp>& operator += ( Rect_<_Tp>& a, const Point_<_Tp>& b )
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1848:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1864:13: note: candidate: template<class _Tp> cv::Rect_<_Tp>& cv::operator+=(cv::Rect_<_Tp>&, const cv::Size_<_Tp>&)
+ Rect_<_Tp>& operator += ( Rect_<_Tp>& a, const Size_<_Tp>& b )
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1864:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:2146:15: note: candidate: template<class _Tp> cv::Scalar_<_Tp>& cv::operator+=(cv::Scalar_<_Tp>&, const cv::Scalar_<_Tp>&)
+ Scalar_<_Tp>& operator += (Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2146:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Scalar_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3420:6: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const cv::MatExpr&)
+ Mat& operator += (Mat& a, const MatExpr& b)
+      ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3420:6: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/mat.inl.hpp:3427:12: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const cv::MatExpr&)
+ const Mat& operator += (const Mat& a, const MatExpr& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3427:12: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.inl.hpp:3434:12: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::MatExpr&)
+ Mat_<_Tp>& operator += (Mat_<_Tp>& a, const MatExpr& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3434:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3441:18: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::MatExpr&)
+ const Mat_<_Tp>& operator += (const Mat_<_Tp>& a, const MatExpr& b)
+                  ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3441:18: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:239:1: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:239:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:239:1: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:239:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:240:1: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const Scalar&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:240:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:240:1: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const Scalar&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:240:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:241:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:241:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:241:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:241:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:242:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const Scalar&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:242:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:242:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const Scalar&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:242:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:243:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::Mat_<_Tp>&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat_<_Tp>)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:243:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:243:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::Mat_<_Tp>&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat_<_Tp>)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:243:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:219:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[2] += SEARCH_GAP;
+                    ^~~~~~~~~~
+src/image.cpp:220:17: error: no match for ‘operator+=’ (operand types are ‘Point_t’ and ‘int’)
+     search_p[3] += SEARCH_GAP;
+                  
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1190:19: note: candidate: template<class _Tp1, class _Tp2, int m, int n> cv::Matx<_Tp, m, n>& cv::operator+=(cv::Matx<_Tp, m, n>&, const cv::Matx<_Tp2, m, n>&)
+ Matx<_Tp1, m, n>& operator += (Matx<_Tp1, m, n>& a, const Matx<_Tp2, m, n>& b)
+                   ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1190:19: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Matx<_Tp, m, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:57:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/matx.hpp:1318:16: note: candidate: template<class _Tp1, class _Tp2, int cn> cv::Vec<_Tp, n>& cv::operator+=(cv::Vec<_Tp, n>&, const cv::Vec<_Tp2, cn>&)
+ Vec<_Tp1, cn>& operator += (Vec<_Tp1, cn>& a, const Vec<_Tp2, cn>& b)
+                ^~~~~~~~
+/usr/local/include/opencv2/core/matx.hpp:1318:16: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Vec<_Tp, n>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1020:15: note: candidate: template<class _Tp> cv::Complex<_Tp>& cv::operator+=(cv::Complex<_Tp>&, const cv::Complex<_Tp>&)
+ Complex<_Tp>& operator += (Complex<_Tp>& a, const Complex<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1020:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1086:15: note: candidate: template<class _Tp> cv::Complex<_Tp>& cv::operator+=(cv::Complex<_Tp>&, _Tp)
+ Complex<_Tp>& operator += (Complex<_Tp>& a, _Tp b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1086:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Complex<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1213:14: note: candidate: template<class _Tp> cv::Point_<_Tp>& cv::operator+=(cv::Point_<_Tp>&, const cv::Point_<_Tp>&)
+ Point_<_Tp>& operator += (Point_<_Tp>& a, const Point_<_Tp>& b)
+              ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1213:14: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Point_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1457:15: note: candidate: template<class _Tp> cv::Point3_<_Tp>& cv::operator+=(cv::Point3_<_Tp>&, const cv::Point3_<_Tp>&)
+ Point3_<_Tp>& operator += (Point3_<_Tp>& a, const Point3_<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1457:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Point3_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1719:13: note: candidate: template<class _Tp> cv::Size_<_Tp>& cv::operator+=(cv::Size_<_Tp>&, const cv::Size_<_Tp>&)
+ Size_<_Tp>& operator += (Size_<_Tp>& a, const Size_<_Tp>& b)
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1719:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Size_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1848:13: note: candidate: template<class _Tp> cv::Rect_<_Tp>& cv::operator+=(cv::Rect_<_Tp>&, const cv::Point_<_Tp>&)
+ Rect_<_Tp>& operator += ( Rect_<_Tp>& a, const Point_<_Tp>& b )
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1848:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:1864:13: note: candidate: template<class _Tp> cv::Rect_<_Tp>& cv::operator+=(cv::Rect_<_Tp>&, const cv::Size_<_Tp>&)
+ Rect_<_Tp>& operator += ( Rect_<_Tp>& a, const Size_<_Tp>& b )
+             ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:1864:13: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Rect_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:58:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/types.hpp:2146:15: note: candidate: template<class _Tp> cv::Scalar_<_Tp>& cv::operator+=(cv::Scalar_<_Tp>&, const cv::Scalar_<_Tp>&)
+ Scalar_<_Tp>& operator += (Scalar_<_Tp>& a, const Scalar_<_Tp>& b)
+               ^~~~~~~~
+/usr/local/include/opencv2/core/types.hpp:2146:15: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Scalar_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3420:6: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const cv::MatExpr&)
+ Mat& operator += (Mat& a, const MatExpr& b)
+      ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3420:6: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/mat.inl.hpp:3427:12: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const cv::MatExpr&)
+ const Mat& operator += (const Mat& a, const MatExpr& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3427:12: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/mat.inl.hpp:3434:12: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::MatExpr&)
+ Mat_<_Tp>& operator += (Mat_<_Tp>& a, const MatExpr& b)
+            ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3434:12: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core/mat.hpp:3642:0,
+                 from /usr/local/include/opencv2/core.hpp:59,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/mat.inl.hpp:3441:18: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::MatExpr&)
+ const Mat_<_Tp>& operator += (const Mat_<_Tp>& a, const MatExpr& b)
+                  ^~~~~~~~
+/usr/local/include/opencv2/core/mat.inl.hpp:3441:18: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:239:1: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:239:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:239:1: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:239:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:240:1: note: candidate: cv::Mat& cv::operator+=(cv::Mat&, const Scalar&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:240:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:240:1: note: candidate: const cv::Mat& cv::operator+=(const cv::Mat&, const Scalar&)
+ CV_MAT_AUG_OPERATOR  (+=, cv::add(a,b,a), Mat, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:240:1: note:   no known conversion for argument 1 from ‘Point_t’ to ‘const cv::Mat&’
+/usr/local/include/opencv2/core/operations.hpp:241:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:241:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:241:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::Mat&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:241:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:242:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const Scalar&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:242:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:242:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const Scalar&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Scalar)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:242:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:243:1: note: candidate: template<class _Tp> cv::Mat_<_Tp>& cv::operator+=(cv::Mat_<_Tp>&, const cv::Mat_<_Tp>&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat_<_Tp>)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:243:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+In file included from /usr/local/include/opencv2/core.hpp:3280:0,
+                 from /usr/local/include/opencv2/highgui.hpp:46,
+                 from /usr/local/include/opencv2/highgui/highgui.hpp:48,
+                 from src/image.cpp:1:
+/usr/local/include/opencv2/core/operations.hpp:243:1: note: candidate: template<class _Tp> const cv::Mat_<_Tp>& cv::operator+=(const cv::Mat_<_Tp>&, const cv::Mat_<_Tp>&)
+ CV_MAT_AUG_OPERATOR_T(+=, cv::add(a,b,a), Mat_<_Tp>, Mat_<_Tp>)
+ ^
+/usr/local/include/opencv2/core/operations.hpp:243:1: note:   template argument deduction/substitution failed:
+In file included from src/image.cpp:7:0:
+src/image.h:18:20: note:   ‘Point_t’ is not derived from ‘const cv::Mat_<_Tp>’
+ #define SEARCH_GAP 2
+                    ^
+src/image.cpp:220:20: note: in expansion of macro ‘SEARCH_GAP’
+     search_p[3] += SEARCH_GAP;
+                    ^~~~~~~~~~
+Makefile:25: recipe for target 'obj/image.o' failed
+make: *** [obj/image.o] Error 1

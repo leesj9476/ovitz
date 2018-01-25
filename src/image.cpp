@@ -10,7 +10,7 @@
 using namespace std;
 using namespace cv;
 
-Point_t::Point_t(double x, double y)
+Point_t::Point_t(int x, int y)
 	: x(x), y(y) {}
 
 Point_t Point_t::operator=(const Point_t &p) {
@@ -20,8 +20,12 @@ Point_t Point_t::operator=(const Point_t &p) {
 	return *this;
 }
 
+bool Point_t::operator==(const Point_t &p) {
+	return (x == p.x && y == p.y);
+}
+
 ostream& operator<<(ostream &os, const Point_t &p) {
-	cout << "( " << p.x << ", " << p.y << " ) ";
+	cout << p.x << " " << p.y;
 	return os;
 }
 
@@ -85,9 +89,9 @@ Point_t Image::getCentreOfMass(const Point_t &p, int unit_width, int unit_height
 	uchar *data = (uchar *)image.data;
 
 	// Sum weight(pixel value), x, y for calculation.
-	int weight = 0;
-	double x = 0;
-	double y = 0;
+	long long int weight = 0;
+	long long int x = 0;
+	long long int y = 0;
 
 	int start_y = p.y;
 	if (start_y < 0)
@@ -157,48 +161,131 @@ Point_t Image::getCenterPoint() {
 //
 // @return	the closest white point(pixel value > 0)
 //
-// TODO 1-pass-1 search -> n-pass-n search
-// TODO check avilability coordinate values
+// n-pass-n search -> can determine proper n by calculate?
 Point_t Image::getClosestWhitePoint(const Point_t &p) {
 	uchar *data = (uchar *)image.data;
+	int idx = p.y * image.cols + p.x;;
 
-	int d = 0;
-	int idx = p.y * image.cols + p.x;
+	// 0       1
+	//   -----
+	//  |     |
+	//  |     |
+	//   -----
+	// 3       2
+	//
+	Point_t search_p[4] = { { p.x, p.y }, { p.x, p.y }, 
+							{ p.x, p.y }, { p.x, p.y } };
+
+	// UP, RIGHT, DOWN, LEFT
+	bool search_expand[4] = { true, true, true, true };
+
 	while (true) {
-		d += 2;
-		idx -= (image.cols + 1);
+		// set searching vertex point
+		//
+		// calculate searching range
+		if (search_expand[UP]) {
+			if (search_p[0].y >= SEARCH_GAP) {
+				search_p[0].y -= SEARCH_GAP;
+				search_p[1].y -= SEARCH_GAP;
 
-		// UP
-		for (int i = 0; i < d; i++) {
-			if (data[idx])
-				goto FINDWHITEPOINT;
-
-			idx += 1;
+				idx -= SEARCH_GAP * image.cols;
+			}
+			else
+				search_expand[UP] = false;
 		}
+
+		if (search_expand[LEFT]) {
+			if (search_p[0].x >= SEARCH_GAP) {
+				search_p[0].x -= SEARCH_GAP;
+				search_p[3].x -= SEARCH_GAP;
+
+				idx -= SEARCH_GAP;
+			}
+			else
+				search_expand[LEFT] = false;
+		}
+
+		if (search_expand[RIGHT]) {
+			if (search_p[2].x + SEARCH_GAP < image.cols) {
+				search_p[2].x += SEARCH_GAP;
+				search_p[1].x += SEARCH_GAP;
+			}
+			else
+				search_expand[RIGHT] = false;
+		}
+
+		if (search_expand[DOWN]) {
+			if (search_p[2].y + SEARCH_GAP < image.cols) {
+				search_p[2].y += SEARCH_GAP;
+				search_p[3].y += SEARCH_GAP;
+			}
+			else
+				search_expand[DOWN] = false;
+		}
+
+		// search white point
+		//
+		// if the boundary point -> skip searching
+		
+		// UP
+		//
+		if (search_expand[UP]) {
+			for (int i = search_p[0].x; i <= search_p[1].x; i++) {
+				if (data[idx] > BLACK_PIXEL)
+					goto FINDWHITEPOINT;
+
+				idx++;
+			}
+
+			idx--;
+		}
+		else
+			idx += (search_p[1].x - search_p[0].x);
 
 		// RIGHT
-		for (int i = 0; i < d; i++) {
-			if (data[idx])
-				goto FINDWHITEPOINT;
+		//
+		if (search_expand[RIGHT]) {
+			for (int i = search_p[1].y; i <= search_p[2].y; i++) {
+				if (data[idx] > BLACK_PIXEL)
+					goto FINDWHITEPOINT;
 
-			idx += image.cols;
-		}
-
-		// DOWN
-		for (int i = 0; i < d; i++) {
-			if (data[idx])
-				goto FINDWHITEPOINT;
-
-			idx -= 1;
-		}
-
-		// LEFT
-		for (int i = 0; i < d; i++) {
-			if (data[idx])
-				goto FINDWHITEPOINT;
+				idx += image.cols;
+			}
 
 			idx -= image.cols;
 		}
+		else
+			idx += image.cols*(search_p[2].y - search_p[1].y);
+
+		// DOWN
+		//
+		if (search_expand[DOWN]) {
+			for (int i = search_p[2].x; i >= search_p[3].x; i--) {
+				if (data[idx] > BLACK_PIXEL)
+					goto FINDWHITEPOINT;
+
+				idx--;
+			}
+
+			idx++;
+		}
+		else
+			idx -= (search_p[2].x - search_p[3].x);
+
+		// LEFT
+		//
+		if (search_expand[LEFT]) {
+			for (int i = search_p[3].y; i >= search_p[0].y; i--) {
+				if (data[idx] > BLACK_PIXEL)
+					goto FINDWHITEPOINT;
+
+				idx -= image.cols;
+			}
+
+			idx += image.cols;
+		}
+		else
+			idx -= image.cols*(search_p[3].y - search_p[0].y);
 	}
 
 FINDWHITEPOINT:
@@ -234,7 +321,7 @@ Point_t Image::adjustCenterPoint(const Point_t &p) {
 
 	// find closest white point from the calculated centre of mass point p
 	Point_t basic_p = p;
-	if (data[idx] == BLACK_PIXEL) {
+	if (data[idx] < BLACK_PIXEL) {
 		basic_p = getClosestWhitePoint(p);
 	}
 
@@ -252,12 +339,14 @@ Point_t Image::adjustCenterPoint(const Point_t &p) {
 	int white = 0;
 	while (search[UP] || search[RIGHT] || search[DOWN] || search[LEFT]) {
 		// search lines, excluding vertex
+		
 		// UP
+		//
 		white = 0;
 		if (search[UP]) {
 			idx = std_p[0].y * image.cols + std_p[0].x + 1;
 			for (int i = std_p[0].x + 1; i < std_p[1].x; i++) {
-				if (data[idx])
+				if (data[idx] > BLACK_PIXEL)
 					white++;
 
 				idx += 1;
@@ -268,11 +357,12 @@ Point_t Image::adjustCenterPoint(const Point_t &p) {
 		}
 
 		// RIGHT
+		//
 		white = 0;
 		if (search[RIGHT]) {
 			idx = (std_p[1].y + 1) * image.cols + std_p[1].x;
 			for (int i = std_p[1].y + 1; i < std_p[2].y; i++) {
-				if (data[idx])
+				if (data[idx] > BLACK_PIXEL)
 					white++;
 
 				idx += image.cols;
@@ -283,11 +373,12 @@ Point_t Image::adjustCenterPoint(const Point_t &p) {
 		}
 
 		// DOWN
+		//
 		white = 0;
 		if (search[DOWN]) {
 			idx = std_p[3].y * image.cols + std_p[3].x + 1;
 			for (int i = std_p[3].x + 1; i < std_p[2].x; i++) {
-				if (data[idx])
+				if (data[idx] > BLACK_PIXEL)
 					white++;
 
 				idx += 1;
@@ -298,11 +389,12 @@ Point_t Image::adjustCenterPoint(const Point_t &p) {
 		}
 
 		// LEFT
+		//
 		white = 0;
 		if (search[LEFT]) {
 			idx = (std_p[0].y + 1) * image.cols + std_p[0].x;
 			for (int i = std_p[0].y + 1; i < std_p[3].y; i++) {
-				if (data[idx])
+				if (data[idx] > BLACK_PIXEL)
 					white++;
 
 				idx += image.cols;
@@ -315,22 +407,22 @@ Point_t Image::adjustCenterPoint(const Point_t &p) {
 		// vertex check
 		// point 0
 		idx = std_p[0].y * image.cols + std_p[0].x;
-		if (data[idx]) {
+		if (data[idx] > BLACK_PIXEL) {
 			search[LEFT] = true; search[UP] = true;
 		}
 		// point 1
 		idx = std_p[1].y * image.cols + std_p[1].x;
-		if (data[idx]) {
+		if (data[idx] > BLACK_PIXEL) {
 			search[UP] = true; search[RIGHT] = true;
 		}
 		// point 2
 		idx = std_p[2].y * image.cols + std_p[2].x;
-		if (data[idx]) {
+		if (data[idx] > BLACK_PIXEL) {
 			search[RIGHT] = true; search[DOWN] = true;
 		}
 		// point 3
 		idx = std_p[3].y * image.cols + std_p[3].x;
-		if (data[idx]) {
+		if (data[idx] > BLACK_PIXEL) {
 			search[DOWN] = true; search[LEFT] = true;
 		}
 
@@ -422,10 +514,6 @@ bool Image::calcCentrePoints() {
 	for (int i = 0; i < ROW_POINT_NUM * COL_POINT_NUM; i++) {
 		unit_centre_points[i].x -= center_point.x;
 		unit_centre_points[i].y = center_point.y - unit_centre_points[i].y;
-
-		cout << unit_centre_points[i];
-		if (i % COL_POINT_NUM == COL_POINT_NUM - 1)
-			cout << endl;
 	}
 
 	return true;
@@ -434,9 +522,16 @@ bool Image::calcCentrePoints() {
 // Calculate variance of x and y between basic and centre points
 void Image::calcVariance() {
 	// Calculate variance point-by-point
-	variance = new Variance_t[ROW_POINT_NUM][COL_POINT_NUM];
+	variance = new Variance_t[ROW_POINT_NUM * COL_POINT_NUM];
+
 	for (int i = 0; i < ROW_POINT_NUM * COL_POINT_NUM; i++) {
 		variance[i].x = unit_centre_points[i].x - unit_ref_points[i].x;
 		variance[i].y = unit_centre_points[i].y - unit_ref_points[i].y;
+	}
+
+	cout << ROW_POINT_NUM << " " << COL_POINT_NUM << endl;
+	cout << ROW_BASIC_DISTANCE << " " << COL_BASIC_DISTANCE << endl;
+	for (int i = 0; i < ROW_POINT_NUM * COL_POINT_NUM; i++) {
+		cout << variance[i] << endl;
 	}
 }

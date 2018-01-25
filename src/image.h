@@ -7,23 +7,25 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
-#define COL_POINT_NUM	13
-#define ROW_POINT_NUM	13
+#define COL_POINT_NUM	7
+#define ROW_POINT_NUM	7
 
 #define REDUCE_RATIO	0.7
-#define POINT_SIZE		5
 
-#define COL_BASIC_DISTANCE	500
-#define ROW_BASIC_DISTANCE	500
+#define COL_BASIC_DISTANCE	110
+#define ROW_BASIC_DISTANCE	110
+
+#define SEARCH_GAP	2
 
 #define Variance_t	Point_t
 
 typedef struct Point_t {
-	Point_t(double = 0, double = 0);
+	Point_t(int = 0, int = 0);
 	Point_t operator=(const Point_t &);
+	bool operator==(const Point_t &);
 
-	double x;
-	double y;
+	int x;
+	int y;
 } Point_t;
 
 std::ostream& operator<<(std::ostream &, const Point_t &);
@@ -43,7 +45,7 @@ public:
 	Point_t adjustCenterPoint(const Point_t &);
 	bool calcCentrePoints();
 
-	Variance_t* calcVariance();
+	void calcVariance();
 
 private:
 	std::string image_filename;
