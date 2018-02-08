@@ -1,19 +1,25 @@
 #include <opencv2/core/core.hpp>
 #include <raspicam/raspicam_cv.h>
+#include <iostream>
 #include <string>
+#include <cmath>
 #include <chrono>
 #include <thread>
+#include <time.h>
 
 #include "capture.h"
+#include "image.h"
 
 using namespace cv;
 using namespace raspicam;
 using namespace std;
 
-Capture::Capture() {
+Capture::Capture(int basic_distance_)
+	: basic_distance(basic_distance_) {
+
+	cam.set(CV_CAP_PROP_FRAME_WIDTH, 512);
+	cam.set(CV_CAP_PROP_FRAME_HEIGHT, 512);
 	cam.open();
-	output_file = "output.png";
-	duration = chrono::seconds(3);
 }
 
 Capture::~Capture() {
@@ -24,51 +30,98 @@ bool Capture::isValid() {
 	return cam.isOpened();
 }
 
-bool Capture::setOption(int propID, double val) {
-	switch (propID) {
-	case CV_CAP_PROP_EXPOSURE:
-		if (val < 1 || val > 100)
-			return false;
-		
-		break;
-	case CV_CAP_PROP_GAIN:
-		if (val < 0 || val > 100)
-			return false;
-		
-		break;
-	case CV_CAP_PROP_FORMAT:
-		if (val != CV_8UC1 && val != CV_8UC3)
-			return false;
+bool Capture::shot() {
+	Image *image;
+	Mat captured_image;
 
-		break;
-	case CV_CAP_PROP_FRAME_WIDTH:
-	case CV_CAP_PROP_FRAME_HEIGHT:
-		break;
+	int exposure_time = 20;
+	int gain = 50;
+	
+	// average pixel min-max setting
+	int min_pixel = 20;
+	int max_pixel = 40;
+	if (min_pixel < 0)
+		min_pixel = 0;
 
-	default:
-		return false;
+	if (max_pixel > 255)
+		max_pixel = 255;
+
+	bool init = false;
+	bool result = true;
+	char pressed;
+	namedWindow("original");
+	while (true) {
+		if (!cam.set(CV_CAP_PROP_EXPOSURE, exposure_time)) {
+			cerr << "exposure time error" << endl;
+			return false;
+		}
+
+		if (!cam.set(CV_CAP_PROP_GAIN, gain)) {
+			cerr << "gain error" << endl;
+			return false;
+		}
+
+		cam.grab();
+		cam.retrieve(captured_image);
+
+		imshow("original", captured_image);
+		pressed = waitKey(20);
+		if (pressed == 27) {
+			imwrite("output.png", captured_image);
+			destroyAllWindows();
+			break;
+		}
+		else if (pressed == 32) {
+			// restart
+		}
+
+		// maybe need cut black square
+		if (!init) {
+			image = new Image(captured_image, basic_distance);
+			image->init();
+			init = true;
+		}
+		else 
+			image->changeImage(captured_image);
+
+		image->gaussianFiltering();
+		image->makePixelCDF();
+		int cur_pixel_avg = image->getValCDF(0.5);
+
+		if (min_pixel <= cur_pixel_avg && cur_pixel_avg <= max_pixel) {
+			image->findAllPoints();
+		}
+		else if (cur_pixel_avg > max_pixel) {
+			if (exposure_time != 1) {
+				if (exposure_time < 10)
+					exposure_time--;
+				else
+					exposure_time = ceil(exposure_time * 0.9);
+			}
+			
+			if (gain != 0) {
+				if (gain < 10)
+					gain--;
+				else
+					gain = ceil(gain * 0.8);
+			}
+		}
+		else if (cur_pixel_avg < min_pixel) {
+			if (exposure_time != 100)
+				exposure_time = ceil(exposure_time * 1.1);
+
+			if (gain != 100)
+				gain = ceil(gain * 1.2);
+		}
+
+		if (exposure_time > 100)
+			exposure_time = 100;
+		
+		if (gain > 100)
+			gain = 100;
 	}
 
-	return cam.set(propID, val);
-}
+	delete image;
 
-void Capture::setOutputFilename(const string &filename) {
-	output_file = filename;
-}
-
-void Capture::setWaitSec(int sec) {
-	duration = chrono::seconds(sec);
-}
-
-bool Capture::shot() {
-	Mat image;
-	
-	this_thread::sleep_for(duration);
-	if (!cam.grab())
-		return false;
-
-	cam.retrieve(image);
-	imwrite(output_file, image);
-
-	return true;
+	return result;
 }

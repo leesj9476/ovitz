@@ -7,23 +7,16 @@
 
 class Capture {
 public:
-	Capture();
+	Capture(int);
 	~Capture();
 
 	bool isValid();
-	bool setOption(int, double);
-	void setOutputFilename(const std::string &);
-	void setWaitSec(int);
-
 	bool shot();
 
 private:
 	raspicam::RaspiCam_Cv cam;
-	std::string output_file;
-	std::chrono::seconds duration;
 
-	int width;
-	int height;
+	int basic_distance;
 };
 
 #endif

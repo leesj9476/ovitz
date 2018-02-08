@@ -2,6 +2,9 @@ CC=g++
 CFLAGS=-g -Wall -Wpedantic -Wextra --std=c++11
 SRCS_DIR=src
 OBJS_DIR=obj
+
+CAM_DIR=cam
+
 OBJS=$(addprefix $(OBJS_DIR)/, main.o image.o capture.o oled.o util.o)
 DEST=ovitz
 
@@ -15,7 +18,7 @@ SSD1306_LIB_DIR=lib
 SSD1306_LIB_FILENAME=libSSD1306.a
 SSD1306_LIB=$(SSD1306_LIB_DIR)/$(SSD1306_LIB_FILENAME)
 
-$(DEST): dummy $(OBJS_DIR) $(OBJS)
+$(DEST): dummy $(OBJS_DIR) $(CAM_DIR) $(OBJS)
 	$(CC) $(CFLAGS) $(OPENCV_LIBS) $(PICAMERA_LIBS) $(OBJS) $(SSD1306_LIB_FILENAME) -o $(DEST)
 
 $(OBJS_DIR)/main.o:
@@ -38,6 +41,9 @@ $(OBJS_DIR)/util.o:
 $(OBJS_DIR):
 	mkdir $(OBJS_DIR)
 
+$(CAM_DIR):
+	mkdir $(CAM_DIR)
+
 dummy:
 	make clean
 
@@ -46,3 +52,4 @@ clean:
 	-rm -f $(OBJS)
 	-rm -f $(SSD1306_LIB_FILENAME)
 	-rm -rf $(OBJS_DIR)
+	-rm -rf $(CAM_DIR)
