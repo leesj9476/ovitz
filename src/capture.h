@@ -11,7 +11,7 @@ public:
 	~Capture();
 
 	bool isValid();
-	bool shot();
+	int shot();
 
 private:
 	raspicam::RaspiCam_Cv cam;

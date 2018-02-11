@@ -1,18 +1,20 @@
 #include <opencv2/core/core.hpp>
 #include <raspicam/raspicam_cv.h>
+
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <chrono>
 #include <thread>
-#include <time.h>
 
 #include "capture.h"
 #include "image.h"
+#include "types.h"
 
 using namespace cv;
 using namespace raspicam;
 using namespace std;
+
+extern bool continue_analyze;
 
 Capture::Capture(int basic_distance_)
 	: basic_distance(basic_distance_) {
@@ -30,7 +32,7 @@ bool Capture::isValid() {
 	return cam.isOpened();
 }
 
-bool Capture::shot() {
+int Capture::shot() {
 	Image *image;
 	Mat captured_image;
 
@@ -47,33 +49,25 @@ bool Capture::shot() {
 		max_pixel = 255;
 
 	bool init = false;
-	bool result = true;
+	int result = SUCCESS;
 	char pressed;
-	namedWindow("original");
 	while (true) {
 		if (!cam.set(CV_CAP_PROP_EXPOSURE, exposure_time)) {
 			cerr << "exposure time error" << endl;
-			return false;
+			result = FAIL;
+
+			break;
 		}
 
 		if (!cam.set(CV_CAP_PROP_GAIN, gain)) {
 			cerr << "gain error" << endl;
-			return false;
+			result = FAIL;
+
+			break;
 		}
 
 		cam.grab();
 		cam.retrieve(captured_image);
-
-		imshow("original", captured_image);
-		pressed = waitKey(20);
-		if (pressed == 27) {
-			imwrite("output.png", captured_image);
-			destroyAllWindows();
-			break;
-		}
-		else if (pressed == 32) {
-			// restart
-		}
 
 		// maybe need cut black square
 		if (!init) {
@@ -83,6 +77,21 @@ bool Capture::shot() {
 		}
 		else 
 			image->changeImage(captured_image);
+
+		imshow("original", captured_image);
+		pressed = waitKey(20);
+		if (pressed == 27) {
+			imwrite("output.png", captured_image);
+			destroyWindow("original");
+			destroyWindow("result");
+			continue_analyze = false;
+			break;
+		}
+		else if (pressed == 32) {
+			destroyWindow("original");
+			destroyWindow("result");
+			break;
+		}
 
 		image->gaussianFiltering();
 		image->makePixelCDF();
@@ -122,6 +131,5 @@ bool Capture::shot() {
 	}
 
 	delete image;
-
 	return result;
 }

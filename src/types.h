@@ -13,4 +13,7 @@
 #define CAM_ERROR		-5
 #define OPTION_ERROR	-6
 
+#define SUCCESS		1
+#define FAIL		0
+
 #endif

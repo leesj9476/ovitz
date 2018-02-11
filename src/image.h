@@ -42,9 +42,12 @@ public:
 	Image(const cv::Mat&, int);
 	~Image();
 
+	void saveImage();
+
 	void init();
 	void changeImage(cv::Mat &);
-	void clear();
+	void setZeroUnderThreshold();
+	void setAllPointsToNONE();
 
 	void convertRGBtoGRAY(cv::Mat &);
 	void makePixelCDF();

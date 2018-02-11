@@ -87,16 +87,14 @@ void Image::init(){
 		delete[] points;
 	}
 
-
 	if (ref) {
 		for (int i = 0; i < point_row; i++) {
 			if (ref[i])
 				delete[] ref[i];
 		}
 
-		delete[] ref;
+	delete[] ref;
 	}
-
 
 	if (vertexes) {
 		for (int i = 0; i < point_row; i++) {
@@ -123,12 +121,6 @@ void Image::init(){
 void Image::changeImage(Mat &new_image) {
 	new_image.copyTo(original);
 	convertRGBtoGRAY(original);
-}
-
-void Image::clear() {
-	memset(points, 0, sizeof(Point_t) * point_row * point_col);
-	memset(ref, 0, sizeof(Point_t) * point_row * point_col);
-	memset(vertexes, 0, sizeof(Vertex_t) * point_row * point_col);
 }
 
 void Image::convertRGBtoGRAY(Mat &original) {
@@ -174,6 +166,8 @@ void Image::findAllPoints() {
 	}
 
 	threshold = getValCDF(0.98);
+	setZeroUnderThreshold();
+	setAllPointsToNONE();
 	
 	findAllAxisPoints();
 
@@ -231,13 +225,16 @@ void Image::findAllPoints() {
 	// make analysis result picture
 	for (int i = 0; i < point_row; i++) {
 		for (int j = 0; j < point_col; j++) {
-			if (points[i][j].avail == EXIST) {	
-				line(original, Point(points[i][j].x, points[i][j].y), Point(points[i][j].x, points[i][j].y), Scalar(0, 0, 255));
+			if (points[i][j].avail == EXIST) {
+				original.at<Vec3b>(i, j) = Scalar(0, 0, 255);
+				// line(original, Point(points[i][j].x, points[i][j].y), Point(points[i][j].x, points[i][j].y), Scalar(0, 0, 255));
 				
+				/*
 				line(original, Point(vertexes[i][j].v[0].x, vertexes[i][j].v[0].y), Point(vertexes[i][j].v[1].x, vertexes[i][j].v[1].y), Scalar(255, 0, 0));
 				line(original, Point(vertexes[i][j].v[1].x, vertexes[i][j].v[1].y), Point(vertexes[i][j].v[2].x, vertexes[i][j].v[2].y), Scalar(255, 0, 0));
 				line(original, Point(vertexes[i][j].v[2].x, vertexes[i][j].v[2].y), Point(vertexes[i][j].v[3].x, vertexes[i][j].v[3].y), Scalar(255, 0, 0));
 				line(original, Point(vertexes[i][j].v[3].x, vertexes[i][j].v[3].y), Point(vertexes[i][j].v[0].x, vertexes[i][j].v[0].y), Scalar(255, 0, 0));
+				*/
 			}
 		}
 	}
@@ -245,10 +242,9 @@ void Image::findAllPoints() {
 	circle(original, Point(points[center_x][center_y].x, points[center_x][center_y].y), radius, Scalar(0, 255, 0));
 
 	imshow("result", original);
+	imwrite("result.png", original);
 
 	// print center points and ref points info
-	cout << "center point: " << points[center_x][center_y] << endl;
-	cout << "radius: " << radius << endl;
 	cout << "|     real point    |    ref point    | x-var | y-var |" << endl;
 	cout << " ----------------------------------------------------- " << endl;
 	for (int y = 0; y < point_row; y++) {
@@ -257,6 +253,21 @@ void Image::findAllPoints() {
 				cout << "|    " << points[x][y] << "    |   " << ref[x][y] << "   | " << setw(5) << (points[x][y].x - ref[x][y].x) << " | " << setw(5) << (points[x][y].y - ref[x][y].y) << " |" << endl;
 			}
 		}
+	}
+}
+
+void Image::setZeroUnderThreshold() {
+	uchar *data = (uchar *)image.data;
+	for (uint i = 0; i < image.total(); i++) {
+		if (data[i] <= threshold)
+			data[i] = 0;
+	}
+}
+
+void Image::setAllPointsToNONE() {
+	for (int i = 0; i < point_row; i++) {
+		for (int j = 0; j < point_col; j++) 
+			points[i][j].avail = NONE;
 	}
 }
 
@@ -451,6 +462,8 @@ void Image::findAllAxisPoints() {
 		if (points[center_x][center_y - i].avail == EXIST)
 			points[center_x][center_y - i].avail = NONE;
 	}
+
+
 
 	// radius
 	radius_p = min_p;

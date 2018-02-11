@@ -14,6 +14,8 @@
 using namespace std;
 using namespace cv;
 
+bool continue_analyze = true;
+
 bool option[OPTION_NUM];
 
 //TODO: change c-style exception state to OOP-style(try - catch)
@@ -93,15 +95,17 @@ int main (int argc, char *argv[]) {
 			return ARGUMENT_ERROR;
 		}
 
-		Capture cam(basic_distance);
-		if (!cam.isValid()) {
-			cerr << "<error> camera open is failed" << endl;
-			return CAM_ERROR;
-		}
+		while (continue_analyze) {
+			Capture cam(basic_distance);
+			if (!cam.isValid()) {
+				cerr << "<error> camera open failed" << endl;
+				return CAM_ERROR;
+			}
 
-		if (!cam.shot()) {
-			cerr << "<error> setting pixel average is failed" << endl;
-			return CAM_ERROR;
+			if (!cam.shot()) {
+				cerr << "<error> camera shot failed" << endl;
+				return CAM_ERROR;
+			}
 		}
 	}
 
