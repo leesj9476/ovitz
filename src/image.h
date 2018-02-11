@@ -58,6 +58,7 @@ public:
 	void findAllPoints();
 	void findAllAxisPoints();
 	void makeRefPointsInfo();
+	void makeRefPointsInCircle();
 
 	Point_t adjustPoint(const Point_t &, int, int, int = NO_FLAG);
 	Point_t findClosestWhitePoint(const Point_t &, int, int);
@@ -86,6 +87,7 @@ private:
 
 	// center of points
 	Point_t **points;
+	Point_t center_p;
 
 	// ref points
 	Point_t **ref;

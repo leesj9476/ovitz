@@ -5,8 +5,6 @@
 
 bool isInt(const char *);
 
-void help();
-
 int getPointDistance(const Point_t &, const Point_t &);
 
 #endif

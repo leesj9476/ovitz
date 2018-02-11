@@ -170,6 +170,7 @@ void Image::findAllPoints() {
 	setAllPointsToNONE();
 	
 	findAllAxisPoints();
+	makeRefPointsInCircle();
 
 	// find all points
 	for (int y = 1; y <= radius_p; y++) {
@@ -179,7 +180,7 @@ void Image::findAllPoints() {
 			if (calc_p[0]) {
 				points[center_x + x][center_y + y] = adjustPoint(Point_t(points[center_x + x][center_y].x, points[center_x][center_y + y].y), x, y);
 
-				if (radius <= getPointDistance(points[center_x][center_y], points[center_x + x][center_y + y])) {
+				if (radius <= getPointDistance(center_p, points[center_x + x][center_y + y])) {
 					points[center_x + x][center_y + y].avail = NONE;
 					calc_p[0] = false;
 				}
@@ -190,7 +191,7 @@ void Image::findAllPoints() {
 			if (calc_p[1]) {
 				points[center_x + x][center_y - y] = adjustPoint(Point_t(points[center_x + x][center_y].x, points[center_x][center_y - y].y), x, -y);
 				
-				if (radius <= getPointDistance(points[center_x][center_y], points[center_x + x][center_y - y])) {
+				if (radius <= getPointDistance(center_p, points[center_x + x][center_y - y])) {
 					points[center_x + x][center_y - y].avail = NONE;
 					calc_p[1] = false;
 				}
@@ -201,7 +202,7 @@ void Image::findAllPoints() {
 			if (calc_p[2]) {
 				points[center_x - x][center_y + y] = adjustPoint(Point_t(points[center_x - x][center_y].x, points[center_x][center_y + y].y), -x, y);
 
-				if (radius <= getPointDistance(points[center_x][center_y], points[center_x - x][center_y + y])) {
+				if (radius <= getPointDistance(center_p, points[center_x - x][center_y + y])) {
 					points[center_x - x][center_y + y].avail = NONE;
 					calc_p[2] = false;
 				}
@@ -212,7 +213,7 @@ void Image::findAllPoints() {
 			if (calc_p[3]) {
 				points[center_x - x][center_y - y] = adjustPoint(Point_t(points[center_x - x][center_y].x, points[center_x][center_y - y].y), -x, -y);
 
-				if (radius <= getPointDistance(points[center_x][center_y], points[center_x - x][center_y - y])) {
+				if (radius <= getPointDistance(center_p, points[center_x - x][center_y - y])) {
 					points[center_x - x][center_y - y].avail = NONE;
 					calc_p[3] = false;
 				}
@@ -226,7 +227,7 @@ void Image::findAllPoints() {
 	for (int i = 0; i < point_row; i++) {
 		for (int j = 0; j < point_col; j++) {
 			if (points[i][j].avail == EXIST) {
-				original.at<Vec3b>(i, j) = Scalar(0, 0, 255);
+				original.at<Vec3b>(i, j) = { 0, 0, 255 };
 				// line(original, Point(points[i][j].x, points[i][j].y), Point(points[i][j].x, points[i][j].y), Scalar(0, 0, 255));
 				
 				/*
@@ -239,7 +240,7 @@ void Image::findAllPoints() {
 		}
 	}
 
-	circle(original, Point(points[center_x][center_y].x, points[center_x][center_y].y), radius, Scalar(0, 255, 0));
+	circle(original, Point(center_p.x, center_p.y), radius, Scalar(0, 255, 0));
 
 	imshow("result", original);
 	imwrite("result.png", original);
@@ -275,7 +276,7 @@ void Image::findAllAxisPoints() {
 	// find center point
 	Point_t zero_p;
 	Point_t expected_center_p = calcCenterOfMass(zero_p, image.cols, image.rows);
-	Point_t center_p = adjustPoint(expected_center_p, 0, 0);
+	center_p = adjustPoint(expected_center_p, 0, 0);
 	points[center_x][center_y] = center_p;
 
 	makeRefPointsInfo();
@@ -467,7 +468,6 @@ void Image::findAllAxisPoints() {
 
 	// radius
 	radius_p = min_p;
-	radius = radius_p * basic_distance;
 }
 
 Point_t Image::adjustPoint(const Point_t &p, int diff_x, int diff_y, int flag) {
@@ -898,30 +898,53 @@ Point_t Image::calcCenterOfMass(Point_t &p, int width, int height) {
 }
 
 void Image::makeRefPointsInfo() {
-	ref[center_x][center_y] = points[center_x][center_y];
+	ref[center_x][center_y] = center_p;
+	ref[center_x][center_y].avail = NONE;
 
 	for (int x = 1; x <= center_x; x++) {
 		ref[center_x + x][center_y] = ref[center_x + (x - 1)][center_y];
 		ref[center_x + x][center_y].x += basic_distance;
+		ref[center_x + x][center_y].avail = NONE;
 
 		ref[center_x - x][center_y] = ref[center_x - (x - 1)][center_y];
 		ref[center_x - x][center_y].x -= basic_distance;
+		ref[center_x - x][center_y].avail = NONE;
 	}
 
 	for (int y = 1; y <= center_y; y++) {
 		ref[center_x][center_y + y] = ref[center_x][center_y + (y - 1)];
 		ref[center_x][center_y + y].y += basic_distance;
+		ref[center_x][center_y + y].avail = NONE;
 
 		ref[center_x][center_y - y] = ref[center_x][center_y - (y - 1)];
 		ref[center_x][center_y - y].y -= basic_distance;
+		ref[center_x][center_y - y].avail = NONE;
 	}
 
 	for (int y = 1; y <= center_y; y++) {
 		for (int x = 1; x <= center_x; x++) {
 			ref[center_x + x][center_y + y] = Point_t(ref[center_x + x][center_y].x, ref[center_x][center_y + y].y);
+			ref[center_x + x][center_y + y].avail = NONE;
+
 			ref[center_x + x][center_y - y] = Point_t(ref[center_x + x][center_y].x, ref[center_x][center_y - y].y);
+			ref[center_x + x][center_y - y].avail = NONE;
+
 			ref[center_x - x][center_y + y] = Point_t(ref[center_x - x][center_y].x, ref[center_x][center_y + y].y);
+			ref[center_x - x][center_y + y].avail = NONE;
+
 			ref[center_x - x][center_y - y] = Point_t(ref[center_x - x][center_y].x, ref[center_x][center_y - y].y);
+			ref[center_x - x][center_y - y].avail = NONE;
 		}
+	}
+}
+
+void Image::makeRefPointsInCircle() {
+	Point_t outer_p(points[center_x + radius_p][center_y].x + (basic_distance >> 1), points[center_x + radius_p][center_y].y + (basic_distance >> 1));
+	radius = getPointDistance(center_p, outer_p);
+
+
+	ref[center_x][center_y].avail = EXIST;
+	for (int i = 1; i <= radius_p; i++) {
+		
 	}
 }
