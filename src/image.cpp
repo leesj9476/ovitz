@@ -174,52 +174,14 @@ void Image::findAllPoints() {
 
 	// find all points
 	for (int y = 1; y <= radius_p; y++) {
-		bool calc_p[4] = { true, true, true, true };
-
 		for (int x = 1; x <= radius_p; x++) {
-			if (calc_p[0]) {
-				points[center_x + x][center_y + y] = adjustPoint(Point_t(points[center_x + x][center_y].x, points[center_x][center_y + y].y), x, y);
+			if (ref[center_x + x][center_y + y].avail == NONE)
+				break;
 
-				if (radius <= getPointDistance(center_p, points[center_x + x][center_y + y])) {
-					points[center_x + x][center_y + y].avail = NONE;
-					calc_p[0] = false;
-				}
-			}
-			else
-				points[center_x + x][center_y + y].avail = NONE;
-
-			if (calc_p[1]) {
-				points[center_x + x][center_y - y] = adjustPoint(Point_t(points[center_x + x][center_y].x, points[center_x][center_y - y].y), x, -y);
-				
-				if (radius <= getPointDistance(center_p, points[center_x + x][center_y - y])) {
-					points[center_x + x][center_y - y].avail = NONE;
-					calc_p[1] = false;
-				}
-			}
-			else
-				points[center_x + x][center_y - y].avail = NONE;
-
-			if (calc_p[2]) {
-				points[center_x - x][center_y + y] = adjustPoint(Point_t(points[center_x - x][center_y].x, points[center_x][center_y + y].y), -x, y);
-
-				if (radius <= getPointDistance(center_p, points[center_x - x][center_y + y])) {
-					points[center_x - x][center_y + y].avail = NONE;
-					calc_p[2] = false;
-				}
-			}
-			else
-				points[center_x - x][center_y + y].avail = NONE;
-
-			if (calc_p[3]) {
-				points[center_x - x][center_y - y] = adjustPoint(Point_t(points[center_x - x][center_y].x, points[center_x][center_y - y].y), -x, -y);
-
-				if (radius <= getPointDistance(center_p, points[center_x - x][center_y - y])) {
-					points[center_x - x][center_y - y].avail = NONE;
-					calc_p[3] = false;
-				}
-			}
-			else
-				points[center_x - x][center_y - y].avail = NONE;
+			points[center_x + x][center_y + y] = adjustPoint(Point_t(points[center_x + x][center_y].x, points[center_x][center_y + y].y), x, y);
+			points[center_x + x][center_y - y] = adjustPoint(Point_t(points[center_x + x][center_y].x, points[center_x][center_y - y].y), x, -y);
+			points[center_x - x][center_y + y] = adjustPoint(Point_t(points[center_x - x][center_y].x, points[center_x][center_y + y].y), -x, y);
+			points[center_x - x][center_y - y] = adjustPoint(Point_t(points[center_x - x][center_y].x, points[center_x][center_y - y].y), -x, -y);
 		}
 	}
 
@@ -228,6 +190,11 @@ void Image::findAllPoints() {
 		for (int j = 0; j < point_col; j++) {
 			if (points[i][j].avail == EXIST) {
 				original.at<Vec3b>(i, j) = { 0, 0, 255 };
+				line(original, Point(points[i][j].x, points[i][j].y), Point(vertexes[i][j].v[1].x, vertexes[i][j].v[1].y), Scalar(255, 0, 0));
+				line(original, Point(points[i][j].x, points[i][j].y), Point(vertexes[i][j].v[2].x, vertexes[i][j].v[2].y), Scalar(255, 0, 0));
+				line(original, Point(points[i][j].x, points[i][j].y), Point(vertexes[i][j].v[3].x, vertexes[i][j].v[3].y), Scalar(255, 0, 0));
+				line(original, Point(points[i][j].x, points[i][j].y), Point(vertexes[i][j].v[0].x, vertexes[i][j].v[0].y), Scalar(255, 0, 0));
+
 				// line(original, Point(points[i][j].x, points[i][j].y), Point(points[i][j].x, points[i][j].y), Scalar(0, 0, 255));
 				
 				/*
@@ -945,6 +912,12 @@ void Image::makeRefPointsInCircle() {
 
 	ref[center_x][center_y].avail = EXIST;
 	for (int i = 1; i <= radius_p; i++) {
-		
+		int p = nearbyint(sqrt(pow(radius, 2) - pow(i + (basic_distance >> 1), 2)) / d - 0.5);
+		for (int j = 1; j < p; j++) {
+			ref[center_x + j][center_y + i].avail = EXIST;
+			ref[center_x + j][center_y - i].avail = EXIST;
+			ref[center_x - j][center_y + i].avail = EXIST;
+			ref[center_x - j][center_y - i].avail = EXIST;
+		}
 	}
 }
