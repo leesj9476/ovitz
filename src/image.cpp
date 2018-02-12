@@ -186,14 +186,15 @@ void Image::findAllPoints() {
 	}
 
 	// make analysis result picture
+	int d = (basic_distance >> 1);
 	for (int i = 0; i < point_row; i++) {
 		for (int j = 0; j < point_col; j++) {
 			if (points[i][j].avail == EXIST) {
 				original.at<Vec3b>(i, j) = { 0, 0, 255 };
-				line(original, Point(points[i][j].x, points[i][j].y), Point(vertexes[i][j].v[1].x, vertexes[i][j].v[1].y), Scalar(255, 0, 0));
-				line(original, Point(points[i][j].x, points[i][j].y), Point(vertexes[i][j].v[2].x, vertexes[i][j].v[2].y), Scalar(255, 0, 0));
-				line(original, Point(points[i][j].x, points[i][j].y), Point(vertexes[i][j].v[3].x, vertexes[i][j].v[3].y), Scalar(255, 0, 0));
-				line(original, Point(points[i][j].x, points[i][j].y), Point(vertexes[i][j].v[0].x, vertexes[i][j].v[0].y), Scalar(255, 0, 0));
+				line(original, Point(points[i][j].x - d, points[i][j].y - d), Point(points[i][j].x + d, points[i][j].y - d), Scalar(255, 0, 0));
+				line(original, Point(points[i][j].x + d, points[i][j].y - d), Point(points[i][j].x + d, points[i][j].y + d), Scalar(255, 0, 0));
+				line(original, Point(points[i][j].x + d, points[i][j].y + d), Point(points[i][j].x - d, points[i][j].y + d), Scalar(255, 0, 0));
+				line(original, Point(points[i][j].x - d, points[i][j].y + d), Point(points[i][j].x - d, points[i][j].y - d), Scalar(255, 0, 0));
 
 				// line(original, Point(points[i][j].x, points[i][j].y), Point(points[i][j].x, points[i][j].y), Scalar(0, 0, 255));
 				
