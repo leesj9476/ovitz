@@ -13,25 +13,27 @@ OPENCV_LIBS=$(OPENCV)
 
 PICAMERA_LIBS=-lraspicam -lraspicam_cv
 
-SSD1306_INCLUDE=include
+SSD1306_INCLUDE=-Iinclude
 SSD1306_LIB_DIR=lib
 SSD1306_LIB_FILENAME=libSSD1306.a
 SSD1306_LIB=$(SSD1306_LIB_DIR)/$(SSD1306_LIB_FILENAME)
 
+WIRINGPI_LIBS=-lwiringPi
+
 $(DEST): dummy $(OBJS_DIR) $(CAM_DIR) $(OBJS)
-	$(CC) $(CFLAGS) $(OPENCV_LIBS) $(PICAMERA_LIBS) $(OBJS) $(SSD1306_LIB_FILENAME) -o $(DEST)
+	$(CC) $(CFLAGS) $(OPENCV_LIBS) $(PICAMERA_LIBS) $(WIRINGPI_LIBS) $(OBJS) $(SSD1306_LIB_FILENAME) -o $(DEST)
 
 $(OBJS_DIR)/main.o:
-	$(CC) $(CFLAGS) -I $(SSD1306_INCLUDE) -c $(SRCS_DIR)/main.cpp -o $(OBJS_DIR)/main.o
+	$(CC) $(CFLAGS) -c $(SRCS_DIR)/main.cpp -o $(OBJS_DIR)/main.o
 
 $(OBJS_DIR)/image.o:
 	$(CC) $(CFLAGS) $(OPENCV_LIBS) -c $(SRCS_DIR)/image.cpp -o $(OBJS_DIR)/image.o
 
 $(OBJS_DIR)/capture.o:
-	$(CC) $(CFLAGS) $(OPENCV_LIBS) $(PICAMERA_LIBS) -c $(SRCS_DIR)/capture.cpp -o $(OBJS_DIR)/capture.o
+	$(CC) $(CFLAGS) $(SSD1306_INCLUDE) $(OPENCV_LIBS) $(PICAMERA_LIBS) $(WIRINGPI_LIBS) -c $(SRCS_DIR)/capture.cpp -o $(OBJS_DIR)/capture.o
 
 $(OBJS_DIR)/oled.o:
-	$(CC) $(CFLAGS) -I $(SSD1306_INCLUDE) -c $(SRCS_DIR)/oled.cpp -o $(OBJS_DIR)/oled.o
+	$(CC) $(CFLAGS) $(SSD1306_INCLUDE) -c $(SRCS_DIR)/oled.cpp -o $(OBJS_DIR)/oled.o
 	cp $(SSD1306_LIB) ./
 	ar crs $(SSD1306_LIB_FILENAME) $(OBJS_DIR)/oled.o
 

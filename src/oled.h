@@ -13,7 +13,6 @@ public:
 
 	void showString(const std::string &, int = 0);
 	void clear();
-	void update();
 
 	bool isValid();
 

@@ -7,7 +7,6 @@
 
 #include "capture.h"
 #include "image.h"
-#include "oled.h"
 #include "types.h"
 #include "util.h"
 
@@ -22,12 +21,12 @@ bool option[OPTION_NUM];
 int main (int argc, char *argv[]) {
 	int opt;
 	string image_filename;
-	string output_filename;
-	Oled oled;
 
 	int basic_distance;
-
 	bool opt_valid = true;
+
+	namedWindow("original");
+	namedWindow("result");
 
 	// TODO add width, height option
 	while ((opt = getopt(argc, argv, "f:d:")) != -1) {
@@ -64,11 +63,6 @@ int main (int argc, char *argv[]) {
 		}
 	}
 
-	if (!oled.isValid()) {
-		cerr << "<error> oled is invalid" << endl;
-		return OLED_ERROR;
-	}
-
 	//////////////////////////////////
 	//          image mode          //
 	//////////////////////////////////
@@ -78,18 +72,15 @@ int main (int argc, char *argv[]) {
 			return ARGUMENT_ERROR;
 		}
 
-		cout << "image mode" << endl;
-
 		Image image(image_filename, basic_distance);
 		image.init();
 		image.findAllPoints();
+		image.print();
 	}
 	//////////////////////////////
 	//         cam mode         //
 	//////////////////////////////
 	else {
-		cout << "cam mode" << endl;
-
 		if (!option[DISTANCE]) {
 			cerr << "<error> cam mode - need distance argument" << endl;
 			return ARGUMENT_ERROR;

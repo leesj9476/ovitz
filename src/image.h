@@ -42,11 +42,10 @@ public:
 	Image(const cv::Mat&, int);
 	~Image();
 
-	void saveImage();
+	void print();
 
 	void init();
 	void changeImage(cv::Mat &);
-	void setZeroUnderThreshold();
 	void setAllPointsToNONE();
 
 	void convertRGBtoGRAY(cv::Mat &);
@@ -55,7 +54,7 @@ public:
 
 	void gaussianFiltering();
 
-	void findAllPoints();
+	bool findAllPoints();
 	void findAllAxisPoints();
 	void makeRefPointsInfo();
 	void makeRefPointsInCircle();
@@ -72,7 +71,7 @@ private:
 
 	double cdf[256];
 
-	int threshold;
+	int threshold_val;
 	int basic_distance;
 
 	int point_col, point_row;

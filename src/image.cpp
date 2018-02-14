@@ -1,5 +1,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+#include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -11,6 +13,8 @@
 
 using namespace std;
 using namespace cv;
+
+int num = 0;
 
 Point_t::Point_t(int x, int y, int avail)
 	: x(x), y(y), avail(avail) {}
@@ -64,6 +68,25 @@ Image::~Image() {
 
 	delete[] points;
 	delete[] vertexes;
+}
+
+void Image::print() {
+	ofstream f("result/output" + to_string(num) + ".txt");
+	for (int i = 0; i < point_row; i++) {
+		for (int j = 0; j < point_col; j++) {
+			if (ref[i][j].avail == EXIST)
+				f << to_string(points[i][j].x - ref[i][j].x) << endl;
+		}
+	}
+
+	for (int i = 0; i < point_row; i++) {
+		for (int j = 0; j < point_col; j++) {
+			if (ref[i][j].avail == EXIST)
+				f << to_string(points[i][j].y - ref[i][j].y) << endl;
+		}
+	}
+
+	f.close();
 }
 
 void Image::init(){
@@ -159,14 +182,14 @@ void Image::gaussianFiltering() {
 }
 
 // find all points
-void Image::findAllPoints() {
+bool Image::findAllPoints() {
 	if (filename != "") {
 		gaussianFiltering();
 		makePixelCDF();
 	}
 
-	threshold = getValCDF(0.98);
-	setZeroUnderThreshold();
+	threshold_val = getValCDF(0.98);
+	threshold(image, image, threshold_val, 255, 3);
 	setAllPointsToNONE();
 	
 	findAllAxisPoints();
@@ -190,30 +213,17 @@ void Image::findAllPoints() {
 	for (int i = 0; i < point_row; i++) {
 		for (int j = 0; j < point_col; j++) {
 			if (points[i][j].avail == EXIST) {
-				original.at<Vec3b>(i, j) = { 0, 0, 255 };
-				line(original, Point(points[i][j].x - d, points[i][j].y - d), Point(points[i][j].x + d, points[i][j].y - d), Scalar(255, 0, 0));
-				line(original, Point(points[i][j].x + d, points[i][j].y - d), Point(points[i][j].x + d, points[i][j].y + d), Scalar(255, 0, 0));
-				line(original, Point(points[i][j].x + d, points[i][j].y + d), Point(points[i][j].x - d, points[i][j].y + d), Scalar(255, 0, 0));
-				line(original, Point(points[i][j].x - d, points[i][j].y + d), Point(points[i][j].x - d, points[i][j].y - d), Scalar(255, 0, 0));
-
-				// line(original, Point(points[i][j].x, points[i][j].y), Point(points[i][j].x, points[i][j].y), Scalar(0, 0, 255));
-				
-				/*
-				line(original, Point(vertexes[i][j].v[0].x, vertexes[i][j].v[0].y), Point(vertexes[i][j].v[1].x, vertexes[i][j].v[1].y), Scalar(255, 0, 0));
-				line(original, Point(vertexes[i][j].v[1].x, vertexes[i][j].v[1].y), Point(vertexes[i][j].v[2].x, vertexes[i][j].v[2].y), Scalar(255, 0, 0));
-				line(original, Point(vertexes[i][j].v[2].x, vertexes[i][j].v[2].y), Point(vertexes[i][j].v[3].x, vertexes[i][j].v[3].y), Scalar(255, 0, 0));
-				line(original, Point(vertexes[i][j].v[3].x, vertexes[i][j].v[3].y), Point(vertexes[i][j].v[0].x, vertexes[i][j].v[0].y), Scalar(255, 0, 0));
-				*/
+				original.at<Vec3b>(points[i][j].y, points[i][j].x) = { 0, 0, 255 };
+				line(original, Point(ref[i][j].x - d, ref[i][j].y - d), Point(ref[i][j].x + d, ref[i][j].y - d), Scalar(255, 0, 0));
+				line(original, Point(ref[i][j].x + d, ref[i][j].y - d), Point(ref[i][j].x + d, ref[i][j].y + d), Scalar(255, 0, 0));
+				line(original, Point(ref[i][j].x + d, ref[i][j].y + d), Point(ref[i][j].x - d, ref[i][j].y + d), Scalar(255, 0, 0));
+				line(original, Point(ref[i][j].x - d, ref[i][j].y + d), Point(ref[i][j].x - d, ref[i][j].y - d), Scalar(255, 0, 0));
 			}
 		}
 	}
-
 	circle(original, Point(center_p.x, center_p.y), radius, Scalar(0, 255, 0));
+	//imshow("result", original);
 
-	imshow("result", original);
-	imwrite("result.png", original);
-
-	// print center points and ref points info
 	cout << "|     real point    |    ref point    | x-var | y-var |" << endl;
 	cout << " ----------------------------------------------------- " << endl;
 	for (int y = 0; y < point_row; y++) {
@@ -223,14 +233,23 @@ void Image::findAllPoints() {
 			}
 		}
 	}
-}
 
-void Image::setZeroUnderThreshold() {
-	uchar *data = (uchar *)image.data;
-	for (uint i = 0; i < image.total(); i++) {
-		if (data[i] <= threshold)
-			data[i] = 0;
+	cout << points[center_x][center_y] << endl;
+
+	int ref_num = 0;
+	int real_num = 0;
+	for (int i = 0; i < point_row; i++) {
+		for (int j = 0; j < point_col; j++) {
+			if (ref[i][j].avail == EXIST) {
+				ref_num++;
+
+				if (points[i][j].avail == EXIST)
+					real_num++;
+			}
+		}
 	}
+
+	return (ref_num == real_num);
 }
 
 void Image::setAllPointsToNONE() {
@@ -300,7 +319,7 @@ void Image::findAllAxisPoints() {
 		if (search[UP] && unit_center_v[UP][0].y - gap >= 0) {
 			idx = (unit_center_v[UP][0].y - gap) * image.cols + unit_center_v[UP][0].x;
 			for (int i = unit_center_v[UP][0].x; i <= unit_center_v[UP][1].x; i++) {
-				if (data[idx] > threshold) {
+				if (data[idx] > threshold_val) {
 					points[center_x][center_y - 2] = adjustPoint(Point_t(i, unit_center_v[UP][0].y - gap, i), 0, -2);
 					search[UP] = false;
 
@@ -316,7 +335,7 @@ void Image::findAllAxisPoints() {
 		if (search[RIGHT] && unit_center_v[RIGHT][1].x + gap < image.cols) {
 			idx = unit_center_v[RIGHT][1].y * image.cols + (unit_center_v[RIGHT][1].x + gap);
 			for (int i = unit_center_v[RIGHT][1].y; i <= unit_center_v[RIGHT][2].y; i++) {
-				if (data[idx] > threshold) {
+				if (data[idx] > threshold_val) {
 					points[center_x + 2][center_y] = adjustPoint(Point_t(unit_center_v[RIGHT][1].x + gap, i), 2, 0);
 					search[RIGHT] = false;	
 
@@ -333,7 +352,7 @@ void Image::findAllAxisPoints() {
 		if (search[DOWN] && unit_center_v[DOWN][2].y + gap < image.rows) {
 			idx = (unit_center_v[DOWN][2].y + gap) * image.cols + unit_center_v[DOWN][2].x;
 			for (int i = unit_center_v[DOWN][2].x; i >= unit_center_v[DOWN][3].x; i--) {
-				if (data[idx] > threshold) {
+				if (data[idx] > threshold_val) {
 					points[center_x][center_y + 2] = adjustPoint(Point_t(i, unit_center_v[DOWN][2].y + gap), 0, 2);
 					search[DOWN] = false;
 
@@ -349,7 +368,7 @@ void Image::findAllAxisPoints() {
 		if (search[LEFT] && unit_center_v[LEFT][3].x - gap >= 0) {
 			idx = unit_center_v[LEFT][3].y * image.cols + (unit_center_v[LEFT][3].x - gap);
 			for (int i = unit_center_v[LEFT][3].y; i >= unit_center_v[LEFT][0].y; i--) {
-				if (data[idx] > threshold) {
+				if (data[idx] > threshold_val) {
 					points[center_x - 2][center_y] = adjustPoint(Point_t(unit_center_v[LEFT][3].x - gap, i), -2, 0);
 					search[LEFT] = false;
 
@@ -445,7 +464,7 @@ Point_t Image::adjustPoint(const Point_t &p, int diff_x, int diff_y, int flag) {
 	uchar *data = (uchar *)image.data;
 	int idx = p.y*image.cols + p.x;
 	Point_t adjust_p = p;
-	if (data[idx] <= threshold) {
+	if (data[idx] <= threshold_val) {
 		adjust_p = findClosestWhitePoint(p, diff_x, diff_y);
 		if (adjust_p.avail == NONE)
 			return p;
@@ -557,7 +576,7 @@ Point_t Image::findClosestWhitePoint(const Point_t &p, int diff_x, int diff_y) {
 		//
 		if (search_expand[UP]) {
 			for (int i = search_p[0].x; i < search_p[1].x; i++) {
-				if (data[idx] > threshold)
+				if (data[idx] > threshold_val)
 					goto FINDWHITEPOINT;
 
 				idx++;
@@ -570,7 +589,7 @@ Point_t Image::findClosestWhitePoint(const Point_t &p, int diff_x, int diff_y) {
 		//
 		if (search_expand[RIGHT]) {
 			for (int i = search_p[1].y; i < search_p[2].y; i++) {
-				if (data[idx] > threshold)
+				if (data[idx] > threshold_val)
 					goto FINDWHITEPOINT;
 
 				idx += image.cols;
@@ -583,7 +602,7 @@ Point_t Image::findClosestWhitePoint(const Point_t &p, int diff_x, int diff_y) {
 		//
 		if (search_expand[DOWN]) {
 			for (int i = search_p[2].x; i > search_p[3].x; i--) {
-				if (data[idx] > threshold)
+				if (data[idx] > threshold_val)
 					goto FINDWHITEPOINT;
 
 				idx--;
@@ -596,7 +615,7 @@ Point_t Image::findClosestWhitePoint(const Point_t &p, int diff_x, int diff_y) {
 		//
 		if (search_expand[LEFT]) {
 			for (int i = search_p[3].y; i > search_p[0].y; i--) {
-				if (data[idx] > threshold)
+				if (data[idx] > threshold_val)
 					goto FINDWHITEPOINT;
 
 				idx -= image.cols;
@@ -734,7 +753,7 @@ Point_t Image::findCenterPoint(const Point_t &p, int diff_x, int diff_y, int fla
 			white = false;
 			idx = v[0].y * image.cols + (v[0].x + 1);
 			for (int i = v[0].x+1; i < v[1].x; i++) {
-				if (data[idx] > threshold) {
+				if (data[idx] > threshold_val) {
 					white = true;
 					break;
 				}
@@ -751,7 +770,7 @@ Point_t Image::findCenterPoint(const Point_t &p, int diff_x, int diff_y, int fla
 			white = false;
 			idx = (v[1].y + 1) * image.cols + v[1].x;
 			for (int i = v[1].y+1; i < v[2].y; i++) {
-				if (data[idx] > threshold) {
+				if (data[idx] > threshold_val) {
 					white = true;
 					break;
 				}
@@ -768,7 +787,7 @@ Point_t Image::findCenterPoint(const Point_t &p, int diff_x, int diff_y, int fla
 			white = false;
 			idx = v[2].y * image.cols + (v[2].x - 1);
 			for (int i = v[2].x-1; i > v[3].x; i--) {
-				if (data[idx] > threshold) {
+				if (data[idx] > threshold_val) {
 					white = true;
 					break;
 				}
@@ -785,7 +804,7 @@ Point_t Image::findCenterPoint(const Point_t &p, int diff_x, int diff_y, int fla
 			white = false;
 			idx = (v[3].y - 1) * image.cols + v[3].x;
 			for (int i = v[3].y-1; i > v[0].y; i--) {
-				if (data[idx] > threshold) {
+				if (data[idx] > threshold_val) {
 					white = true;
 					break;
 				}
@@ -803,25 +822,25 @@ Point_t Image::findCenterPoint(const Point_t &p, int diff_x, int diff_y, int fla
 		
 		// v0
 		idx = v[0].y * image.cols + v[0].x;
-		if (data[idx] > threshold && v[0].x >= SEARCH_GAP && v[0].y >= SEARCH_GAP && expand[LEFT] <= unit_x_left && expand[UP] <= unit_y_up) {
+		if (data[idx] > threshold_val && v[0].x >= SEARCH_GAP && v[0].y >= SEARCH_GAP && expand[LEFT] <= unit_x_left && expand[UP] <= unit_y_up) {
 			search[LEFT] = true; search[UP] = true;
 		}
 
 		// v1
 		idx = v[1].y * image.cols + v[1].x;
-		if (data[idx] > threshold && v[1].x + SEARCH_GAP < image.cols && v[1].y >= SEARCH_GAP && expand[UP] <= unit_y_up && expand[RIGHT] <= unit_x_right) {
+		if (data[idx] > threshold_val && v[1].x + SEARCH_GAP < image.cols && v[1].y >= SEARCH_GAP && expand[UP] <= unit_y_up && expand[RIGHT] <= unit_x_right) {
 			search[UP] = true; search[RIGHT] = true;
 		}
 
 		// v2
 		idx = v[2].y * image.cols + v[2].x;
-		if (data[idx] > threshold && v[2].x + SEARCH_GAP < image.cols && v[2].y + SEARCH_GAP < image.cols && expand[RIGHT] <= unit_x_right && expand[DOWN] <= unit_y_down) {
+		if (data[idx] > threshold_val && v[2].x + SEARCH_GAP < image.cols && v[2].y + SEARCH_GAP < image.cols && expand[RIGHT] <= unit_x_right && expand[DOWN] <= unit_y_down) {
 			search[RIGHT] = true; search[DOWN] = true;
 		}
 
 		// v3
 		idx = v[3].y * image.cols + v[3].x;
-		if (data[idx] > threshold && v[3].x >= SEARCH_GAP && v[3].y + SEARCH_GAP < image.cols && expand[DOWN] <= unit_y_down && expand[LEFT] <= unit_x_left) {
+		if (data[idx] > threshold_val && v[3].x >= SEARCH_GAP && v[3].y + SEARCH_GAP < image.cols && expand[DOWN] <= unit_y_down && expand[LEFT] <= unit_x_left) {
 			search[DOWN] = true; search[LEFT] = true;
 		}
 	}
@@ -850,7 +869,7 @@ Point_t Image::calcCenterOfMass(Point_t &p, int width, int height) {
 	int idx = (p.y * image.rows + p.x);
 	for (int row_i = 0; row_i < height; row_i++) {
 		for (int col_j = 0; col_j < width; col_j++) {
-			if (data[idx] > threshold) {
+			if (data[idx] > threshold_val) {
 				w += data[idx];
 				x += data[idx] * col_j;
 				y += data[idx] * row_i;
@@ -910,11 +929,10 @@ void Image::makeRefPointsInCircle() {
 	Point_t outer_p(points[center_x + radius_p][center_y].x + (basic_distance >> 1), points[center_x + radius_p][center_y].y + (basic_distance >> 1));
 	radius = getPointDistance(center_p, outer_p);
 
-
 	ref[center_x][center_y].avail = EXIST;
 	for (int i = 1; i <= radius_p; i++) {
-		int p = nearbyint(sqrt(pow(radius, 2) - pow(i + (basic_distance >> 1), 2)) / d - 0.5);
-		for (int j = 1; j < p; j++) {
+		int p = sqrt(pow(static_cast<double>(radius) / basic_distance, 2) - pow((i + 0.5), 2)) - 0.5;
+		for (int j = 1; j <= p; j++) {
 			ref[center_x + j][center_y + i].avail = EXIST;
 			ref[center_x + j][center_y - i].avail = EXIST;
 			ref[center_x - j][center_y + i].avail = EXIST;

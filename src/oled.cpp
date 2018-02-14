@@ -17,21 +17,18 @@ Oled::Oled(const std::string &device, uint8_t address) {
 
 Oled::~Oled() {
 	clear();
-	update();
+	oled->displayUpdate();
 	delete oled;
 }
 
 void Oled::showString(const string &str, int row) {
 	clear();
 	drawString8x16(SSD1306::OledPoint(0, row * 16), str, SSD1306::PixelStyle::Set, *oled);
-	update();
+	oled->displayUpdate();
 }
 
 void Oled::clear() {
 	oled->clear();
-}
-
-void Oled::update() {
 	oled->displayUpdate();
 }
 

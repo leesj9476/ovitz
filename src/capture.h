@@ -5,6 +5,8 @@
 #include <string>
 #include <chrono>
 
+void clear(int);
+
 class Capture {
 public:
 	Capture(int);
