@@ -277,8 +277,9 @@ string Image::findAllPoints() {
 			}
 		}
 	
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 5; i++) {
 			result[i] *= (-1);
+		}
 
 		result_str = to_string(result[2]) + "\n" + to_string(result[3]) + "\n" + to_string(result[4]);
 	}

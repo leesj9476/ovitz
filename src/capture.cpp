@@ -6,6 +6,7 @@
 #include <string>
 #include <cmath>
 #include <thread>
+#include <mutex>
 
 #include "capture.h"
 #include "image.h"
@@ -24,6 +25,8 @@ extern int num;
 
 bool a_pressed = false;
 bool b_pressed = false;
+
+mutex m;
 
 void aPress() {
 	a_pressed = true;
@@ -82,6 +85,8 @@ int Capture::shot() {
 	bool init = false;
 	int result = SUCCESS;
 	while (true) {
+		m.lock();
+
 		if (!cam.set(CV_CAP_PROP_EXPOSURE, exposure_time)) {
 			cerr << "exposure time error" << endl;
 			result = FAIL;
@@ -173,6 +178,7 @@ int Capture::shot() {
 			gain = 100;
 
 		oled.showString(result);
+		m.unlock();
 	}
 
 	oled.clear();
