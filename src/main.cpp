@@ -14,10 +14,10 @@ using namespace std;
 using namespace cv;
 
 bool continue_analyze = true;
-
 bool option[OPTION_NUM];
 
-//TODO: change c-style exception state to OOP-style(try - catch)
+double *lens_mat[5][5];
+
 int main (int argc, char *argv[]) {
 	int opt;
 	string image_filename;
@@ -25,8 +25,8 @@ int main (int argc, char *argv[]) {
 	int basic_distance;
 	bool opt_valid = true;
 
-	namedWindow("original");
-	namedWindow("result");
+	//namedWindow("original");
+	//namedWindow("result");
 
 	// TODO add width, height option
 	while ((opt = getopt(argc, argv, "f:d:")) != -1) {
@@ -63,6 +63,8 @@ int main (int argc, char *argv[]) {
 		}
 	}
 
+	makeLensMatrix();
+
 	//////////////////////////////////
 	//          image mode          //
 	//////////////////////////////////
@@ -74,8 +76,7 @@ int main (int argc, char *argv[]) {
 
 		Image image(image_filename, basic_distance);
 		image.init();
-		image.findAllPoints();
-		image.print();
+		cout << image.findAllPoints() << endl;
 	}
 	//////////////////////////////
 	//         cam mode         //

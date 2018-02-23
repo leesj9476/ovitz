@@ -106,7 +106,6 @@ int Capture::shot() {
 		else 
 			image->changeImage(captured_image);
 
-		//imshow("original", captured_image);
 		char pressed = waitKey(20);
 		if (pressed == 27) {
 			continue_analyze = false;
@@ -114,7 +113,6 @@ int Capture::shot() {
 		}
 		else if (pressed == 32) {
 			imwrite("result/output" + to_string(num) += ".png", captured_image);
-			image->print();
 			num++;
 		}
 
@@ -129,20 +127,15 @@ int Capture::shot() {
 		image->gaussianFiltering();
 		image->makePixelCDF();
 		int cur_pixel_avg = image->getValCDF(0.5);
-		string str = to_string(cur_pixel_avg) + " " + to_string(exposure_time) +" " + to_string(gain) + " ";
 
+		string result = "";
 		if (min_pixel <= cur_pixel_avg && cur_pixel_avg <= max_pixel) {
-			if (image->findAllPoints())
-				str += "OK";
-			else
-				str += "NO";
+			result = image->findAllPoints();
+
 		}
 		else if (cur_pixel_avg > max_pixel) {
 			if (exposure_time == 1 && gain == 0) {
-				if (image->findAllPoints())
-					str += "OK";
-				else
-					str += "NO";
+				result = image->findAllPoints();
 			}
 			else {
 				if (exposure_time != 1) {
@@ -162,10 +155,7 @@ int Capture::shot() {
 		}
 		else if (cur_pixel_avg < min_pixel) {
 			if (exposure_time == 100 && gain == 100) {
-				if (image->findAllPoints())
-					str += "OK";
-				else
-					str += "NO";
+				result = image->findAllPoints();
 			}
 			else {
 				if (exposure_time != 100)
@@ -182,7 +172,7 @@ int Capture::shot() {
 		if (gain > 100)
 			gain = 100;
 
-		oled.showString(str);
+		oled.showString(result);
 	}
 
 	oled.clear();

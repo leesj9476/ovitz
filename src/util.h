@@ -7,4 +7,6 @@ bool isInt(const char *);
 
 int getPointDistance(const Point_t &, const Point_t &);
 
+void makeLensMatrix();
+
 #endif

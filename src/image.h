@@ -18,6 +18,7 @@
 #define NO_FLAG	255
 
 typedef struct Point_t {
+	Point_t(double, double, int = NONE);
 	Point_t(int = 0, int = 0, int = NONE);
 
 	Point_t operator=(const Point_t &);
@@ -25,6 +26,9 @@ typedef struct Point_t {
 
 	int x;
 	int y;
+
+	double real_x;
+	double real_y;
 
 	// EXIST, NONE
 	int avail;
@@ -42,8 +46,6 @@ public:
 	Image(const cv::Mat&, int);
 	~Image();
 
-	void print();
-
 	void init();
 	void changeImage(cv::Mat &);
 	void setAllPointsToNONE();
@@ -54,7 +56,7 @@ public:
 
 	void gaussianFiltering();
 
-	bool findAllPoints();
+	std::string findAllPoints();
 	void findAllAxisPoints();
 	void makeRefPointsInfo();
 	void makeRefPointsInCircle();
@@ -90,6 +92,9 @@ private:
 
 	// ref points
 	Point_t **ref;
+
+	// slope data
+	double *slope;
 
 	// vertex points of unit boxes
 	Vertex_t **vertexes;

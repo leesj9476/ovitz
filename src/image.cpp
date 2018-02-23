@@ -14,14 +14,29 @@
 using namespace std;
 using namespace cv;
 
+extern double *lens_mat[5][5];
+
 int num = 0;
 
-Point_t::Point_t(int x, int y, int avail)
-	: x(x), y(y), avail(avail) {}
+Point_t::Point_t(double real_x_, double real_y_, int avail)
+	: real_x(real_x_), real_y(real_y_), avail(avail) {
+
+	x = static_cast<int>(real_x);
+	y = static_cast<int>(real_y);
+}
+
+Point_t::Point_t(int x_, int y_, int avail)
+	: x(x_), y(y_), avail(avail) {
+
+	real_x = static_cast<double>(x);
+	real_y = static_cast<double>(y);
+}
 
 Point_t Point_t::operator=(const Point_t &p) {
 	this->x = p.x;
 	this->y = p.y;
+	this->real_x = p.real_x;
+	this->real_y = p.real_y;
 	this->avail = p.avail;
 
 	return *this;
@@ -68,25 +83,6 @@ Image::~Image() {
 
 	delete[] points;
 	delete[] vertexes;
-}
-
-void Image::print() {
-	ofstream f("result/output" + to_string(num) + ".txt");
-	for (int i = 0; i < point_row; i++) {
-		for (int j = 0; j < point_col; j++) {
-			if (ref[i][j].avail == EXIST)
-				f << to_string(points[i][j].x - ref[i][j].x) << endl;
-		}
-	}
-
-	for (int i = 0; i < point_row; i++) {
-		for (int j = 0; j < point_col; j++) {
-			if (ref[i][j].avail == EXIST)
-				f << to_string(points[i][j].y - ref[i][j].y) << endl;
-		}
-	}
-
-	f.close();
 }
 
 void Image::init(){
@@ -170,7 +166,7 @@ void Image::makePixelCDF() {
 int Image::getValCDF(double p) {
 	int i = 0;
 	for (i = 0; i < 256; i++) {
-		if (cdf[i] >= p)
+		if (cdf[i] > p)
 			break;
 	}
 
@@ -182,17 +178,18 @@ void Image::gaussianFiltering() {
 }
 
 // find all points
-bool Image::findAllPoints() {
+string Image::findAllPoints() {
 	if (filename != "") {
 		gaussianFiltering();
 		makePixelCDF();
 	}
 
-	threshold_val = getValCDF(0.98);
+	threshold_val = getValCDF(0.95);
 	threshold(image, image, threshold_val, 255, 3);
 	setAllPointsToNONE();
 	
 	findAllAxisPoints();
+	makeRefPointsInfo();
 	makeRefPointsInCircle();
 
 	// find all points
@@ -212,44 +209,82 @@ bool Image::findAllPoints() {
 	int d = (basic_distance >> 1);
 	for (int i = 0; i < point_row; i++) {
 		for (int j = 0; j < point_col; j++) {
-			if (points[i][j].avail == EXIST) {
-				original.at<Vec3b>(points[i][j].y, points[i][j].x) = { 0, 0, 255 };
+			if (ref[i][j].avail == EXIST) {
 				line(original, Point(ref[i][j].x - d, ref[i][j].y - d), Point(ref[i][j].x + d, ref[i][j].y - d), Scalar(255, 0, 0));
 				line(original, Point(ref[i][j].x + d, ref[i][j].y - d), Point(ref[i][j].x + d, ref[i][j].y + d), Scalar(255, 0, 0));
 				line(original, Point(ref[i][j].x + d, ref[i][j].y + d), Point(ref[i][j].x - d, ref[i][j].y + d), Scalar(255, 0, 0));
 				line(original, Point(ref[i][j].x - d, ref[i][j].y + d), Point(ref[i][j].x - d, ref[i][j].y - d), Scalar(255, 0, 0));
+
+				if (points[i][j].avail == EXIST)
+					original.at<Vec3b>(points[i][j].y, points[i][j].x) = { 0, 0, 255 };
 			}
 		}
 	}
 	circle(original, Point(center_p.x, center_p.y), radius, Scalar(0, 255, 0));
-	//imshow("result", original);
+	imshow("result", original);
+	imwrite("result.png", original);
 
+	/*
 	cout << "|     real point    |    ref point    | x-var | y-var |" << endl;
 	cout << " ----------------------------------------------------- " << endl;
 	for (int y = 0; y < point_row; y++) {
 		for (int x = 0; x < point_col; x++) {
 			if (points[x][y].avail == EXIST) {
-				cout << "|    " << points[x][y] << "    |   " << ref[x][y] << "   | " << setw(5) << (points[x][y].x - ref[x][y].x) << " | " << setw(5) << (points[x][y].y - ref[x][y].y) << " |" << endl;
+				cout << "|    " << points[x][y] << "    |   " << ref[x][y] << "   | " << setw(5) << (points[x][y].real_x - ref[x][y].real_x) << " | " << setw(5) << (points[x][y].real_y - ref[x][y].real_y) << " |" << endl;
 			}
 		}
-	}
-
-	cout << points[center_x][center_y] << endl;
+	}*/
 
 	int ref_num = 0;
-	int real_num = 0;
 	for (int i = 0; i < point_row; i++) {
 		for (int j = 0; j < point_col; j++) {
-			if (ref[i][j].avail == EXIST) {
+			if (ref[i][j].avail == EXIST) { 
 				ref_num++;
-
-				if (points[i][j].avail == EXIST)
-					real_num++;
 			}
 		}
 	}
 
-	return (ref_num == real_num);
+	// TODO reallocate only when ref_num is changed.
+	// TODO hard-coded 512 -> get info from cam class
+	slope = new double[ref_num * 2];
+	double w = 1944 / 512 * (0.2); // ccd_pixel = (maximum height pixel = 1944) / (current height) * (real pixel distance = 1.4)
+	                               // focal = 7mm
+	int slope_i = 0;
+	for (int y = center_y - radius_p; y <= center_y + radius_p; y++) {
+		for (int x = center_x - radius_p; x <= center_x + radius_p; x++) {
+			if (ref[x][y].avail == EXIST) {
+				// slope x
+				slope[slope_i] = points[x][y].real_x - ref[x][y].real_x;
+
+				// slope y
+				slope[slope_i + ref_num] = -(points[x][y].real_y - ref[x][y].real_y);
+
+				slope_i++;
+			}
+		}
+	}
+
+	for (int i = 0; i < ref_num * 2; i++) {
+		slope[i] *= w;
+	}
+	
+	string result_str = "";
+	if (radius_p <= 5) {
+		double result[5] = { 0,  };
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < ref_num * 2; j++) {
+				result[i] += lens_mat[radius_p - 1][i][j] * slope[j];
+			}
+		}
+	
+		for (int i = 0; i < 5; i++)
+			result[i] *= (-1);
+
+		result_str = to_string(result[2]) + "\n" + to_string(result[3]) + "\n" + to_string(result[4]);
+	}
+
+	delete[] slope;
+	return result_str;
 }
 
 void Image::setAllPointsToNONE() {
@@ -265,8 +300,6 @@ void Image::findAllAxisPoints() {
 	Point_t expected_center_p = calcCenterOfMass(zero_p, image.cols, image.rows);
 	center_p = adjustPoint(expected_center_p, 0, 0);
 	points[center_x][center_y] = center_p;
-
-	makeRefPointsInfo();
 
 	// find 1st axis point -> use basic distance
 	points[center_x + 1][center_y] = adjustPoint(Point_t(center_p.x + basic_distance, center_p.y), 1, 0, RIGHT);
@@ -381,80 +414,89 @@ void Image::findAllAxisPoints() {
 		else
 			search[LEFT] = false;
 	}
-	
-	//calc reduction proportion
-	double reduce_p[4] = { 0, };
-	if (point_row >= 5) {
-		if (points[center_x][center_y - 2].avail == EXIST)
-			reduce_p[UP] = (points[center_x][center_y - 1].y - points[center_x][center_y - 2].y) / static_cast<double>(basic_distance);
-		
-		if (points[center_x][center_y + 2].avail == EXIST)
-			reduce_p[DOWN] = (points[center_x][center_y + 2].y - points[center_x][center_y + 1].y) / static_cast<double>(basic_distance);
-	}
 
-	if (point_col >= 5) { 
-		if (points[center_x + 2][center_y].avail == EXIST)
-			reduce_p[RIGHT] = (points[center_x + 2][center_y].x - points[center_x + 1][center_y].x) / static_cast<double>(basic_distance);
-		
-		if (points[center_x - 2][center_y].avail == EXIST)
-			reduce_p[LEFT] = (points[center_x - 1][center_y].x - points[center_x - 2][center_y].x) / static_cast<double>(basic_distance);
-	}
-
-	prop = (reduce_p[UP] + reduce_p[RIGHT] + reduce_p[DOWN] + reduce_p[LEFT]) / 4;
-
-	// find all axis points
-	int d[4];
 	int min_p = (center_x < center_y) ? center_x : center_y;
-	for (int i = 3; i <= min_p; i++) {
-		// find up, down axis points
-		d[UP] = ceil((points[center_x][center_y - i + 2].y - points[center_x][center_y - i + 1].y) * prop);
-		d[DOWN] = ceil((points[center_x][center_y + i - 1].y - points[center_x][center_y + i - 2].y) * prop);
+	if (points[center_x + 2][center_y].avail == NONE ||
+		points[center_x - 2][center_y].avail == NONE ||
+		points[center_x][center_y + 2].avail == NONE ||
+		points[center_x][center_y - 2].avail == NONE)
 
-		// UP
-		points[center_x][center_y - i] = adjustPoint(Point_t(points[center_x][center_y - i + 1].x, points[center_x][center_y - i + 1].y - d[UP]), 0, -i);
-		
-		// DOWN
-		points[center_x][center_y + i] = adjustPoint(Point_t(points[center_x][center_y + i - 1].x, points[center_x][center_y + i - 1].y + d[DOWN]), 0, i);
+		min_p = 1;
+	
+	if (min_p != 1) {
+		//calc reduction proportion
+		double reduce_p[4] = { 0, };
+		if (point_row >= 5) {
+			if (points[center_x][center_y - 2].avail == EXIST)
+				reduce_p[UP] = (points[center_x][center_y - 1].y - points[center_x][center_y - 2].y) / static_cast<double>(basic_distance);
+			
+			if (points[center_x][center_y + 2].avail == EXIST)
+				reduce_p[DOWN] = (points[center_x][center_y + 2].y - points[center_x][center_y + 1].y) / static_cast<double>(basic_distance);
+		}
+	
+		if (point_col >= 5) { 
+			if (points[center_x + 2][center_y].avail == EXIST)
+				reduce_p[RIGHT] = (points[center_x + 2][center_y].x - points[center_x + 1][center_y].x) / static_cast<double>(basic_distance);
+			
+			if (points[center_x - 2][center_y].avail == EXIST)
+				reduce_p[LEFT] = (points[center_x - 1][center_y].x - points[center_x - 2][center_y].x) / static_cast<double>(basic_distance);
+		}
 
-		if (points[center_x][center_y - i].avail == NONE || points[center_x][center_y + i].avail == NONE)
-			min_p = i - 1;
+		prop = (reduce_p[UP] + reduce_p[RIGHT] + reduce_p[DOWN] + reduce_p[LEFT]) / 4;
+	
+		// find all axis points
+		int d[4];
+		for (int i = 3; i <= min_p; i++) {
+			// find up, down axis points
+			d[UP] = ceil((points[center_x][center_y - i + 2].y - points[center_x][center_y - i + 1].y) * prop);
+			d[DOWN] = ceil((points[center_x][center_y + i - 1].y - points[center_x][center_y + i - 2].y) * prop);
+	
+			// UP
+			points[center_x][center_y - i] = adjustPoint(Point_t(points[center_x][center_y - i + 1].x, points[center_x][center_y - i + 1].y - d[UP]), 0, -i);
+			
+			// DOWN
+			points[center_x][center_y + i] = adjustPoint(Point_t(points[center_x][center_y + i - 1].x, points[center_x][center_y + i - 1].y + d[DOWN]), 0, i);
+	
+			if (points[center_x][center_y - i].avail == NONE || points[center_x][center_y + i].avail == NONE)
+				min_p = i - 1;
+		}
+	
+		for (int i = 3; i <= min_p; i++) {
+			// find right, left axis points
+			d[RIGHT] = ceil((points[center_x + i - 1][center_y].x - points[center_x + i - 2][center_y].x) * prop);
+			d[LEFT] = ceil((points[center_x - i + 2][center_y].x - points[center_x - i + 1][center_y].x) * prop);
+	
+			// RIGHT
+			points[center_x + i][center_y] = adjustPoint(Point_t(points[center_x + i - 1][center_y].x + d[RIGHT], points[center_x + i - 1][center_y].y), i, 0);
+			
+			// LEFT
+			points[center_x - i][center_y] = adjustPoint(Point_t(points[center_x - i + 1][center_y].x - d[LEFT], points[center_x - i + 1][center_y].y), -i, 0);
+	
+			if (points[center_x + i][center_y].avail == NONE || points[center_x - i][center_y].avail == NONE)
+				min_p = i - 1;
+		}
+	
+		for (int i = min_p + 1; i <= center_x; i++) {
+			if (points[center_x + i][center_y].avail == EXIST)
+				points[center_x + i][center_y].avail = NONE;
+	
+			if (points[center_x - i][center_y].avail == EXIST)
+				points[center_x - i][center_y].avail = NONE;
+		}
+	
+		for (int i = min_p + 1; i <= center_x; i++) {
+			if (points[center_x][center_y + i].avail == EXIST)
+				points[center_x][center_y + i].avail = NONE;
+	
+			if (points[center_x][center_y - i].avail == EXIST)
+				points[center_x][center_y - i].avail = NONE;
+		}
 	}
-
-	for (int i = 3; i <= min_p; i++) {
-		// find right, left axis points
-		d[RIGHT] = ceil((points[center_x + i - 1][center_y].x - points[center_x + i - 2][center_y].x) * prop);
-		d[LEFT] = ceil((points[center_x - i + 2][center_y].x - points[center_x - i + 1][center_y].x) * prop);
-
-		// RIGHT
-		points[center_x + i][center_y] = adjustPoint(Point_t(points[center_x + i - 1][center_y].x + d[RIGHT], points[center_x + i - 1][center_y].y), i, 0);
-		
-		// LEFT
-		points[center_x - i][center_y] = adjustPoint(Point_t(points[center_x - i + 1][center_y].x - d[LEFT], points[center_x - i + 1][center_y].y), -i, 0);
-
-		if (points[center_x + i][center_y].avail == NONE || points[center_x - i][center_y].avail == NONE)
-			min_p = i - 1;
-	}
-
-	for (int i = min_p; i <= center_x; i++) {
-		if (points[center_x + i][center_y].avail == EXIST)
-			points[center_x + i][center_y].avail = NONE;
-
-		if (points[center_x - i][center_y].avail == EXIST)
-			points[center_x - i][center_y].avail = NONE;
-	}
-
-	for (int i = min_p; i <= center_x; i++) {
-		if (points[center_x][center_y + i].avail == EXIST)
-			points[center_x][center_y + i].avail = NONE;
-
-		if (points[center_x][center_y - i].avail == EXIST)
-			points[center_x][center_y - i].avail = NONE;
-	}
-
-
 
 	// radius
 	radius_p = min_p;
+	if (radius > 5)
+		radius_p = 5;
 }
 
 Point_t Image::adjustPoint(const Point_t &p, int diff_x, int diff_y, int flag) {
@@ -861,18 +903,18 @@ Point_t Image::findCenterPoint(const Point_t &p, int diff_x, int diff_y, int fla
 }
 
 Point_t Image::calcCenterOfMass(Point_t &p, int width, int height) {
-	double w = 0;
-	double x = 0;
-	double y = 0;
+	long long int w = 0;
+	long long int x = 0;
+	long long int y = 0;
 
 	uchar *data = (uchar *)image.data;
-	int idx = (p.y * image.rows + p.x);
+	int idx = p.y * image.cols + p.x;
 	for (int row_i = 0; row_i < height; row_i++) {
 		for (int col_j = 0; col_j < width; col_j++) {
 			if (data[idx] > threshold_val) {
 				w += data[idx];
-				x += data[idx] * col_j;
-				y += data[idx] * row_i;
+				x += data[idx] * (p.x + col_j);
+				y += data[idx] * (p.y + row_i);
 			}
 
 			idx++;
@@ -881,7 +923,7 @@ Point_t Image::calcCenterOfMass(Point_t &p, int width, int height) {
 		idx += (image.cols - width);
 	}
 
-	return Point_t(p.x + x/w, p.y + y/w, EXIST);
+	return Point_t(x/static_cast<double>(w), y/static_cast<double>(w), EXIST);
 }
 
 void Image::makeRefPointsInfo() {
@@ -891,46 +933,61 @@ void Image::makeRefPointsInfo() {
 	for (int x = 1; x <= center_x; x++) {
 		ref[center_x + x][center_y] = ref[center_x + (x - 1)][center_y];
 		ref[center_x + x][center_y].x += basic_distance;
+		ref[center_x + x][center_y].real_x += basic_distance;
 		ref[center_x + x][center_y].avail = NONE;
 
 		ref[center_x - x][center_y] = ref[center_x - (x - 1)][center_y];
 		ref[center_x - x][center_y].x -= basic_distance;
+		ref[center_x - x][center_y].real_x -= basic_distance;
 		ref[center_x - x][center_y].avail = NONE;
 	}
 
 	for (int y = 1; y <= center_y; y++) {
 		ref[center_x][center_y + y] = ref[center_x][center_y + (y - 1)];
 		ref[center_x][center_y + y].y += basic_distance;
+		ref[center_x][center_y + y].real_y += basic_distance;
 		ref[center_x][center_y + y].avail = NONE;
 
 		ref[center_x][center_y - y] = ref[center_x][center_y - (y - 1)];
 		ref[center_x][center_y - y].y -= basic_distance;
+		ref[center_x][center_y - y].real_y -= basic_distance;
 		ref[center_x][center_y - y].avail = NONE;
 	}
 
 	for (int y = 1; y <= center_y; y++) {
 		for (int x = 1; x <= center_x; x++) {
-			ref[center_x + x][center_y + y] = Point_t(ref[center_x + x][center_y].x, ref[center_x][center_y + y].y);
+			ref[center_x + x][center_y + y] = Point_t(ref[center_x + x][center_y].real_x, ref[center_x][center_y + y].real_y);
 			ref[center_x + x][center_y + y].avail = NONE;
 
-			ref[center_x + x][center_y - y] = Point_t(ref[center_x + x][center_y].x, ref[center_x][center_y - y].y);
+			ref[center_x + x][center_y - y] = Point_t(ref[center_x + x][center_y].real_x, ref[center_x][center_y - y].real_y);
 			ref[center_x + x][center_y - y].avail = NONE;
 
-			ref[center_x - x][center_y + y] = Point_t(ref[center_x - x][center_y].x, ref[center_x][center_y + y].y);
+			ref[center_x - x][center_y + y] = Point_t(ref[center_x - x][center_y].real_x, ref[center_x][center_y + y].real_y);
 			ref[center_x - x][center_y + y].avail = NONE;
 
-			ref[center_x - x][center_y - y] = Point_t(ref[center_x - x][center_y].x, ref[center_x][center_y - y].y);
+			ref[center_x - x][center_y - y] = Point_t(ref[center_x - x][center_y].real_x, ref[center_x][center_y - y].real_y);
 			ref[center_x - x][center_y - y].avail = NONE;
 		}
 	}
 }
 
 void Image::makeRefPointsInCircle() {
-	Point_t outer_p(points[center_x + radius_p][center_y].x + (basic_distance >> 1), points[center_x + radius_p][center_y].y + (basic_distance >> 1));
+	int d;
+	if (basic_distance & 0x01)
+		d = (basic_distance + 1) >> 1;
+	else
+		d = basic_distance >> 1;
+
+	Point_t outer_p(ref[center_x + radius_p][center_y].x + d, ref[center_x + radius_p][center_y].y + d);
 	radius = getPointDistance(center_p, outer_p);
 
 	ref[center_x][center_y].avail = EXIST;
 	for (int i = 1; i <= radius_p; i++) {
+		ref[center_x + i][center_y].avail = EXIST;
+		ref[center_x - i][center_y].avail = EXIST;
+		ref[center_x][center_y + i].avail = EXIST;
+		ref[center_x][center_y - i].avail = EXIST;
+
 		int p = sqrt(pow(static_cast<double>(radius) / basic_distance, 2) - pow((i + 0.5), 2)) - 0.5;
 		for (int j = 1; j <= p; j++) {
 			ref[center_x + j][center_y + i].avail = EXIST;
