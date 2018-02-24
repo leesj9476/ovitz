@@ -221,7 +221,6 @@ string Image::findAllPoints() {
 		}
 	}
 	circle(original, Point(center_p.x, center_p.y), radius, Scalar(0, 255, 0));
-	imshow("result", original);
 
 	/*
 	cout << "|     real point    |    ref point    | x-var | y-var |" << endl;

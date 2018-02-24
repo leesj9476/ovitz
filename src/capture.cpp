@@ -114,6 +114,7 @@ int Capture::shot() {
 		char pressed = waitKey(20);
 		if (pressed == 27) {
 			continue_analyze = false;
+			m.unlock();
 			break;
 		}
 		else if (pressed == 32) {
@@ -123,11 +124,14 @@ int Capture::shot() {
 
 		if (a_pressed) {
 			continue_analyze = false;
+			m.unlock();
 			break;
 		}
 
-		if (b_pressed)
+		if (b_pressed) {
+			m.unlock();
 			break;
+		}
 
 		image->gaussianFiltering();
 		image->makePixelCDF();
