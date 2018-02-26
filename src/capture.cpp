@@ -18,15 +18,12 @@ using namespace raspicam;
 using namespace std;
 
 extern bool continue_analyze;
-extern int num;
 
 #define A_PIN	5
 #define B_PIN	6
 
 bool a_pressed = false;
 bool b_pressed = false;
-
-mutex m;
 
 void aPress() {
 	a_pressed = true;
@@ -56,6 +53,7 @@ int Capture::shot() {
 	Image *image;
 	Mat captured_image;
 	Oled oled;
+	mutex m;
 
 	if (!oled.isValid())
 		return FAIL;
@@ -87,17 +85,8 @@ int Capture::shot() {
 	while (true) {
 		m.lock();
 
-		if (!cam.set(CV_CAP_PROP_EXPOSURE, exposure_time)) {
-			cerr << "exposure time error" << endl;
-			result = FAIL;
-			break;
-		}
-
-		if (!cam.set(CV_CAP_PROP_GAIN, gain)) {
-			cerr << "gain error" << endl;
-			result = FAIL;
-			break;
-		}
+		cam.set(CV_CAP_PROP_EXPOSURE, exposure_time);
+		cam.set(CV_CAP_PROP_GAIN, gain);
 
 		cam.grab();
 		cam.retrieve(captured_image);
@@ -117,17 +106,12 @@ int Capture::shot() {
 			m.unlock();
 			break;
 		}
-		else if (pressed == 32) {
-			imwrite("result/output" + to_string(num) += ".png", captured_image);
-			num++;
-		}
 
 		if (a_pressed) {
 			continue_analyze = false;
 			m.unlock();
 			break;
 		}
-
 		if (b_pressed) {
 			m.unlock();
 			break;

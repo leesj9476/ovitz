@@ -16,8 +16,6 @@ using namespace cv;
 
 extern double *lens_mat[5][5];
 
-int num = 0;
-
 Point_t::Point_t(double real_x_, double real_y_, int avail)
 	: real_x(real_x_), real_y(real_y_), avail(avail) {
 
@@ -221,17 +219,6 @@ string Image::findAllPoints() {
 		}
 	}
 	circle(original, Point(center_p.x, center_p.y), radius, Scalar(0, 255, 0));
-
-	/*
-	cout << "|     real point    |    ref point    | x-var | y-var |" << endl;
-	cout << " ----------------------------------------------------- " << endl;
-	for (int y = 0; y < point_row; y++) {
-		for (int x = 0; x < point_col; x++) {
-			if (points[x][y].avail == EXIST) {
-				cout << "|    " << points[x][y] << "    |   " << ref[x][y] << "   | " << setw(5) << (points[x][y].real_x - ref[x][y].real_x) << " | " << setw(5) << (points[x][y].real_y - ref[x][y].real_y) << " |" << endl;
-			}
-		}
-	}*/
 
 	int ref_num = 0;
 	for (int i = 0; i < point_row; i++) {
