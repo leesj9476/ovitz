@@ -3,10 +3,10 @@ CFLAGS=-g -Wall -Wpedantic -Wextra --std=c++11
 SRCS_DIR=src
 OBJS_DIR=obj
 
-CAM_DIR=cam
-
 OBJS=$(addprefix $(OBJS_DIR)/, main.o image.o capture.o oled.o util.o)
 DEST=ovitz
+
+WRAPPER_DEST=start
 
 OPENCV=`pkg-config opencv --cflags --libs`
 OPENCV_LIBS=$(OPENCV)
@@ -20,8 +20,16 @@ SSD1306_LIB=$(SSD1306_LIB_DIR)/$(SSD1306_LIB_FILENAME)
 
 WIRINGPI_LIBS=-lwiringPi
 
-$(DEST): dummy $(OBJS_DIR) $(CAM_DIR) $(OBJS)
+all: dummy $(DEST) $(WRAPPER_DEST)
+
+$(DEST): $(OBJS_DIR) $(OBJS)
 	$(CC) $(CFLAGS) $(OPENCV_LIBS) $(PICAMERA_LIBS) $(WIRINGPI_LIBS) $(OBJS) $(SSD1306_LIB_FILENAME) -o $(DEST)
+
+$(WRAPPER_DEST): $(OBJS_DIR)/start.o
+	$(CC) $(CFLAGS) $(WIRINGPI_LIBS) $(OBJS_DIR)/start.o -o $(WRAPPER_DEST)
+
+$(OBJS_DIR)/start.o:
+	$(CC) $(CFLAGS) $(WIRINGPI_LIBS) -c $(SRCS_DIR)/start.cpp -o $(OBJS_DIR)/start.o
 
 $(OBJS_DIR)/main.o:
 	$(CC) $(CFLAGS) -c $(SRCS_DIR)/main.cpp -o $(OBJS_DIR)/main.o
@@ -43,14 +51,12 @@ $(OBJS_DIR)/util.o:
 $(OBJS_DIR):
 	mkdir $(OBJS_DIR)
 
-$(CAM_DIR):
-	mkdir $(CAM_DIR)
-
 dummy:
 	make clean
 
 clean:
 	-rm -f $(DEST)
+	-rm -f $(WRAPPER_DEST)
 	-rm -f $(OBJS)
 	-rm -f $(SSD1306_LIB_FILENAME)
 	-rm -rf $(OBJS_DIR)
