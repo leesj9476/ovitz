@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 #include <string>
 #include <cmath>
 
@@ -13,6 +14,8 @@
 
 using namespace std;
 using namespace cv;
+
+extern bool option[MAX_OPTION_NUM];
 
 extern double *lens_mat[5][5];
 
@@ -49,8 +52,8 @@ ostream& operator<<(ostream &os, const Point_t &p) {
 	return os;
 }
 
-Image::Image(const string &filename_, int basic_distance_) 
-	: filename(filename_), basic_distance(basic_distance_) {
+Image::Image(const string &filename_, int basic_distance_, double focal_, double pixel_size_) 
+	: filename(filename_), basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
 	
 	image = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
 	original = imread(filename);
@@ -60,8 +63,8 @@ Image::Image(const string &filename_, int basic_distance_)
 	vertexes = NULL;
 }
 
-Image::Image(const Mat &image_, int basic_distance_) 
-	: basic_distance(basic_distance_) {
+Image::Image(const Mat &image_, int basic_distance_, double focal_, double pixel_size_) 
+	: basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
 
 	filename = "";
 
@@ -220,6 +223,9 @@ string Image::findAllPoints() {
 	}
 	circle(original, Point(center_p.x, center_p.y), radius, Scalar(0, 255, 0));
 
+	if (option[SHOW_WINDOW])
+		imshow("result", original);
+
 	int ref_num = 0;
 	for (int i = 0; i < point_row; i++) {
 		for (int j = 0; j < point_col; j++) {
@@ -230,10 +236,8 @@ string Image::findAllPoints() {
 	}
 
 	// TODO reallocate only when ref_num is changed.
-	// TODO hard-coded 512 -> get info from cam class
 	slope = new double[ref_num * 2];
-	double w = 1944 / 512 * (0.2); // ccd_pixel = (maximum height pixel = 1944) / (current height) * (real pixel distance = 1.4)
-	                               // focal = 7mm
+	double w = 1944 / image.rows * pixel_size / focal; // ccd_pixel = max_row(1944) / cur_row(image's row) * real_pixel_size
 	int slope_i = 0;
 	for (int y = center_y - radius_p; y <= center_y + radius_p; y++) {
 		for (int x = center_x - radius_p; x <= center_x + radius_p; x++) {
@@ -266,7 +270,12 @@ string Image::findAllPoints() {
 			result[i] *= (-1);
 		}
 
-		result_str = to_string(result[2]) + "\n" + to_string(result[3]) + "\n" + to_string(result[4]);
+		stringstream result_precision[3];
+		result_precision[0] << fixed << setprecision(3) << result[2];
+		result_precision[1] << fixed << setprecision(3) << result[3];
+		result_precision[2] << fixed << setprecision(3) << result[4];
+
+		result_str = "3: " + result_precision[0].str() + "\n4: " + result_precision[1].str() + "\n5: " + result_precision[2].str();
 	}
 
 	delete[] slope;

@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-g -Wall -Wpedantic -Wextra --std=c++11
+CFLAGS=-g -Wall -Wpedantic -Wextra --std=c++11 -lpthread
 SRCS_DIR=src
 OBJS_DIR=obj
 
@@ -7,6 +7,7 @@ OBJS=$(addprefix $(OBJS_DIR)/, main.o image.o capture.o oled.o util.o)
 DEST=ovitz
 
 WRAPPER_DEST=start
+WRAPPER_OBJS=$(addprefix $(OBJS_DIR)/, start.o oled.o)
 
 OPENCV=`pkg-config opencv --cflags --libs`
 OPENCV_LIBS=$(OPENCV)
@@ -25,11 +26,11 @@ all: dummy $(DEST) $(WRAPPER_DEST)
 $(DEST): $(OBJS_DIR) $(OBJS)
 	$(CC) $(CFLAGS) $(OPENCV_LIBS) $(PICAMERA_LIBS) $(WIRINGPI_LIBS) $(OBJS) $(SSD1306_LIB_FILENAME) -o $(DEST)
 
-$(WRAPPER_DEST): $(OBJS_DIR)/start.o
-	$(CC) $(CFLAGS) $(WIRINGPI_LIBS) $(OBJS_DIR)/start.o -o $(WRAPPER_DEST)
+$(WRAPPER_DEST): $(OBJS_DIR) $(WRAPPER_OBJS)
+	$(CC) $(CFLAGS) $(WIRINGPI_LIBS) $(WRAPPER_OBJS) $(SSD1306_LIB_FILENAME) -o $(WRAPPER_DEST)
 
 $(OBJS_DIR)/start.o:
-	$(CC) $(CFLAGS) $(WIRINGPI_LIBS) -c $(SRCS_DIR)/start.cpp -o $(OBJS_DIR)/start.o
+	$(CC) $(CFLAGS) $(SSD1306_INCLUDE) $(WIRINGPI_LIBS) -c $(SRCS_DIR)/start.cpp -o $(OBJS_DIR)/start.o
 
 $(OBJS_DIR)/main.o:
 	$(CC) $(CFLAGS) -c $(SRCS_DIR)/main.cpp -o $(OBJS_DIR)/main.o

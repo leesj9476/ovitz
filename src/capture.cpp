@@ -18,6 +18,7 @@ using namespace raspicam;
 using namespace std;
 
 extern bool continue_analyze;
+extern bool option[MAX_OPTION_NUM];
 
 #define A_PIN	5
 #define B_PIN	6
@@ -33,8 +34,8 @@ void bPress() {
 	b_pressed = true;
 }
 
-Capture::Capture(int basic_distance_)
-	: basic_distance(basic_distance_) {
+Capture::Capture(int pixel_max_, int pixel_min_, int basic_distance_, double focal_, double pixel_size_)
+	: pixel_max(pixel_max_), pixel_min(pixel_min_), basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
 
 	cam.set(CV_CAP_PROP_FRAME_WIDTH, 512);
 	cam.set(CV_CAP_PROP_FRAME_HEIGHT, 512);
@@ -55,20 +56,11 @@ int Capture::shot() {
 	Oled oled;
 	mutex m;
 
-	if (!oled.isValid())
+	if (!option[TERMINAL] && !oled.isValid())
 		return FAIL;
 
 	int exposure_time = 20;
 	int gain = 50;
-	
-	// average pixel min-max setting
-	int min_pixel = 15;
-	int max_pixel = 30;
-	if (min_pixel < 0)
-		min_pixel = 0;
-
-	if (max_pixel > 255)
-		max_pixel = 255;
 
 	wiringPiSetupGpio();
 	pinMode(A_PIN, INPUT);
@@ -81,7 +73,8 @@ int Capture::shot() {
 	b_pressed = false;
 
 	bool init = false;
-	int result = SUCCESS;
+	int succ = SUCCESS;
+	string result = "Loading...";
 	while (true) {
 		m.lock();
 
@@ -93,7 +86,7 @@ int Capture::shot() {
 
 		// maybe need cut black square
 		if (!init) {
-			image = new Image(captured_image, basic_distance);
+			image = new Image(captured_image, basic_distance, focal, pixel_size);
 			image->init();
 			init = true;
 		}
@@ -109,10 +102,12 @@ int Capture::shot() {
 
 		if (a_pressed) {
 			continue_analyze = false;
+			result = "Exiting...";
 			m.unlock();
 			break;
 		}
 		if (b_pressed) {
+			result = "Refreshing...";
 			m.unlock();
 			break;
 		}
@@ -121,12 +116,13 @@ int Capture::shot() {
 		image->makePixelCDF();
 		int cur_pixel_avg = image->getValCDF(0.5);
 
-		string result = "";
-		if (min_pixel <= cur_pixel_avg && cur_pixel_avg <= max_pixel) {
+		cout << exposure_time << " " << gain << endl;
+
+		if (pixel_min <= cur_pixel_avg && cur_pixel_avg <= pixel_max) {
 			result = image->findAllPoints();
 
 		}
-		else if (cur_pixel_avg > max_pixel) {
+		else if (cur_pixel_avg > pixel_max) {
 			if (exposure_time == 1 && gain == 0) {
 				result = image->findAllPoints();
 			}
@@ -146,7 +142,7 @@ int Capture::shot() {
 				}
 			}
 		}
-		else if (cur_pixel_avg < min_pixel) {
+		else if (cur_pixel_avg < pixel_min) {
 			if (exposure_time == 100 && gain == 100) {
 				result = image->findAllPoints();
 			}
@@ -154,8 +150,12 @@ int Capture::shot() {
 				if (exposure_time != 100)
 					exposure_time = ceil(exposure_time * 1.1);
 	
-				if (gain != 100)
-					gain = ceil(gain * 1.2);
+				if (gain != 100) {
+					if (gain == 0)
+						gain = 1;
+					else
+						gain = ceil(gain * 1.2);
+				}
 			}
 		}
 
@@ -165,12 +165,20 @@ int Capture::shot() {
 		if (gain > 100)
 			gain = 100;
 
-		oled.showString(result);
+		if (option[TERMINAL] && result != "Loading...")
+			cout << result << endl;
+		else
+			oled.showString(result);
+
+		result = "Loading...";
 		m.unlock();
 	}
 
-	oled.clear();
+	if (option[TERMINAL])
+		cout << result << endl;
+	else
+		oled.showString(result);
 
 	delete image;
-	return result;
+	return succ;
 }

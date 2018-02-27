@@ -2,14 +2,10 @@
 #define __CAPTURE_H__
 
 #include <raspicam/raspicam_cv.h>
-#include <string>
-#include <chrono>
-
-void clear(int);
 
 class Capture {
 public:
-	Capture(int);
+	Capture(int, int, int, double, double);
 	~Capture();
 
 	bool isValid();
@@ -18,7 +14,13 @@ public:
 private:
 	raspicam::RaspiCam_Cv cam;
 
+	int pixel_max;
+	int pixel_min;
+
 	int basic_distance;
+
+	double focal;
+	double pixel_size;
 };
 
 #endif

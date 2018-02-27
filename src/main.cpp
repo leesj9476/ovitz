@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <cmath>
+#include <getopt.h>
 
 #include <opencv2/highgui/highgui.hpp>
 
@@ -14,49 +16,87 @@ using namespace std;
 using namespace cv;
 
 bool continue_analyze = true;
-bool option[OPTION_NUM];
+bool option[MAX_OPTION_NUM];
 
 double *lens_mat[5][5];
+
+struct option long_options[] = {
+	{ "filename", required_argument, 0, 'i' },
+	{ "lens_distance", required_argument, 0, 'd' },
+	{ "real_pixel_size", required_argument, 0, 0 },
+	{ "pixel_max", required_argument, 0, 0 },
+	{ "pixel_min", required_argument, 0, 0 },
+	{ "focal", required_argument, 0, 'f' },
+	{ "window", no_argument, 0, 'w' },
+	{ "print_terminal", no_argument, 0, 't' },
+	{ 0, 0, 0, 0 }
+};
 
 int main (int argc, char *argv[]) {
 	int opt;
 	string image_filename;
+	int basic_distance = 22;
+	double focal = 7;
+	double pixel_size = 1.4;
 
-	int basic_distance;
-	bool opt_valid = true;
-
-	//namedWindow("original");
-	//namedWindow("result");
+	int pixel_max = 30;
+	int pixel_min = 15;
 
 	// TODO add width, height option
-	while ((opt = getopt(argc, argv, "f:d:")) != -1) {
+	int opt_idx = 0;
+	while ((opt = getopt_long(argc, argv, "i:d:f:wt", long_options, &opt_idx)) != -1) {
 		switch (opt) {
-		case 'f':
-			if (option[IMAGE_FILE]) {
-				cerr << "<error> 'f' option is duplicated" << endl;
+		case 0: {
+			if (long_options[opt_idx].flag != 0)
+				break;
+
+			string opt_name(long_options[opt_idx].name);
+			if (opt_name == "real_pixel_size") {
+				option[PIXEL_SIZE] = true;
+				pixel_size = stod(string(optarg));
+				break;
+			}
+			else if (opt_name == "pixel_max") {
+				option[PIXEL_MAX] = true;
+				pixel_max = atoi(optarg);
+				break;
+			}
+			else if (opt_name == "pixel_min") {
+				option[PIXEL_MIN] = true;
+				pixel_min = atoi(optarg);
+				break;		
+			}
+			else {
+				cerr << "<error> unknown option" << endl;
 				return ARGUMENT_ERROR;
 			}
 
+			break;
+		}
+
+		case 'i':
 			option[IMAGE_FILE] = true;
 			image_filename = string(optarg);
-			
 			break;
+
 		case 'd':
-			if (option[DISTANCE]) {
-				cerr << "<error> 'd' options is duplicated" << endl;
-				return ARGUMENT_ERROR;
-			}
-
 			option[DISTANCE] = true;
-			opt_valid = isInt(optarg);
-			if (!opt_valid) {
-				cerr << "<error> 'd' option's argjment is not int" <<endl;
-				return ARGUMENT_ERROR;
-			}
-
 			basic_distance = atoi(optarg);
-			
 			break;
+
+		case 'f':
+			option[FOCAL] = true;
+			focal = stod(string(optarg));
+			break;
+
+		case 'w':
+			option[SHOW_WINDOW] = true;
+			break;
+
+		case 't':
+			option[TERMINAL] = true;
+			break;
+
 		default:
 			cerr << "<error> argument error" << endl;
 			return ARGUMENT_ERROR;
@@ -64,6 +104,9 @@ int main (int argc, char *argv[]) {
 	}
 
 	makeLensMatrix();
+
+	if (option[SHOW_WINDOW])
+		namedWindow("result");
 
 	//////////////////////////////////
 	//          image mode          //
@@ -74,7 +117,7 @@ int main (int argc, char *argv[]) {
 			return ARGUMENT_ERROR;
 		}
 
-		Image image(image_filename, basic_distance);
+		Image image(image_filename, basic_distance, focal, pixel_size);
 		image.init();
 		cout << image.findAllPoints() << endl;
 	}
@@ -82,13 +125,8 @@ int main (int argc, char *argv[]) {
 	//         cam mode         //
 	//////////////////////////////
 	else {
-		if (!option[DISTANCE]) {
-			cerr << "<error> cam mode - need distance argument" << endl;
-			return ARGUMENT_ERROR;
-		}
-
 		while (continue_analyze) {
-			Capture cam(basic_distance);
+			Capture cam(pixel_max, pixel_min, basic_distance, focal, pixel_size);
 			if (!cam.isValid()) {
 				cerr << "<error> camera open failed" << endl;
 				return CAM_ERROR;
