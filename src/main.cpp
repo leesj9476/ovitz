@@ -3,11 +3,14 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <csignal>
 #include <getopt.h>
 
+#include <raspicam/raspicam_cv.h>
 #include <opencv2/highgui/highgui.hpp>
 
 #include "capture.h"
+#include "oled.h"
 #include "image.h"
 #include "types.h"
 #include "util.h"
@@ -31,6 +34,8 @@ struct option long_options[] = {
 	{ "print_terminal", no_argument, 0, 't' },
 	{ 0, 0, 0, 0 }
 };
+
+void int_handler(int);
 
 int main (int argc, char *argv[]) {
 	int opt;
@@ -124,6 +129,9 @@ int main (int argc, char *argv[]) {
 	else {
 		while (continue_analyze) {
 			Capture cam(pixel_max, pixel_min, basic_distance, focal, pixel_size);
+
+			signal(SIGINT, int_handler);
+
 			if (!cam.isValid()) {
 				cerr << "<error> camera open failed" << endl;
 				return CAM_ERROR;
@@ -137,4 +145,14 @@ int main (int argc, char *argv[]) {
 	}
 
 	return 0;
+}
+
+void int_handler(int sig) {
+	raspicam::RaspiCam_Cv cam;
+	cam.release();
+
+	Oled oled;
+	oled.clear();
+
+	exit(0);
 }

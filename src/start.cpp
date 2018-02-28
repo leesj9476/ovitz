@@ -7,7 +7,7 @@
 #include <string>
 #include <thread>
 #include <chrono>
-#include <signal.h>
+#include <csignal>
 
 #include "oled.h"
 
@@ -29,11 +29,15 @@ void bPress() {
 
 bool isUInt(const char *);
 bool isUFloat(const char *);
-string parseSettingFile(Oled &);
+
+string parseSettingFile();
+void int_handler(int sig);
 
 bool window_avail = false;
 
 int main () {
+	signal(SIGINT, int_handler);
+	
 	ifstream dup_lock("./lock/dup_lock");
 	if (dup_lock.is_open())
 		return -1;
@@ -61,7 +65,7 @@ int main () {
 	wiringPiISR(A_PIN, INT_EDGE_FALLING, aPress);
 	wiringPiISR(B_PIN, INT_EDGE_FALLING, bPress);
 
-	string cmd = parseSettingFile(oled);
+	string cmd = parseSettingFile();
 	while (true) {
 		char input;
 		if (!menu_print) {
@@ -129,10 +133,11 @@ bool isUFloat(const char *str) {
 	return true;
 }
 
-string parseSettingFile(Oled &oled) {
+string parseSettingFile() {
 	string cmd = "./ovitz";
 
 	ifstream f("./conf/setting.conf");
+	Oled oled;
 	if (!f.is_open()) {
 		oled.showString("Setting file is not exist!!");
 		this_thread::sleep_for(chrono::seconds(2));
@@ -179,4 +184,11 @@ string parseSettingFile(Oled &oled) {
 
 	f.close();
 	return cmd;
+}
+
+void int_handler(int sig) {
+	Oled oled;
+	oled.clear();
+	system("rm ./lock/dup_lock");
+	exit(0);
 }

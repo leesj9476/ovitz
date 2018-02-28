@@ -119,12 +119,6 @@ int Capture::shot() {
 			}
 		}
 
-		char key = waitKey(20);
-		if (key == 23) {
-			continue_analyze = false;
-			break;
-		}
-
 		image->gaussianFiltering();
 		image->makePixelCDF();
 		int cur_pixel_avg = image->getValCDF(0.5);

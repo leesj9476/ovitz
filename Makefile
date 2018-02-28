@@ -35,7 +35,7 @@ $(OBJS_DIR)/start.o:
 	$(CC) $(CFLAGS) $(SSD1306_INCLUDE) $(WIRINGPI_LIBS) -c $(SRCS_DIR)/start.cpp -o $(OBJS_DIR)/start.o
 
 $(OBJS_DIR)/main.o:
-	$(CC) $(CFLAGS) -c $(SRCS_DIR)/main.cpp -o $(OBJS_DIR)/main.o
+	$(CC) $(CFLAGS) $(SSD1306_INCLUDE) $(PICAMERA_LIBS) -c $(SRCS_DIR)/main.cpp -o $(OBJS_DIR)/main.o
 
 $(OBJS_DIR)/image.o:
 	$(CC) $(CFLAGS) $(OPENCV_LIBS) -c $(SRCS_DIR)/image.cpp -o $(OBJS_DIR)/image.o
