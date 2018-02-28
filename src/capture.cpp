@@ -93,22 +93,35 @@ int Capture::shot() {
 		else 
 			image->changeImage(captured_image);
 
-		char pressed = waitKey(20);
-		if (pressed == 27) {
-			continue_analyze = false;
-			m.unlock();
-			break;
+		if (!option[TERMINAL]) {
+			if (a_pressed) {
+				continue_analyze = false;
+				result = "Exiting...";
+				m.unlock();
+				break;
+			}
+
+			if (b_pressed) {
+				result = "Refreshing...";
+				m.unlock();
+				break;
+			}
+		}
+		else {
+			char input;
+			input = getchar();
+			if (input == 'c') {
+				continue_analyze = false;
+				break;
+			}
+			else if (input == 'r') {
+				break;
+			}
 		}
 
-		if (a_pressed) {
+		char key = waitKey(20);
+		if (key == 23) {
 			continue_analyze = false;
-			result = "Exiting...";
-			m.unlock();
-			break;
-		}
-		if (b_pressed) {
-			result = "Refreshing...";
-			m.unlock();
 			break;
 		}
 
@@ -116,11 +129,8 @@ int Capture::shot() {
 		image->makePixelCDF();
 		int cur_pixel_avg = image->getValCDF(0.5);
 
-		cout << exposure_time << " " << gain << endl;
-
 		if (pixel_min <= cur_pixel_avg && cur_pixel_avg <= pixel_max) {
 			result = image->findAllPoints();
-
 		}
 		else if (cur_pixel_avg > pixel_max) {
 			if (exposure_time == 1 && gain == 0) {

@@ -3,6 +3,8 @@ CFLAGS=-g -Wall -Wpedantic -Wextra --std=c++11 -lpthread
 SRCS_DIR=src
 OBJS_DIR=obj
 
+MK_DIRS=$(OBJS_DIR) lock
+
 OBJS=$(addprefix $(OBJS_DIR)/, main.o image.o capture.o oled.o util.o)
 DEST=ovitz
 
@@ -21,12 +23,12 @@ SSD1306_LIB=$(SSD1306_LIB_DIR)/$(SSD1306_LIB_FILENAME)
 
 WIRINGPI_LIBS=-lwiringPi
 
-all: dummy $(DEST) $(WRAPPER_DEST)
+all: init $(MK_DIRS) $(DEST) $(WRAPPER_DEST)
 
-$(DEST): $(OBJS_DIR) $(OBJS)
+$(DEST): $(OBJS)
 	$(CC) $(CFLAGS) $(OPENCV_LIBS) $(PICAMERA_LIBS) $(WIRINGPI_LIBS) $(OBJS) $(SSD1306_LIB_FILENAME) -o $(DEST)
 
-$(WRAPPER_DEST): $(OBJS_DIR) $(WRAPPER_OBJS)
+$(WRAPPER_DEST): $(WRAPPER_OBJS)
 	$(CC) $(CFLAGS) $(WIRINGPI_LIBS) $(WRAPPER_OBJS) $(SSD1306_LIB_FILENAME) -o $(WRAPPER_DEST)
 
 $(OBJS_DIR)/start.o:
@@ -49,11 +51,12 @@ $(OBJS_DIR)/oled.o:
 $(OBJS_DIR)/util.o:
 	$(CC) -c $(SRCS_DIR)/util.cpp -o $(OBJS_DIR)/util.o
 
-$(OBJS_DIR):
-	mkdir $(OBJS_DIR)
+$(MK_DIRS):
+	mkdir $(MK_DIRS)
 
-dummy:
+init:
 	make clean
+	cp ./conf/ovitz.sh ~/
 
 clean:
 	-rm -f $(DEST)
@@ -62,3 +65,4 @@ clean:
 	-rm -f $(SSD1306_LIB_FILENAME)
 	-rm -rf $(OBJS_DIR)
 	-rm -rf $(CAM_DIR)
+	-rm -rf $(MK_DIRS)

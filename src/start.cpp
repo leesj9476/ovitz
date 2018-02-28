@@ -1,5 +1,4 @@
 #include <wiringPi.h>
-#include <opencv2/highgui/highgui.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -8,6 +7,7 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <signal.h>
 
 #include "oled.h"
 
@@ -31,10 +31,28 @@ bool isUInt(const char *);
 bool isUFloat(const char *);
 string parseSettingFile(Oled &);
 
+bool window_avail = false;
+
 int main () {
+	ifstream dup_lock("./lock/dup_lock");
+	if (dup_lock.is_open())
+		return -1;
+	else
+		system("touch ./lock/dup_lock");
+	
+	dup_lock.close();
+
 	Oled oled;
 	string menu = "A: start\nB: end";
 	bool menu_print = false;
+
+	ifstream window_lock("./lock/window_avail");
+	if (window_lock.is_open())
+		window_avail = true;
+	else
+		system("touch ./lock/window_avail");
+
+	window_lock.close();
 
 	wiringPiSetupGpio();
 	pinMode(A_PIN, INPUT);
@@ -44,14 +62,20 @@ int main () {
 	wiringPiISR(B_PIN, INT_EDGE_FALLING, bPress);
 
 	string cmd = parseSettingFile(oled);
-	cout << cmd << endl;
 	while (true) {
+		char input;
 		if (!menu_print) {
-			oled.showString(menu);
-			menu_print = true;
+			if (cmd.find("-t") == string::npos) {
+				oled.showString(menu);
+				menu_print = true;
+			}
+			else {
+				cout << "a: start" << endl << "b: end" << endl << "input: ";
+				cin >> input;
+			}
 		}
 
-		if (a_pressed) {
+		if (a_pressed || input == 'a') {
 			system(cmd.c_str());
 
 			if (b_pressed) {
@@ -62,11 +86,13 @@ int main () {
 			menu_print = false;
 		}
 
-		if (b_pressed) {
+		if (b_pressed || input == 'b') {
 			break;
 		}
 	}
 	oled.clear();
+
+	system("rm ./lock/dup_lock");
 
 	return 0;
 }
@@ -143,7 +169,7 @@ string parseSettingFile(Oled &oled) {
 		else if (key == "focal" && isUFloat(val_str)) {
 			cmd += " -f " + to_string(stof(val));
 		}
-		else if (key == "window" && val.find("true") != string::npos) {
+		else if (key == "window" && val.find("true") != string::npos && window_avail) {
 			cmd += " -w";
 		}
 		else if (key == "terminal" && val.find("true") != string::npos) {
@@ -152,6 +178,5 @@ string parseSettingFile(Oled &oled) {
 	}
 
 	f.close();
-
 	return cmd;
 }

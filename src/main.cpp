@@ -105,9 +105,6 @@ int main (int argc, char *argv[]) {
 
 	makeLensMatrix();
 
-	if (option[SHOW_WINDOW])
-		namedWindow("result");
-
 	//////////////////////////////////
 	//          image mode          //
 	//////////////////////////////////

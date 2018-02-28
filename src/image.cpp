@@ -223,8 +223,10 @@ string Image::findAllPoints() {
 	}
 	circle(original, Point(center_p.x, center_p.y), radius, Scalar(0, 255, 0));
 
-	if (option[SHOW_WINDOW])
+	if (option[SHOW_WINDOW]) {
 		imshow("result", original);
+		waitKey(20);
+	}
 
 	int ref_num = 0;
 	for (int i = 0; i < point_row; i++) {
