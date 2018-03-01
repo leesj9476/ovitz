@@ -7,6 +7,7 @@
 #include <cmath>
 #include <thread>
 #include <mutex>
+#include <chrono>
 
 #include "capture.h"
 #include "image.h"
@@ -111,10 +112,12 @@ int Capture::shot() {
 			char input;
 			input = getchar();
 			if (input == 'c') {
+				result = "Exiting...";
 				continue_analyze = false;
 				break;
 			}
 			else if (input == 'r') {
+				result = "Refreshing...";
 				break;
 			}
 		}
@@ -169,8 +172,12 @@ int Capture::shot() {
 		if (gain > 100)
 			gain = 100;
 
-		if (option[TERMINAL] && result != "Loading...")
-			cout << result << endl;
+		if (option[TERMINAL]) {
+			if (result != "Loading...")
+				cout << "========" << endl << result << endl << "========" << endl;
+			else
+				cout << "exposure time: " << exposure_time << " gain: " << gain << endl;
+		}
 		else
 			oled.showString(result);
 
@@ -182,6 +189,8 @@ int Capture::shot() {
 		cout << result << endl;
 	else
 		oled.showString(result);
+
+	this_thread::sleep_for(chrono::seconds(1));
 
 	delete image;
 	return succ;

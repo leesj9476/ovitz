@@ -3,8 +3,6 @@ CFLAGS=-g -Wall -Wpedantic -Wextra --std=c++11 -lpthread
 SRCS_DIR=src
 OBJS_DIR=obj
 
-MK_DIRS=$(OBJS_DIR) lock
-
 OBJS=$(addprefix $(OBJS_DIR)/, main.o image.o capture.o oled.o util.o)
 DEST=ovitz
 
@@ -23,7 +21,15 @@ SSD1306_LIB=$(SSD1306_LIB_DIR)/$(SSD1306_LIB_FILENAME)
 
 WIRINGPI_LIBS=-lwiringPi
 
-all: init $(MK_DIRS) $(DEST) $(WRAPPER_DEST)
+CONF_DIR=conf
+SCRIPTS=init.sh ovitz.sh
+SCRIPTS_DIR=$(HOME)/rc.scripts
+
+LOCK_DIR=lock
+
+ALL_DIRS=$(OBJS_DIR) $(SCRIPTS_DIR) $(LOCK_DIR)
+
+all: init $(DEST) $(WRAPPER_DEST)
 
 $(DEST): $(OBJS)
 	$(CC) $(CFLAGS) $(OPENCV_LIBS) $(PICAMERA_LIBS) $(WIRINGPI_LIBS) $(OBJS) $(SSD1306_LIB_FILENAME) -o $(DEST)
@@ -51,19 +57,15 @@ $(OBJS_DIR)/oled.o:
 $(OBJS_DIR)/util.o:
 	$(CC) -c $(SRCS_DIR)/util.cpp -o $(OBJS_DIR)/util.o
 
-$(MK_DIRS):
-	mkdir $(MK_DIRS)
-
 init:
 	make clean
-	cp ./conf/ovitz.sh /home/pi
-	cp ./conf/init.sh /home/pi
+	mkdir $(ALL_DIRS)
+	touch $(LOCK_DIR)/window_avail
+	sudo chmod 755 $(CONF_DIR)/init.sh $(CONF_DIR)/ovitz.sh
+	cp $(CONF_DIR)/init.sh $(CONF_DIR)/ovitz.sh $(SCRIPTS_DIR)
 
 clean:
 	-rm -f $(DEST)
 	-rm -f $(WRAPPER_DEST)
-	-rm -f $(OBJS)
 	-rm -f $(SSD1306_LIB_FILENAME)
-	-rm -rf $(OBJS_DIR)
-	-rm -rf $(CAM_DIR)
-	-rm -rf $(MK_DIRS)
+	-rm -rf $(ALL_DIRS)

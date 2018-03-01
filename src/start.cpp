@@ -74,7 +74,7 @@ int main () {
 				menu_print = true;
 			}
 			else {
-				cout << "a: start" << endl << "b: end" << endl << "input: ";
+				cout << "a: start" << endl << "b: end" << endl;
 				cin >> input;
 			}
 		}
