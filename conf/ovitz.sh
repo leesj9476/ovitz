@@ -1,12 +1,12 @@
 # /bin/sh
 
-file="./lock/window_avail"
+window_file="./lock/window_avail"
 
 cd /home/pi/workspace/ovitz
 ./start
 
-if [ ! -e "$file" ]; then
-	touch "$file"
+if [ ! -e "$window_file" ]; then
+	touch "$window_file"
 fi
 
 cd /home/pi

@@ -56,7 +56,8 @@ $(MK_DIRS):
 
 init:
 	make clean
-	cp ./conf/ovitz.sh ~/
+	cp ./conf/ovitz.sh /home/pi
+	cp ./conf/init.sh /home/pi
 
 clean:
 	-rm -f $(DEST)
