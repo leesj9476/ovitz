@@ -217,7 +217,7 @@ string Image::findAllPoints() {
 				line(original, Point(ref[i][j].x - d, ref[i][j].y + d), Point(ref[i][j].x - d, ref[i][j].y - d), Scalar(255, 0, 0));
 
 				if (points[i][j].avail == EXIST)
-					original.at<Vec3b>(points[i][j].y, points[i][j].x) = { 0, 0, 255 };
+					original.at<Vec3b>(points[i][j].y, points[i][j].x) = { 255, 255, 255 };
 			}
 		}
 	}
@@ -238,11 +238,13 @@ string Image::findAllPoints() {
 	}
 
 	// TODO reallocate only when ref_num is changed.
+	
+	int radius_calc = radius_p > 5 ? 5 : radius_p;
 	slope = new double[ref_num * 2];
 	double w = 1944 / image.rows * pixel_size / focal; // ccd_pixel = max_row(1944) / cur_row(image's row) * real_pixel_size
 	int slope_i = 0;
-	for (int y = center_y - radius_p; y <= center_y + radius_p; y++) {
-		for (int x = center_x - radius_p; x <= center_x + radius_p; x++) {
+	for (int y = center_y - radius_calc; y <= center_y + radius_calc; y++) {
+		for (int x = center_x - radius_calc; x <= center_x + radius_calc; x++) {
 			if (ref[x][y].avail == EXIST) {
 				// slope x
 				slope[slope_i] = points[x][y].real_x - ref[x][y].real_x;
@@ -260,25 +262,24 @@ string Image::findAllPoints() {
 	}
 	
 	string result_str = "";
-	if (radius_p <= 5) {
-		double result[5] = { 0,  };
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < ref_num * 2; j++) {
-				result[i] += lens_mat[radius_p - 1][i][j] * slope[j];
-			}
+	int mat_num = radius_calc - 1;
+	double result[5] = { 0,  };
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < ref_num * 2; j++) {
+			result[i] += lens_mat[mat_num][i][j] * slope[j];
 		}
-	
-		for (int i = 0; i < 5; i++) {
-			result[i] *= (-1);
-		}
-
-		stringstream result_precision[3];
-		result_precision[0] << fixed << setprecision(3) << result[2];
-		result_precision[1] << fixed << setprecision(3) << result[3];
-		result_precision[2] << fixed << setprecision(3) << result[4];
-
-		result_str = "3: " + result_precision[0].str() + "\n4: " + result_precision[1].str() + "\n5: " + result_precision[2].str();
 	}
+	
+	for (int i = 0; i < 5; i++) {
+		result[i] *= (-1);
+	}
+
+	stringstream result_precision[3];
+	result_precision[0] << fixed << setprecision(3) << result[2];
+	result_precision[1] << fixed << setprecision(3) << result[3];
+	result_precision[2] << fixed << setprecision(3) << result[4];
+
+	result_str = "3: " + result_precision[0].str() + "\n4: " + result_precision[1].str() + "\n5: " + result_precision[2].str();
 
 	delete[] slope;
 	return result_str;
@@ -492,8 +493,6 @@ void Image::findAllAxisPoints() {
 
 	// radius
 	radius_p = min_p;
-	if (radius > 5)
-		radius_p = 5;
 }
 
 Point_t Image::adjustPoint(const Point_t &p, int diff_x, int diff_y, int flag) {
