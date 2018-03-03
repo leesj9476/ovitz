@@ -159,11 +159,11 @@ string parseSettingFile() {
 		val = line.substr(pos + 1);
 		const char *val_str = val.c_str();
 
-		if (key == "basic_distance" && isUInt(val_str)) {
-			cmd += " -d " + to_string(atoi(val_str));
+		if (key == "basic_distance" && isUFloat(val_str)) {
+			cmd += " -d " + to_string(stod(val));
 		}
 		else if (key == "real_pixel_size" && isUFloat(val_str)) {
-			cmd += " --real_pixel_size " + to_string(stof(val));
+			cmd += " --real_pixel_size " + to_string(stod(val));
 		}
 		else if (key == "pixel_min" && isUInt(val_str)) {
 			cmd += " --pixel_min " + to_string(atoi(val_str));
@@ -172,7 +172,7 @@ string parseSettingFile() {
 			cmd += " --pixel_max " + to_string(atoi(val_str));
 		}
 		else if (key == "focal" && isUFloat(val_str)) {
-			cmd += " -f " + to_string(stof(val));
+			cmd += " -f " + to_string(stod(val));
 		}
 		else if (key == "window" && val.find("true") != string::npos && window_avail) {
 			cmd += " -w";

@@ -52,24 +52,28 @@ ostream& operator<<(ostream &os, const Point_t &p) {
 	return os;
 }
 
-Image::Image(const string &filename_, int basic_distance_, double focal_, double pixel_size_) 
-	: filename(filename_), basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
+Image::Image(const string &filename_, double basic_distance_, double focal_, double pixel_size_) 
+	: filename(filename_), real_basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
 	
 	image = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
 	original = imread(filename);
+
+	basic_distance = static_cast<int>(real_basic_distance);
 
 	points = NULL;
 	ref = NULL;
 	vertexes = NULL;
 }
 
-Image::Image(const Mat &image_, int basic_distance_, double focal_, double pixel_size_) 
-	: basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
+Image::Image(const Mat &image_, double basic_distance_, double focal_, double pixel_size_) 
+	: real_basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
 
 	filename = "";
 
 	image_.copyTo(original);
 	convertRGBtoGRAY(original);
+
+	basic_distance = static_cast<int>(real_basic_distance);
 
 	points = NULL;
 	ref = NULL;
@@ -238,7 +242,6 @@ string Image::findAllPoints() {
 	}
 
 	// TODO reallocate only when ref_num is changed.
-	
 	int radius_calc = radius_p > 5 ? 5 : radius_p;
 	slope = new double[ref_num * 2];
 	double w = 1944 / image.rows * pixel_size / focal; // ccd_pixel = max_row(1944) / cur_row(image's row) * real_pixel_size
@@ -928,25 +931,25 @@ void Image::makeRefPointsInfo() {
 
 	for (int x = 1; x <= center_x; x++) {
 		ref[center_x + x][center_y] = ref[center_x + (x - 1)][center_y];
-		ref[center_x + x][center_y].x += basic_distance;
-		ref[center_x + x][center_y].real_x += basic_distance;
+		ref[center_x + x][center_y].x += real_basic_distance;
+		ref[center_x + x][center_y].real_x += real_basic_distance;
 		ref[center_x + x][center_y].avail = NONE;
 
 		ref[center_x - x][center_y] = ref[center_x - (x - 1)][center_y];
-		ref[center_x - x][center_y].x -= basic_distance;
-		ref[center_x - x][center_y].real_x -= basic_distance;
+		ref[center_x - x][center_y].x -= real_basic_distance;
+		ref[center_x - x][center_y].real_x -= real_basic_distance;
 		ref[center_x - x][center_y].avail = NONE;
 	}
 
 	for (int y = 1; y <= center_y; y++) {
 		ref[center_x][center_y + y] = ref[center_x][center_y + (y - 1)];
-		ref[center_x][center_y + y].y += basic_distance;
-		ref[center_x][center_y + y].real_y += basic_distance;
+		ref[center_x][center_y + y].y += real_basic_distance;
+		ref[center_x][center_y + y].real_y += real_basic_distance;
 		ref[center_x][center_y + y].avail = NONE;
 
 		ref[center_x][center_y - y] = ref[center_x][center_y - (y - 1)];
-		ref[center_x][center_y - y].y -= basic_distance;
-		ref[center_x][center_y - y].real_y -= basic_distance;
+		ref[center_x][center_y - y].y -= real_basic_distance;
+		ref[center_x][center_y - y].real_y -= real_basic_distance;
 		ref[center_x][center_y - y].avail = NONE;
 	}
 

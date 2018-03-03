@@ -40,7 +40,7 @@ void int_handler(int);
 int main (int argc, char *argv[]) {
 	int opt;
 	string image_filename;
-	int basic_distance = 22;
+	double basic_distance = 22;
 	double focal = 7;
 	double pixel_size = 1.4;
 
@@ -86,7 +86,7 @@ int main (int argc, char *argv[]) {
 
 		case 'd':
 			option[DISTANCE] = true;
-			basic_distance = atoi(optarg);
+			basic_distance = stod(string(optarg));
 			break;
 
 		case 'f':
