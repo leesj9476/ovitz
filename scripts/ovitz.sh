@@ -1,4 +1,4 @@
-# /bin/sh
+#! /bin/sh
 
 window_file="./lock/window_avail"
 
