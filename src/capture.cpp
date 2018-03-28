@@ -182,11 +182,19 @@ int Capture::shot() {
 		if (gain > 100)
 			gain = 100;
 
-		if (pixel_val_arrow > 0) {
-			result += "";
-		}
-		else if (pixel_val_arrow < 0) {
-			result += "";
+		if (pixel_val_arrow != 0) {
+			result += "\n" + to_string(cur_pixel_avg);
+			if (cur_pixel_avg < 10)
+				result += "  ";
+			else if (cur_pixel_avg < 100)
+				result += " ";
+
+			if (pixel_val_arrow > 0) {
+				result += " H";
+			}
+			else if (pixel_val_arrow < 0) {
+				result += " L";
+			}
 		}
 
 		if (option[TERMINAL]) {
