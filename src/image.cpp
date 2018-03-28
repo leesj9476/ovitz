@@ -52,8 +52,10 @@ ostream& operator<<(ostream &os, const Point_t &p) {
 	return os;
 }
 
-Image::Image(const string &filename_, double basic_distance_, double focal_, double pixel_size_) 
-	: filename(filename_), real_basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
+Image::Image(const string &filename_, double basic_distance_, double focal_,
+									  double pixel_size_, double threshold_p_) 
+	: filename(filename_), real_basic_distance(basic_distance_), focal(focal_),
+	  pixel_size(pixel_size_), threshold_p(threshold_p_) {
 	
 	image = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
 	original = imread(filename);
@@ -62,11 +64,13 @@ Image::Image(const string &filename_, double basic_distance_, double focal_, dou
 
 	points = NULL;
 	ref = NULL;
-	vertexes = NULL;
+	vertex = NULL;
 }
 
-Image::Image(const Mat &image_, double basic_distance_, double focal_, double pixel_size_) 
-	: real_basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
+Image::Image(const Mat &image_, double basic_distance_, double focal_,
+								double pixel_size_, double threshold_p_) 
+	: real_basic_distance(basic_distance_), focal(focal_),
+	  pixel_size(pixel_size_), threshold_p(threshold_p_) {
 
 	filename = "";
 
@@ -77,17 +81,17 @@ Image::Image(const Mat &image_, double basic_distance_, double focal_, double pi
 
 	points = NULL;
 	ref = NULL;
-	vertexes = NULL;
+	vertex = NULL;
 }
 
 Image::~Image() {
 	for (int i = 0; i < point_row; i++) {
 		delete[] points[i];
-		delete[] vertexes[i];
+		delete[] vertex[i];
 	}
 
 	delete[] points;
-	delete[] vertexes;
+	delete[] vertex;
 }
 
 void Image::init(){
@@ -120,13 +124,13 @@ void Image::init(){
 	delete[] ref;
 	}
 
-	if (vertexes) {
+	if (vertex) {
 		for (int i = 0; i < point_row; i++) {
-			if (vertexes[i])
-				delete[] vertexes[i];
+			if (vertex[i])
+				delete[] vertex[i];
 		}
 
-		delete[] vertexes;
+		delete[] vertex;
 	}
 
 	points = new Point_t*[point_row];
@@ -137,9 +141,9 @@ void Image::init(){
 	for (int i = 0; i < point_row; i++)
 		ref[i] = new Point_t[point_col];
 
-	vertexes = new Vertex_t*[point_row];
+	vertex = new Vertex_t*[point_row];
 	for (int i = 0; i < point_row; i++)
-		vertexes[i] = new Vertex_t[point_col];
+		vertex[i] = new Vertex_t[point_col];
 }
 
 void Image::changeImage(Mat &new_image) {
@@ -189,7 +193,10 @@ string Image::findAllPoints() {
 		makePixelCDF();
 	}
 
-	threshold_val = getValCDF(0.95);
+	threshold_val = getValCDF(0.50) * (threshold_p / 100.0);
+	if (threshold_val > 255)
+		threshold_val = 255;
+
 	threshold(image, image, threshold_val, 255, 3);
 	setAllPointsToNONE();
 	
@@ -211,17 +218,15 @@ string Image::findAllPoints() {
 	}
 
 	// make analysis result picture
-	int d = (basic_distance >> 1);
 	for (int i = 0; i < point_row; i++) {
 		for (int j = 0; j < point_col; j++) {
-			if (ref[i][j].avail == EXIST) {
-				line(original, Point(ref[i][j].x - d, ref[i][j].y - d), Point(ref[i][j].x + d, ref[i][j].y - d), Scalar(255, 0, 0));
-				line(original, Point(ref[i][j].x + d, ref[i][j].y - d), Point(ref[i][j].x + d, ref[i][j].y + d), Scalar(255, 0, 0));
-				line(original, Point(ref[i][j].x + d, ref[i][j].y + d), Point(ref[i][j].x - d, ref[i][j].y + d), Scalar(255, 0, 0));
-				line(original, Point(ref[i][j].x - d, ref[i][j].y + d), Point(ref[i][j].x - d, ref[i][j].y - d), Scalar(255, 0, 0));
+			if (ref[i][j].avail == EXIST && points[i][j].avail == EXIST) {
+				line(original, Point(vertex[i][j].v[0].x, vertex[i][j].v[0].y), Point(vertex[i][j].v[1].x, vertex[i][j].v[1].y), Scalar(255, 0, 0));
+				line(original, Point(vertex[i][j].v[1].x, vertex[i][j].v[1].y), Point(vertex[i][j].v[2].x, vertex[i][j].v[2].y), Scalar(255, 0, 0));
+				line(original, Point(vertex[i][j].v[2].x, vertex[i][j].v[2].y), Point(vertex[i][j].v[3].x, vertex[i][j].v[3].y), Scalar(255, 0, 0));
+				line(original, Point(vertex[i][j].v[3].x, vertex[i][j].v[3].y), Point(vertex[i][j].v[0].x, vertex[i][j].v[0].y), Scalar(255, 0, 0));
 
-				if (points[i][j].avail == EXIST)
-					original.at<Vec3b>(points[i][j].y, points[i][j].x) = { 255, 255, 255 };
+				original.at<Vec3b>(points[i][j].y, points[i][j].x) = { 255, 255, 255 };
 			}
 		}
 	}
@@ -894,7 +899,7 @@ Point_t Image::findCenterPoint(const Point_t &p, int diff_x, int diff_y, int fla
 	}
 
 	for (int i = 0; i < 4; i++)
-		vertexes[center_x + diff_x][center_y + diff_y].v[i] = v[i];
+		vertex[center_x + diff_x][center_y + diff_y].v[i] = v[i];
 
 	int width = v[2].x - v[0].x + 1;
 	int height = v[2].y - v[0].y + 1;

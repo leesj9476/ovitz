@@ -35,8 +35,10 @@ void bPress() {
 	b_pressed = true;
 }
 
-Capture::Capture(int pixel_max_, int pixel_min_, int basic_distance_, double focal_, double pixel_size_)
-	: pixel_max(pixel_max_), pixel_min(pixel_min_), basic_distance(basic_distance_), focal(focal_), pixel_size(pixel_size_) {
+Capture::Capture(int pixel_max_, int pixel_min_, int basic_distance_,
+				 double focal_, double pixel_size_, double threshold_p_)
+	: pixel_max(pixel_max_), pixel_min(pixel_min_), basic_distance(basic_distance_),
+	  focal(focal_), pixel_size(pixel_size_), threshold_p(threshold_p_) {
 
 	cam.set(CV_CAP_PROP_FRAME_WIDTH, 512);
 	cam.set(CV_CAP_PROP_FRAME_HEIGHT, 512);
@@ -76,6 +78,7 @@ int Capture::shot() {
 	bool init = false;
 	int succ = SUCCESS;
 	string result = "Loading...";
+	int pixel_val_arrow = 0;
 	while (true) {
 		m.lock();
 
@@ -85,9 +88,10 @@ int Capture::shot() {
 		cam.grab();
 		cam.retrieve(captured_image);
 
-		// maybe need cut black square
+		result = "Loading...";
+
 		if (!init) {
-			image = new Image(captured_image, basic_distance, focal, pixel_size);
+			image = new Image(captured_image, basic_distance, focal, pixel_size, threshold_p);
 			image->init();
 			init = true;
 		}
@@ -125,13 +129,18 @@ int Capture::shot() {
 		image->gaussianFiltering();
 		image->makePixelCDF();
 		int cur_pixel_avg = image->getValCDF(0.5);
+		pixel_val_arrow = 0;
 
-		if (pixel_min <= cur_pixel_avg && cur_pixel_avg <= pixel_max) {
+		if (option[AUTO_CONTROL_OFF]) {
+			result = image->findAllPoints();
+		}
+		else if (pixel_min <= cur_pixel_avg && cur_pixel_avg <= pixel_max) {
 			result = image->findAllPoints();
 		}
 		else if (cur_pixel_avg > pixel_max) {
 			if (exposure_time == 1 && gain == 0) {
 				result = image->findAllPoints();
+				pixel_val_arrow = cur_pixel_avg - pixel_max;
 			}
 			else {
 				if (exposure_time != 1) {
@@ -152,6 +161,7 @@ int Capture::shot() {
 		else if (cur_pixel_avg < pixel_min) {
 			if (exposure_time == 100 && gain == 100) {
 				result = image->findAllPoints();
+				pixel_val_arrow = cur_pixel_avg - pixel_min;
 			}
 			else {
 				if (exposure_time != 100)
@@ -172,6 +182,13 @@ int Capture::shot() {
 		if (gain > 100)
 			gain = 100;
 
+		if (pixel_val_arrow > 0) {
+			result += "";
+		}
+		else if (pixel_val_arrow < 0) {
+			result += "";
+		}
+
 		if (option[TERMINAL]) {
 			if (result != "Loading...")
 				cout << "========" << endl << result << endl << "========" << endl;
@@ -181,7 +198,6 @@ int Capture::shot() {
 		else
 			oled.showString(result);
 
-		result = "Loading...";
 		m.unlock();
 	}
 

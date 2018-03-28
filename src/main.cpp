@@ -29,9 +29,11 @@ struct option long_options[] = {
 	{ "real_pixel_size", required_argument, 0, 0 },
 	{ "pixel_max", required_argument, 0, 0 },
 	{ "pixel_min", required_argument, 0, 0 },
+	{ "auto_control_off", no_argument, 0, 0 },
 	{ "focal", required_argument, 0, 'f' },
 	{ "window", no_argument, 0, 'w' },
 	{ "print_terminal", no_argument, 0, 't' },
+	{ "threshold_percent", required_argument, 0, 'p' },
 	{ 0, 0, 0, 0 }
 };
 
@@ -43,13 +45,14 @@ int main (int argc, char *argv[]) {
 	double basic_distance = 22;
 	double focal = 7;
 	double pixel_size = 1.4;
+	double threshold_percent = 100;
 
 	int pixel_max = 30;
 	int pixel_min = 15;
 
 	// TODO add width, height option
 	int opt_idx = 0;
-	while ((opt = getopt_long(argc, argv, "i:d:f:wt", long_options, &opt_idx)) != -1) {
+	while ((opt = getopt_long(argc, argv, "i:d:f:wtp:", long_options, &opt_idx)) != -1) {
 		switch (opt) {
 		case 0: {
 			if (long_options[opt_idx].flag != 0)
@@ -70,6 +73,10 @@ int main (int argc, char *argv[]) {
 				option[PIXEL_MIN] = true;
 				pixel_min = atoi(optarg);
 				break;		
+			}
+			else if (opt_name == "auto_control_off") {
+				option[AUTO_CONTROL_OFF] = true;
+				break;
 			}
 			else {
 				cerr << "<error> unknown option" << endl;
@@ -102,6 +109,11 @@ int main (int argc, char *argv[]) {
 			option[TERMINAL] = true;
 			break;
 
+		case 'p':
+			option[THRESHOLD_P] = true;
+			threshold_percent = stod(string(optarg));
+			break;
+
 		default:
 			cerr << "<error> argument error" << endl;
 			return ARGUMENT_ERROR;
@@ -119,7 +131,7 @@ int main (int argc, char *argv[]) {
 			return ARGUMENT_ERROR;
 		}
 
-		Image image(image_filename, basic_distance, focal, pixel_size);
+		Image image(image_filename, basic_distance, focal, pixel_size, threshold_percent);
 		image.init();
 		cout << image.findAllPoints() << endl;
 	}
@@ -128,7 +140,7 @@ int main (int argc, char *argv[]) {
 	//////////////////////////////
 	else {
 		while (continue_analyze) {
-			Capture cam(pixel_max, pixel_min, basic_distance, focal, pixel_size);
+			Capture cam(pixel_max, pixel_min, basic_distance, focal, pixel_size, threshold_percent);
 
 			signal(SIGINT, int_handler);
 

@@ -42,8 +42,8 @@ typedef struct Vertex_t {
 
 class Image {
 public:
-	Image(const std::string &, double, double, double);
-	Image(const cv::Mat&, double, double, double);
+	Image(const std::string &, double, double, double, double);
+	Image(const cv::Mat&, double, double, double, double);
 	~Image();
 
 	void init();
@@ -78,6 +78,7 @@ private:
 	double real_basic_distance;
 	double focal;
 	double pixel_size;
+	double threshold_p;
 
 	int basic_distance;
 
@@ -102,7 +103,7 @@ private:
 	double *slope;
 
 	// vertex points of unit boxes
-	Vertex_t **vertexes;
+	Vertex_t **vertex;
 
 	// reduce average proportion
 	double prop;

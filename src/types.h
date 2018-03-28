@@ -9,6 +9,8 @@
 #define FOCAL		5
 #define PIXEL_MAX	6
 #define PIXEL_MIN	7
+#define AUTO_CONTROL_OFF	8
+#define THRESHOLD_P	9
 
 #define MAX_OPTION_NUM	255
 

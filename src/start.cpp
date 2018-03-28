@@ -180,6 +180,12 @@ string parseSettingFile() {
 		else if (key == "terminal" && val.find("true") != string::npos) {
 			cmd += " -t";
 		}
+		else if (key == "auto_control" && val.find("off") != string::npos) {
+			cmd += " --auto_control_off";
+		}
+		else if (key == "threshold_percent" && isUFloat(val_str)) {
+			cmd += " -p " + to_string(stod(val));
+		}
 	}
 
 	f.close();
