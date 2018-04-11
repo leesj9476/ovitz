@@ -42,8 +42,8 @@ typedef struct Vertex_t {
 
 class Image {
 public:
-	Image(const std::string &, double, double, double, double);
-	Image(const cv::Mat&, double, double, double, double);
+	Image(const std::string &, double, double, double, double, double);
+	Image(const cv::Mat&, double, double, double, double, double);
 	~Image();
 
 	void init();
@@ -79,6 +79,7 @@ private:
 	double focal;
 	double pixel_size;
 	double threshold_p;
+	double threshold_top_p;
 
 	int basic_distance;
 

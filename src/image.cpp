@@ -53,9 +53,9 @@ ostream& operator<<(ostream &os, const Point_t &p) {
 }
 
 Image::Image(const string &filename_, double basic_distance_, double focal_,
-									  double pixel_size_, double threshold_p_) 
+			 double pixel_size_, double threshold_p_, double threshold_top_p_) 
 	: filename(filename_), real_basic_distance(basic_distance_), focal(focal_),
-	  pixel_size(pixel_size_), threshold_p(threshold_p_) {
+	  pixel_size(pixel_size_), threshold_p(threshold_p_), threshold_top_p(threshold_top_p_) {
 	
 	image = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
 	original = imread(filename);
@@ -68,9 +68,9 @@ Image::Image(const string &filename_, double basic_distance_, double focal_,
 }
 
 Image::Image(const Mat &image_, double basic_distance_, double focal_,
-								double pixel_size_, double threshold_p_) 
+			 double pixel_size_, double threshold_p_, double threshold_top_p_) 
 	: real_basic_distance(basic_distance_), focal(focal_),
-	  pixel_size(pixel_size_), threshold_p(threshold_p_) {
+	  pixel_size(pixel_size_), threshold_p(threshold_p_), threshold_top_p(threshold_top_p_) {
 
 	filename = "";
 
@@ -193,7 +193,11 @@ string Image::findAllPoints() {
 		makePixelCDF();
 	}
 
-	threshold_val = getValCDF(0.50) * (threshold_p / 100.0);
+	if (option[THRESHOLD_TOP_P])
+		threshold_val = getValCDF(threshold_top_p / 100.0);
+	else
+		threshold_val = getValCDF(0.50) * (threshold_p / 100.0);
+
 	if (threshold_val > 255)
 		threshold_val = 255;
 

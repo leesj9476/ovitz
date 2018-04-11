@@ -34,6 +34,7 @@ struct option long_options[] = {
 	{ "window", no_argument, 0, 'w' },
 	{ "print_terminal", no_argument, 0, 't' },
 	{ "threshold_percent", required_argument, 0, 'p' },
+	{ "tp", required_argument, 0, 0 },
 	{ 0, 0, 0, 0 }
 };
 
@@ -46,6 +47,7 @@ int main (int argc, char *argv[]) {
 	double focal = 7;
 	double pixel_size = 1.4;
 	double threshold_percent = 100;
+	double threshold_top_percent = 95;
 
 	int pixel_max = 30;
 	int pixel_min = 15;
@@ -76,6 +78,11 @@ int main (int argc, char *argv[]) {
 			}
 			else if (opt_name == "auto_control_off") {
 				option[AUTO_CONTROL_OFF] = true;
+				break;
+			}
+			else if (opt_name == "tp") {
+				option[THRESHOLD_TOP_P] = true;
+				threshold_top_percent = stod(stirng(optarg));
 				break;
 			}
 			else {
@@ -131,7 +138,7 @@ int main (int argc, char *argv[]) {
 			return ARGUMENT_ERROR;
 		}
 
-		Image image(image_filename, basic_distance, focal, pixel_size, threshold_percent);
+		Image image(image_filename, basic_distance, focal, pixel_size, threshold_percent, threshold_top_percent);
 		image.init();
 		cout << image.findAllPoints() << endl;
 	}
@@ -140,7 +147,7 @@ int main (int argc, char *argv[]) {
 	//////////////////////////////
 	else {
 		while (continue_analyze) {
-			Capture cam(pixel_max, pixel_min, basic_distance, focal, pixel_size, threshold_percent);
+			Capture cam(pixel_max, pixel_min, basic_distance, focal, pixel_size, threshold_percent, threshold_top_percent);
 
 			signal(SIGINT, int_handler);
 

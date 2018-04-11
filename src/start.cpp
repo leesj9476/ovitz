@@ -159,6 +159,8 @@ string parseSettingFile() {
 		val = line.substr(pos + 1);
 		const char *val_str = val.c_str();
 
+		string threshold_cmd = "";
+
 		if (key == "basic_distance" && isUFloat(val_str)) {
 			cmd += " -d " + to_string(stod(val));
 		}
@@ -184,11 +186,16 @@ string parseSettingFile() {
 			cmd += " --auto_control_off";
 		}
 		else if (key == "threshold_percent" && isUFloat(val_str)) {
-			cmd += " -p " + to_string(stod(val));
+			threshold_cmd = " -p " + to_string(stod(val));
+		}
+		else if (key == "threshold_top_percent" && isUFloat(val_str)) {
+			threshold_cmd = " --tp " + to_string(stod(val));
 		}
 	}
 
 	f.close();
+
+	cmd += threshold_cmd;
 	return cmd;
 }
 
