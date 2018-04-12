@@ -184,8 +184,8 @@ int Capture::shot() {
 		if (gain > 100)
 			gain = 100;
 
+		result += "\n" + to_string(cur_pixel_avg);
 		if (pixel_val_arrow != 0) {
-			result += "\n" + to_string(cur_pixel_avg);
 			if (cur_pixel_avg < 10)
 				result += "  ";
 			else if (cur_pixel_avg < 100)
