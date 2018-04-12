@@ -82,7 +82,7 @@ int main (int argc, char *argv[]) {
 			}
 			else if (opt_name == "tp") {
 				option[THRESHOLD_TOP_P] = true;
-				threshold_top_percent = stod(stirng(optarg));
+				threshold_top_percent = stod(string(optarg));
 				break;
 			}
 			else {

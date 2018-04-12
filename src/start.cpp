@@ -135,6 +135,7 @@ bool isUFloat(const char *str) {
 
 string parseSettingFile() {
 	string cmd = "./ovitz";
+	string threshold_cmd = "";
 
 	ifstream f("./conf/setting.conf");
 	Oled oled;
@@ -158,8 +159,6 @@ string parseSettingFile() {
 		key = line.substr(0, pos);
 		val = line.substr(pos + 1);
 		const char *val_str = val.c_str();
-
-		string threshold_cmd = "";
 
 		if (key == "basic_distance" && isUFloat(val_str)) {
 			cmd += " -d " + to_string(stod(val));
