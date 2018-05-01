@@ -188,7 +188,10 @@ string parseSettingFile() {
 			threshold_cmd = " -p " + to_string(stod(val));
 		}
 		else if (key == "threshold_top_percent" && isUFloat(val_str)) {
-			threshold_cmd = " --tp " + to_string(stod(val));
+			threshold_cmd = " --pt " + to_string(stod(val));
+		}
+		else if (key == "threshold_area" && isUInt(val_str)) {
+			threshold_cmd = " -a " + to_string(atoi(val_str));
 		}
 	}
 

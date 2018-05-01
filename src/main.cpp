@@ -34,7 +34,8 @@ struct option long_options[] = {
 	{ "window", no_argument, 0, 'w' },
 	{ "print_terminal", no_argument, 0, 't' },
 	{ "threshold_percent", required_argument, 0, 'p' },
-	{ "tp", required_argument, 0, 0 },
+	{ "pt", required_argument, 0, 0 },
+	{ "threshold_area", required_argument, 0, 'a' },
 	{ 0, 0, 0, 0 }
 };
 
@@ -48,13 +49,14 @@ int main (int argc, char *argv[]) {
 	double pixel_size = 1.4;
 	double threshold_percent = 100;
 	double threshold_top_percent = 95;
+	int threshold_area = 0;
 
 	int pixel_max = 30;
 	int pixel_min = 15;
 
 	// TODO add width, height option
 	int opt_idx = 0;
-	while ((opt = getopt_long(argc, argv, "i:d:f:wtp:", long_options, &opt_idx)) != -1) {
+	while ((opt = getopt_long(argc, argv, "i:d:f:wtp:a:", long_options, &opt_idx)) != -1) {
 		switch (opt) {
 		case 0: {
 			if (long_options[opt_idx].flag != 0)
@@ -80,7 +82,7 @@ int main (int argc, char *argv[]) {
 				option[AUTO_CONTROL_OFF] = true;
 				break;
 			}
-			else if (opt_name == "tp") {
+			else if (opt_name == "pt") {
 				option[THRESHOLD_TOP_P] = true;
 				threshold_top_percent = stod(string(optarg));
 				break;
@@ -121,6 +123,11 @@ int main (int argc, char *argv[]) {
 			threshold_percent = stod(string(optarg));
 			break;
 
+		case 'a':
+			option[THRESHOLD_AREA] = true;
+			threshold_area = atoi(optarg);
+			break;
+
 		default:
 			cerr << "<error> argument error" << endl;
 			return ARGUMENT_ERROR;
@@ -138,7 +145,7 @@ int main (int argc, char *argv[]) {
 			return ARGUMENT_ERROR;
 		}
 
-		Image image(image_filename, basic_distance, focal, pixel_size, threshold_percent, threshold_top_percent);
+		Image image(image_filename, basic_distance, focal, pixel_size, threshold_percent, threshold_top_percent, threshold_area);
 		image.init();
 		cout << image.findAllPoints() << endl;
 	}
@@ -147,7 +154,7 @@ int main (int argc, char *argv[]) {
 	//////////////////////////////
 	else {
 		while (continue_analyze) {
-			Capture cam(pixel_max, pixel_min, basic_distance, focal, pixel_size, threshold_percent, threshold_top_percent);
+			Capture cam(pixel_max, pixel_min, basic_distance, focal, pixel_size, threshold_percent, threshold_top_percent, threshold_area);
 
 			signal(SIGINT, int_handler);
 

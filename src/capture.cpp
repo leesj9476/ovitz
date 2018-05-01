@@ -37,10 +37,11 @@ void bPress() {
 
 Capture::Capture(int pixel_max_, int pixel_min_, int basic_distance_,
 				 double focal_, double pixel_size_, 
-				 double threshold_p_, double threshold_top_p_)
+				 double threshold_p_, double threshold_top_p_, int threshold_area_)
 	: pixel_max(pixel_max_), pixel_min(pixel_min_), basic_distance(basic_distance_),
 	  focal(focal_), pixel_size(pixel_size_),
-	  threshold_p(threshold_p_), threshold_top_p(threshold_top_p_) {
+	  threshold_p(threshold_p_), threshold_top_p(threshold_top_p_),
+	  threshold_area(threshold_area_) {
 
 	cam.set(CV_CAP_PROP_FRAME_WIDTH, 512);
 	cam.set(CV_CAP_PROP_FRAME_HEIGHT, 512);
@@ -93,7 +94,7 @@ int Capture::shot() {
 		result = "Loading...";
 
 		if (!init) {
-			image = new Image(captured_image, basic_distance, focal, pixel_size, threshold_p, threshold_top_p);
+			image = new Image(captured_image, basic_distance, focal, pixel_size, threshold_p, threshold_top_p, threshold_area);
 			image->init();
 			init = true;
 		}

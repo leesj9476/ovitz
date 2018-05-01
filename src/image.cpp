@@ -53,9 +53,12 @@ ostream& operator<<(ostream &os, const Point_t &p) {
 }
 
 Image::Image(const string &filename_, double basic_distance_, double focal_,
-			 double pixel_size_, double threshold_p_, double threshold_top_p_) 
+			 double pixel_size_, double threshold_p_,
+			 double threshold_top_p_, int threshold_area_) 
+
 	: filename(filename_), real_basic_distance(basic_distance_), focal(focal_),
-	  pixel_size(pixel_size_), threshold_p(threshold_p_), threshold_top_p(threshold_top_p_) {
+	  pixel_size(pixel_size_), threshold_p(threshold_p_),
+	  threshold_top_p(threshold_top_p_), threshold_area(threshold_area_) {
 	
 	image = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
 	original = imread(filename);
@@ -68,9 +71,12 @@ Image::Image(const string &filename_, double basic_distance_, double focal_,
 }
 
 Image::Image(const Mat &image_, double basic_distance_, double focal_,
-			 double pixel_size_, double threshold_p_, double threshold_top_p_) 
+			 double pixel_size_, double threshold_p_,
+			 double threshold_top_p_, int threshold_area_) 
+
 	: real_basic_distance(basic_distance_), focal(focal_),
-	  pixel_size(pixel_size_), threshold_p(threshold_p_), threshold_top_p(threshold_top_p_) {
+	  pixel_size(pixel_size_), threshold_p(threshold_p_),
+	  threshold_top_p(threshold_top_p_), threshold_area(threshold_area_) {
 
 	filename = "";
 
@@ -157,10 +163,39 @@ void Image::convertRGBtoGRAY(Mat &original) {
 
 void Image::makePixelCDF() {
 	uchar *data = (uchar *)image.data;
-	memset(cdf, 0, sizeof(cdf));
 
-	for (uint i = 0; i < image.total(); i++) {
-		cdf[data[i]]++;
+	int col_start = 0;
+	int col_end = image.cols;
+	int row_start = 0;
+	int row_end = image.rows;
+	if (option[THRESHOLD_AREA]) {
+		int cen_p_x = image.cols / 2;
+		int cen_p_y = image.rows / 2;
+
+		col_start = cen_p_x - threshold_area;
+		col_end = cen_p_x + threshold_area;
+
+		row_start = cen_p_y - threshold_area;
+		row_end = cen_p_y + threshold_area;
+
+		if (col_start < 0 || row_start < 0 ||
+			col_end >= image.cols || row_end >= image.rows) {
+	
+			col_start = 0;
+			col_end = image.cols;
+			row_start = 0;
+			row_end = image.rows;
+		}
+	}
+
+	memset(cdf, 0, sizeof(cdf));
+	for (int i = row_start; i <= row_end; i++) {
+		int idx = i * image.cols + col_start;
+
+		for (int j = col_start; j <= col_end; j++) {
+			cdf[data[idx]]++;
+			idx++;
+		}
 	}
 
 	for (int i = 0; i < 256; i++) {

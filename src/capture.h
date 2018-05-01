@@ -5,7 +5,7 @@
 
 class Capture {
 public:
-	Capture(int, int, int, double, double, double, double);
+	Capture(int, int, int, double, double, double, double, int);
 	~Capture();
 
 	bool isValid();
@@ -23,6 +23,8 @@ private:
 	double pixel_size;
 	double threshold_p;
 	double threshold_top_p;
+
+	int threshold_area;
 };
 
 #endif
