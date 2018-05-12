@@ -198,8 +198,9 @@ void Image::makePixelCDF() {
 		}
 	}
 
+	int total_pixel = row_end * col_end;
 	for (int i = 0; i < 256; i++) {
-		cdf[i] /= image.total();
+		cdf[i] /= total_pixel;
 	}
 
 	for (int i = 1; i < 256; i++) {

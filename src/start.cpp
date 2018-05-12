@@ -146,6 +146,7 @@ string parseSettingFile() {
 	}
 
 	string line;
+	bool show_window = true;
 	while (getline(f, line)) {
 		if (line[0] == '#' || line[0] == ' ' || line[0] == '\n')
 			continue;
@@ -175,8 +176,8 @@ string parseSettingFile() {
 		else if (key == "focal" && isUFloat(val_str)) {
 			cmd += " -f " + to_string(stod(val));
 		}
-		else if (key == "window" && val.find("true") != string::npos && window_avail) {
-			cmd += " -w";
+		else if (key == "window" && val.find("false") != string::npos) {
+			show_window = false;
 		}
 		else if (key == "terminal" && val.find("true") != string::npos) {
 			cmd += " -t";
@@ -198,6 +199,9 @@ string parseSettingFile() {
 	f.close();
 
 	cmd += threshold_cmd;
+	if (show_window && window_avail)
+		cmd += " -w";
+
 	return cmd;
 }
 

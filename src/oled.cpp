@@ -23,7 +23,7 @@ Oled::~Oled() {
 
 void Oled::showString(const string &str, int row) {
 	clear();
-	drawString8x16(SSD1306::OledPoint(0, row * 16), str, SSD1306::PixelStyle::Set, *oled);
+	drawString8x16(SSD1306::OledPoint(0, row * 8), str, SSD1306::PixelStyle::Set, *oled);
 	oled->displayUpdate();
 }
 

@@ -44,17 +44,18 @@ void int_handler(int);
 int main (int argc, char *argv[]) {
 	int opt;
 	string image_filename;
-	double basic_distance = 22;
+	double basic_distance = 50.17284;
 	double focal = 7;
 	double pixel_size = 1.4;
 	double threshold_percent = 100;
 	double threshold_top_percent = 95;
 	int threshold_area = 0;
 
+	option[THRESHOLD_TOP_P] = true;
+
 	int pixel_max = 30;
 	int pixel_min = 15;
 
-	// TODO add width, height option
 	int opt_idx = 0;
 	while ((opt = getopt_long(argc, argv, "i:d:f:wtp:a:", long_options, &opt_idx)) != -1) {
 		switch (opt) {
@@ -84,6 +85,7 @@ int main (int argc, char *argv[]) {
 			}
 			else if (opt_name == "pt") {
 				option[THRESHOLD_TOP_P] = true;
+				option[THRESHOLD_P] = false;
 				threshold_top_percent = stod(string(optarg));
 				break;
 			}
@@ -120,6 +122,7 @@ int main (int argc, char *argv[]) {
 
 		case 'p':
 			option[THRESHOLD_P] = true;
+			option[THRESHOLD_TOP_P] = false;
 			threshold_percent = stod(string(optarg));
 			break;
 
