@@ -9,136 +9,26 @@
 #include <raspicam/raspicam_cv.h>
 #include <opencv2/highgui/highgui.hpp>
 
+/*
 #include "capture.h"
 #include "oled.h"
-#include "image.h"
+#include "image.h"*/
 #include "types.h"
 #include "util.h"
 
 using namespace std;
 using namespace cv;
 
-bool continue_analyze = true;
-bool option[MAX_OPTION_NUM];
-
 double *lens_mat[5][5];
 
-struct option long_options[] = {
-	{ "filename", required_argument, 0, 'i' },
-	{ "lens_distance", required_argument, 0, 'd' },
-	{ "real_pixel_size", required_argument, 0, 0 },
-	{ "pixel_max", required_argument, 0, 0 },
-	{ "pixel_min", required_argument, 0, 0 },
-	{ "auto_control_off", no_argument, 0, 0 },
-	{ "focal", required_argument, 0, 'f' },
-	{ "window", no_argument, 0, 'w' },
-	{ "print_terminal", no_argument, 0, 't' },
-	{ "threshold_percent", required_argument, 0, 'p' },
-	{ "pt", required_argument, 0, 0 },
-	{ "threshold_area", required_argument, 0, 'a' },
-	{ 0, 0, 0, 0 }
-};
-
-void int_handler(int);
+//void int_handler(int);
 
 int main (int argc, char *argv[]) {
-	int opt;
-	string image_filename;
-	double basic_distance = 50.17284;
-	double focal = 7;
-	double pixel_size = 1.4;
-	double threshold_percent = 100;
-	double threshold_top_percent = 95;
-	int threshold_area = 0;
-
-	option[THRESHOLD_TOP_P] = true;
-
-	int pixel_max = 30;
-	int pixel_min = 15;
-
-	int opt_idx = 0;
-	while ((opt = getopt_long(argc, argv, "i:d:f:wtp:a:", long_options, &opt_idx)) != -1) {
-		switch (opt) {
-		case 0: {
-			if (long_options[opt_idx].flag != 0)
-				break;
-
-			string opt_name(long_options[opt_idx].name);
-			if (opt_name == "real_pixel_size") {
-				option[PIXEL_SIZE] = true;
-				pixel_size = stod(string(optarg));
-				break;
-			}
-			else if (opt_name == "pixel_max") {
-				option[PIXEL_MAX] = true;
-				pixel_max = atoi(optarg);
-				break;
-			}
-			else if (opt_name == "pixel_min") {
-				option[PIXEL_MIN] = true;
-				pixel_min = atoi(optarg);
-				break;		
-			}
-			else if (opt_name == "auto_control_off") {
-				option[AUTO_CONTROL_OFF] = true;
-				break;
-			}
-			else if (opt_name == "pt") {
-				option[THRESHOLD_TOP_P] = true;
-				option[THRESHOLD_P] = false;
-				threshold_top_percent = stod(string(optarg));
-				break;
-			}
-			else {
-				cerr << "<error> unknown option" << endl;
-				return ARGUMENT_ERROR;
-			}
-
-			break;
-		}
-
-		case 'i':
-			option[IMAGE_FILE] = true;
-			image_filename = string(optarg);
-			break;
-
-		case 'd':
-			option[DISTANCE] = true;
-			basic_distance = stod(string(optarg));
-			break;
-
-		case 'f':
-			option[FOCAL] = true;
-			focal = stod(string(optarg));
-			break;
-
-		case 'w':
-			option[SHOW_WINDOW] = true;
-			break;
-
-		case 't':
-			option[TERMINAL] = true;
-			break;
-
-		case 'p':
-			option[THRESHOLD_P] = true;
-			option[THRESHOLD_TOP_P] = false;
-			threshold_percent = stod(string(optarg));
-			break;
-
-		case 'a':
-			option[THRESHOLD_AREA] = true;
-			threshold_area = atoi(optarg);
-			break;
-
-		default:
-			cerr << "<error> argument error" << endl;
-			return ARGUMENT_ERROR;
-		}
-	}
-
+	// options setting information
+	Options options = parseSettingFile();
 	makeLensMatrix();
 
+	/*
 	//////////////////////////////////
 	//          image mode          //
 	//////////////////////////////////
@@ -148,7 +38,7 @@ int main (int argc, char *argv[]) {
 			return ARGUMENT_ERROR;
 		}
 
-		Image image(image_filename, basic_distance, focal, pixel_size, threshold_percent, threshold_top_percent, threshold_area);
+		Image image(image_filename, options);
 		image.init();
 		cout << image.findAllPoints() << endl;
 	}
@@ -157,7 +47,7 @@ int main (int argc, char *argv[]) {
 	//////////////////////////////
 	else {
 		while (continue_analyze) {
-			Capture cam(pixel_max, pixel_min, basic_distance, focal, pixel_size, threshold_percent, threshold_top_percent, threshold_area);
+			Capture cam(pixel_max, options);
 
 			signal(SIGINT, int_handler);
 
@@ -171,11 +61,12 @@ int main (int argc, char *argv[]) {
 				return CAM_ERROR;
 			}
 		}
-	}
+	}*/
 
 	return 0;
 }
 
+/*
 void int_handler(int sig) {
 	raspicam::RaspiCam_Cv cam;
 	cam.release();
@@ -184,4 +75,4 @@ void int_handler(int sig) {
 	oled.clear();
 
 	exit(0);
-}
+}*/

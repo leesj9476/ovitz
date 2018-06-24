@@ -6,6 +6,8 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
+#include "util.h"
+
 #define SEARCH_GAP	2
 
 #define EXIST		1
@@ -42,8 +44,8 @@ typedef struct Vertex_t {
 
 class Image {
 public:
-	Image(const std::string &, double, double, double, double, double, int);
-	Image(const cv::Mat&, double, double, double, double, double, int);
+	Image(const std::string &, Options &);
+	Image(const cv::Mat &, Options &);
 	~Image();
 
 	void init();
@@ -58,8 +60,7 @@ public:
 
 	std::string findAllPoints();
 	void findAllAxisPoints();
-	void makeRefPointsInfo();
-	void makeRefPointsInCircle();
+	int makeRefPointsInfo();
 
 	Point_t adjustPoint(const Point_t &, int, int, int = NO_FLAG);
 	Point_t findClosestWhitePoint(const Point_t &, int, int);
@@ -73,16 +74,11 @@ private:
 
 	double cdf[256];
 
+	Options opt;
+
+	int int_basic_distance;
+
 	int threshold_val;
-
-	double real_basic_distance;
-	double focal;
-	double pixel_size;
-	double threshold_p;
-	double threshold_top_p;
-	int threshold_area;
-
-	int basic_distance;
 
 	int point_col, point_row;
 
@@ -90,8 +86,10 @@ private:
 
 	// UP, RIGHT, DOWN, LEFT - 0 1
 	//                         3 2
-	Point_t unit_center_v[4][4];
+	Point_t unit_v[4][4];
 
+	// the number of points in circle
+	int ref_point_num;
 	int point_num;
 
 	// center of points
@@ -101,8 +99,8 @@ private:
 	// ref points
 	Point_t **ref;
 
-	// slope data
-	double *slope;
+	// diff data
+	double *diff;
 
 	// vertex points of unit boxes
 	Vertex_t **vertex;
