@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cctype>
 #include <string>
+#include <thread>
+#include <chrono>
 
 #include <raspicam/raspicam_cv.h>
 
@@ -15,6 +17,8 @@
 using namespace std;
 
 extern double *lens_mat[5][5];
+
+extern bool continue_analysis;
 
 // Point_t constructor using double x, y value
 Point_t::Point_t(double real_x_, double real_y_, int avail_)
@@ -268,8 +272,18 @@ Options parseSettingFile() {
 }
 
 void int_handler(int sig) {
+	continue_analysis = false;
+	this_thread::sleep_for(chrono::seconds(1));
+
 	raspicam::RaspiCam_Cv cam;
 	cam.release();
+
+	string t = "Exiting...";
+	ssd1306_clearDisplay();
+	ssd1306_drawString(const_cast<char *>(t.c_str()));
+	ssd1306_display();
+
+	this_thread::sleep_for(chrono::seconds(1));
 
 	ssd1306_clearDisplay();
 	ssd1306_display();

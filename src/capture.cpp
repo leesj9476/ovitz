@@ -18,6 +18,8 @@ using namespace cv;
 using namespace raspicam;
 using namespace std;
 
+bool continue_analysis = true;
+
 Capture::Capture(Options &options) {
 	opt = options;
 
@@ -63,7 +65,7 @@ void Capture::shot() {
 	int pixel_diff = 0;
 
 	// Analysis loop
-	while (true) {
+	while (continue_analysis) {
 		m.lock();
 
 		// If exposure time value is changed,
@@ -187,7 +189,7 @@ void Capture::shot() {
 
 		// Add average pixel value.
 		// If average pixel value is not in the range, show H or L additionally.
-		result += "\n  " + to_string(cur_pixel_avg);
+		result += "\n " + to_string(cur_pixel_avg);
 		if (pixel_diff != 0) {
 			if (cur_pixel_avg < 10)
 				result += "  ";
