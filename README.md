@@ -6,6 +6,12 @@
 
 2. Install `raspicam` (ref: http://webnautes.tistory.com/956)
 
+3. Install `wiringPi` (ref: http://wiringpi.com/download-and-install/)
+
+4. Clone this repository and edit setting file(`conf/setting.conf` file)
+
+5. `make` at the root of this repository folder
+
 ## Usage
 
 ## License Announcement
