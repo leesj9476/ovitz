@@ -1,1 +1,0 @@
-# OVITZ project
