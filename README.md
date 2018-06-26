@@ -2,6 +2,10 @@
 
 ## Installation
 
+1. Install `opencv` including `opencv_contrib` (ref: http://webnautes.tistory.com/916)
+
+2. Install `raspicam` (ref: http://webnautes.tistory.com/956)
+
 ## Usage
 
 ## License Announcement
@@ -38,4 +42,5 @@ This application contains copyrighted software under BSD License and GNU LGPLv3 
 
 * #### raspicam
     http://www.uco.es/investiga/grupos/ava/node/40
+    
     BSD License
