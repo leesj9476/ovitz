@@ -17,6 +17,7 @@ This application contains copyrighted software under BSD License and GNU LGPLv3 
 
     BSD License
 
+&nbsp;
 
 * #### Open Source Computer Vision Library(opencv)
 
@@ -24,6 +25,7 @@ This application contains copyrighted software under BSD License and GNU LGPLv3 
 
     BSD License
 
+&nbsp;
 
 * #### wiringPi
 
