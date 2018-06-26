@@ -217,8 +217,7 @@ void Capture::shot() {
 		}
 
 		// Delay interval between analysis
-		if (opt.option[DELAY])
-			this_thread::sleep_for(chrono::milliseconds(opt.delay_ms));
+		this_thread::sleep_for(chrono::milliseconds(opt.delay_ms));
 
 		m.unlock();
 	}

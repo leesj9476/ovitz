@@ -66,6 +66,8 @@ Options::Options() {
 	pixel_max = 30;
 	pixel_min = 15;
 
+	delay_ms = 0;
+
 	// Init the option checker array to false
 	for (int i = 0; i < MAX_OPTION_NUM; i++)
 		option[i] = false;
