@@ -8,6 +8,7 @@
 
 This application contains copyrighted software under BSD License and GNU LGPLv3 License.
 
+&nbsp;
 
 * #### SSD1306 i2c driver for Raspberry Pi
 
@@ -32,3 +33,9 @@ This application contains copyrighted software under BSD License and GNU LGPLv3 
     http://wiringpi.com/
 
     GNU LGPLv3 License
+
+&nbsp;
+
+* #### raspicam
+    http://www.uco.es/investiga/grupos/ava/node/40
+    BSD License
