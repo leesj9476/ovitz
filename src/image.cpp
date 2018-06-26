@@ -232,10 +232,10 @@ string Image::findAllPoints() {
 	}
 
 	// calcuate threshold value
-	if (opt.option[THRESHOLD_TOP_P])
-		threshold_val = getValCDF(opt.threshold_top_percent / 100.0);
+	if (opt.option[THRESHOLD_FROM_TOP_PERCENT])
+		threshold_val = getValCDF(opt.threshold_from_top_percent / 100.0);
 	else
-		threshold_val = getValCDF(0.50) * (opt.threshold_percent / 100.0);
+		threshold_val = getValCDF(0.50) * (opt.threshold_from_avg_percent / 100.0);
 
 	if (threshold_val > 255)
 		threshold_val = 255;

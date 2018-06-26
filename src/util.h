@@ -15,8 +15,8 @@ typedef struct Options {
 	double basic_distance;
 	double focal;
 	double pixel_size;
-	double threshold_percent;
-	double threshold_top_percent;
+	double threshold_from_avg_percent;
+	double threshold_from_top_percent;
 	int threshold_area;
 
 	int pixel_max;

@@ -59,8 +59,8 @@ Options::Options() {
 	basic_distance = 50.17284;
 	focal = 7;
 	pixel_size = 1.4;
-	threshold_percent = 100;
-	threshold_top_percent = 95;
+	threshold_from_avg_percent = 100;
+	threshold_from_top_percent = 95;
 	threshold_area = 0;
 
 	pixel_max = 30;
@@ -73,7 +73,7 @@ Options::Options() {
 		option[i] = false;
 
 	// Default thresholding method is threshold using histogram CDF
-	option[THRESHOLD_TOP_P] = true;
+	option[THRESHOLD_FROM_TOP_PERCENT] = true;
 }
 
 // Calculate 2-d euclidean distance
@@ -234,15 +234,15 @@ Options parseSettingFile() {
 		else if (key == "auto_control" && val.find("off") != string::npos) {
 			opt.option[AUTO_CONTROL_OFF] = true;
 		}
-		else if (key == "threshold_percent" && isFloat(val.c_str(), false)) {
-			opt.option[THRESHOLD_P] = true;
-			opt.option[THRESHOLD_TOP_P] = false;
-			opt.threshold_percent = stod(val);
+		else if (key == "threshold_from_avg_percent" && isInt(val.c_str(), false)) {
+			opt.option[THRESHOLD_FROM_AVG_PERCENT] = true;
+			opt.option[THRESHOLD_FROM_TOP_PERCENT] = false;
+			opt.threshold_from_avg_percent = stod(val);
 		}
-		else if (key == "threshold_top_percent" && isFloat(val.c_str(), false)) {
-			opt.option[THRESHOLD_P] = false;
-			opt.option[THRESHOLD_TOP_P] = true;
-			opt.threshold_top_percent = stod(val);
+		else if (key == "threshold_from_top_percent" && isInt(val.c_str(), false)) {
+			opt.option[THRESHOLD_FROM_AVG_PERCENT] = false;
+			opt.option[THRESHOLD_FROM_TOP_PERCENT] = true;
+			opt.threshold_from_top_percent = stod(val);
 		}
 		else if (key == "threshold_area" && isInt(val.c_str(), false)) {
 			opt.option[THRESHOLD_AREA] = true;

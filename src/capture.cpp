@@ -187,7 +187,7 @@ void Capture::shot() {
 
 		// Add average pixel value.
 		// If average pixel value is not in the range, show H or L additionally.
-		result += "\n" + to_string(cur_pixel_avg);
+		result += "\n  " + to_string(cur_pixel_avg);
 		if (pixel_diff != 0) {
 			if (cur_pixel_avg < 10)
 				result += "  ";
