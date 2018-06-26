@@ -1,7 +1,7 @@
 #ifndef __TYPES_H__
-#define __TYPES_H__
+#define __TYPES_H
 
-#define IMAGE_FILE	0
+#define INPUT_IMAGE_FILE	0
 #define DISTANCE	1
 #define SHOW_WINDOW	2
 #define TERMINAL	3
@@ -13,17 +13,20 @@
 #define THRESHOLD_P		9
 #define THRESHOLD_TOP_P	10
 #define THRESHOLD_AREA	11
+#define OUTPUT_IMAGE_FILE	12
+#define DELAY		13
 
 #define MAX_OPTION_NUM	255
 
-#define ARGUMENT_ERROR	-1
-#define OLED_ERROR		-2
-#define IMAGE_ERROR		-3
-#define CALC_ERROR		-4
-#define CAM_ERROR		-5
-#define OPTION_ERROR	-6
+#define SEARCH_GAP	2
 
-#define SUCCESS		1
-#define FAIL		0
+#define UP		0
+#define RIGHT	1
+#define DOWN	2
+#define LEFT	3
+#define NO_FLAG	255
+
+#define EXIST		1
+#define NONEXIST	0
 
 #endif

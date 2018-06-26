@@ -3,28 +3,21 @@
 
 #include <raspicam/raspicam_cv.h>
 
+#include "util.h"
+#include "types.h"
+
 class Capture {
 public:
-	Capture(int, int, int, double, double, double, double, int);
+	Capture(Options &);
 	~Capture();
 
 	bool isValid();
-	int shot();
+	void shot();
 
 private:
 	raspicam::RaspiCam_Cv cam;
 
-	int pixel_max;
-	int pixel_min;
-
-	int basic_distance;
-
-	double focal;
-	double pixel_size;
-	double threshold_p;
-	double threshold_top_p;
-
-	int threshold_area;
+	Options opt;
 };
 
 #endif

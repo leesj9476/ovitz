@@ -1,18 +1,12 @@
 #include <iostream>
+#include <fstream>
 #include <unistd.h>
-#include <string>
-#include <vector>
-#include <cmath>
 #include <csignal>
-#include <getopt.h>
 
-#include <raspicam/raspicam_cv.h>
-#include <opencv2/highgui/highgui.hpp>
+#include "ssd1306_i2c.h"
 
-/*
 #include "capture.h"
-#include "oled.h"
-#include "image.h"*/
+#include "image.h"
 #include "types.h"
 #include "util.h"
 
@@ -21,58 +15,45 @@ using namespace cv;
 
 double *lens_mat[5][5];
 
-//void int_handler(int);
+void int_handler(int);
 
-int main (int argc, char *argv[]) {
+int main () {
+	ifstream dup_lock("./lock/dup_lock");
+	if (dup_lock.is_open())
+		return -1;
+	else
+		system("touch ./lock/dup_lock");
+
 	// options setting information
 	Options options = parseSettingFile();
 	makeLensMatrix();
 
-	/*
-	//////////////////////////////////
-	//          image mode          //
-	//////////////////////////////////
-	if (option[IMAGE_FILE]) {
-		if (!option[DISTANCE]) {
-			cerr << "<error> image mode - need distance argument" << endl;
-			return ARGUMENT_ERROR;
-		}
+	// Initiate i2c led
+	ssd1306_begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS);
+	ssd1306_setTextSize(1);
+	ssd1306_clearDisplay();
+	ssd1306_display();
 
-		Image image(image_filename, options);
+	// Ctrl-c interrupt(kill -9 <pid>)
+	signal(SIGINT, int_handler);
+
+	// image mode
+	if (options.option[INPUT_IMAGE_FILE]) {
+		Image image(options);
 		image.init();
 		cout << image.findAllPoints() << endl;
 	}
-	//////////////////////////////
-	//         cam mode         //
-	//////////////////////////////
+	// cam mode
 	else {
-		while (continue_analyze) {
-			Capture cam(pixel_max, options);
+		Capture cam(options);
 
-			signal(SIGINT, int_handler);
-
-			if (!cam.isValid()) {
-				cerr << "<error> camera open failed" << endl;
-				return CAM_ERROR;
-			}
-
-			if (!cam.shot()) {
-				cerr << "<error> camera shot failed" << endl;
-				return CAM_ERROR;
-			}
+		if (!cam.isValid()) {
+			cerr << "<error> camera open failed" << endl;
+			return -1;
 		}
-	}*/
+
+		cam.shot();
+	}
 
 	return 0;
 }
-
-/*
-void int_handler(int sig) {
-	raspicam::RaspiCam_Cv cam;
-	cam.release();
-
-	Oled oled;
-	oled.clear();
-
-	exit(0);
-}*/

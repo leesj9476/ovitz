@@ -466,7 +466,7 @@ void ssd1306_drawFastHLineInternal(int x, int y, int w, unsigned int color)
 		return;
 	}
 	// set up the pointer for movement through the buffer
-	unsigned int *pBuf = buffer;
+	unsigned int *pBuf = (unsigned int *)buffer;
 	// adjust the buffer pointer for the current row
 	pBuf += ((y / 8) * SSD1306_LCDWIDTH);
 	// and offset x columns in
@@ -523,7 +523,7 @@ void ssd1306_drawFastVLineInternal(int x, int __y, int __h, unsigned int color)
 	unsigned int h = __h;
 
 	// set up the pointer for fast movement through the buffer
-	unsigned int *pBuf = buffer;
+	unsigned int *pBuf = (unsigned int*)buffer;
 	// adjust the buffer pointer for the current row
 	pBuf += ((y / 8) * SSD1306_LCDWIDTH);
 	// and offset x columns in
@@ -721,7 +721,7 @@ void ssd1306_fillRect(int x, int y, int w, int h, int fillcolor)
 
 	switch (rotation) {
 	case 1:
-		swap_values(x, y);
+		ssd1306_swap(x, y);
 		x = WIDTH - x - 1;
 		break;
 	case 2:
@@ -729,7 +729,7 @@ void ssd1306_fillRect(int x, int y, int w, int h, int fillcolor)
 		y = HEIGHT - y - 1;
 		break;
 	case 3:
-		swap_values(x, y);
+		ssd1306_swap(x, y);
 		y = HEIGHT - y - 1;
 		break;
 	}

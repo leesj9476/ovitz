@@ -1,8 +1,13 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <cmath>
 #include <cctype>
 #include <string>
+
+#include <raspicam/raspicam_cv.h>
+
+#include "ssd1306_i2c.h"
 
 #include "util.h"
 #include "image.h"
@@ -10,6 +15,45 @@
 using namespace std;
 
 extern double *lens_mat[5][5];
+
+// Point_t constructor using double x, y value
+Point_t::Point_t(double real_x_, double real_y_, int avail_)
+	: real_x(real_x_), real_y(real_y_), avail(avail_) {
+
+	x = static_cast<int>(real_x);
+	y = static_cast<int>(real_y);
+}
+
+// Point_t constructor using int x, y value
+Point_t::Point_t(int x_, int y_, int avail_)
+	: x(x_), y(y_), avail(avail_) {
+
+	real_x = static_cast<double>(x);
+	real_y = static_cast<double>(y);
+}
+
+// Point_t copy operator= overloading
+Point_t Point_t::operator=(const Point_t &p) {
+	this->x = p.x;
+	this->y = p.y;
+	this->real_x = p.real_x;
+	this->real_y = p.real_y;
+	this->avail = p.avail;
+
+	return *this;
+}
+
+// Point_t compare operator== overloading
+bool Point_t::operator==(const Point_t &p) {
+	return (x == p.x && y == p.y);
+}
+
+// define Point_t print stream
+// form => (x,y)
+ostream& operator<<(ostream &os, const Point_t &p) {
+	cout << "(" << setw(4) << p.x << "," << setw(4) << p.y << ")";
+	return os;
+}
 
 Options::Options() {
 	basic_distance = 50.17284;
@@ -127,7 +171,6 @@ Options parseSettingFile() {
 
 	// Read setting file line by line
 	string line;
-	bool show_window = false;
 	while (getline(f, line)) {
 
 		// Ignore blank line
@@ -135,12 +178,22 @@ Options parseSettingFile() {
 			continue;
 
 		// Separate key and val
-		// form -> <key>=<val> no blank char on both side of '='
 		string key;
 		string val;
+
+		// remove all space from the line
+		uint i = 0;
+		while (i < line.size()) {
+			while (line[i] == ' ')
+				line.erase(i, 1);
+
+			i++;
+		}
+
+		// Find separater
 		size_t pos = line.find('=');
 
-		// strange line form
+		// Check strange form
 		if (pos == string::npos || pos == line.size() - 1)
 			continue;
 
@@ -193,6 +246,18 @@ Options parseSettingFile() {
 			opt.option[THRESHOLD_AREA] = true;
 			opt.threshold_area = atoi(val.c_str());
 		}
+		else if (key == "input_image_filename") {
+			opt.option[INPUT_IMAGE_FILE] = true;
+			opt.input_image_file = val;
+		}
+		else if (key == "output_image_filename") {
+			opt.option[OUTPUT_IMAGE_FILE] = true;
+			opt.output_image_file = val;
+		}
+		else if (key == "delay" && isInt(val.c_str(), false)) {
+			opt.option[DELAY] = true;
+			opt.delay_ms = atoi(val.c_str());
+		}
 	}
 
 	f.close();
@@ -201,8 +266,13 @@ Options parseSettingFile() {
 }
 
 void int_handler(int sig) {
-	//Oled oled;
-	//oled.clear();
-	system("rm ./lock/dup_lock");
-	exit(0);
+	raspicam::RaspiCam_Cv cam;
+	cam.release();
+
+	ssd1306_clearDisplay();
+	ssd1306_display();
+
+	system("rm -f ./lock/dup_lock");
+
+	exit(0);	
 }

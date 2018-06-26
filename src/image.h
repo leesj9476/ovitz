@@ -7,44 +7,11 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "util.h"
-
-#define SEARCH_GAP	2
-
-#define EXIST		1
-#define NONE		0
-
-#define UP		0
-#define RIGHT	1
-#define DOWN	2
-#define LEFT	3
-#define NO_FLAG	255
-
-typedef struct Point_t {
-	Point_t(double, double, int = NONE);
-	Point_t(int = 0, int = 0, int = NONE);
-
-	Point_t operator=(const Point_t &);
-	bool operator==(const Point_t &);
-
-	int x;
-	int y;
-
-	double real_x;
-	double real_y;
-
-	// EXIST, NONE
-	int avail;
-} Point_t;
-
-std::ostream& operator<<(std::ostream &, const Point_t &);
-
-typedef struct Vertex_t {
-	Point_t v[4];
-} Vertex_t;
+#include "types.h"
 
 class Image {
 public:
-	Image(const std::string &, Options &);
+	Image(Options &);
 	Image(const cv::Mat &, Options &);
 	~Image();
 
@@ -68,7 +35,6 @@ public:
 	Point_t calcCenterOfMass(Point_t &, int, int);
 
 private:	
-	std::string filename;
 	cv::Mat image;
 	cv::Mat original;
 
@@ -89,7 +55,7 @@ private:
 	Point_t unit_v[4][4];
 
 	// the number of points in circle
-	int ref_point_num;
+	int ref_points_num;
 	int point_num;
 
 	// center of points
@@ -100,7 +66,7 @@ private:
 	Point_t **ref;
 
 	// diff data
-	double *diff;
+	double diff[146];
 
 	// vertex points of unit boxes
 	Vertex_t **vertex;

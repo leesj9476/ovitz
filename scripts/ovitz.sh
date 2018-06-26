@@ -3,7 +3,7 @@
 window_file="./lock/window_avail"
 
 cd /home/pi/workspace/ovitz
-./start
+./ovitz
 
 if [ ! -e "$window_file" ]; then
 	touch "$window_file"

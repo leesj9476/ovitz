@@ -6,9 +6,6 @@ OBJS_DIR=obj
 OBJS=$(addprefix $(OBJS_DIR)/, main.o image.o capture.o ssd1306_i2c.o util.o)
 DEST=ovitz
 
-WRAPPER_DEST=start
-WRAPPER_OBJS=$(addprefix $(OBJS_DIR)/, start.o ssd1306_i2c.o)
-
 OPENCV=`pkg-config opencv --cflags --libs`
 OPENCV_LIBS=$(OPENCV)
 
@@ -25,19 +22,13 @@ LOCK_DIR=lock
 
 ALL_DIRS=$(OBJS_DIR) $(SCRIPTS_HOME_DIR) $(LOCK_DIR) 
 
-all: init $(DEST) $(WRAPPER_DEST)
+all: init $(DEST)
 
 $(DEST): $(OBJS)
 	$(CC) $(CFLAGS) $(OPENCV_LIBS) $(PICAMERA_LIBS) $(WIRINGPI_LIBS) $(OBJS) -o $(DEST)
 
-$(WRAPPER_DEST): $(WRAPPER_OBJS)
-	$(CC) $(CFLAGS) $(WIRINGPI_LIBS) $(WRAPPER_OBJS) -o $(WRAPPER_DEST)
-
-$(OBJS_DIR)/start.o:
-	$(CC) $(CFLAGS) $(WIRINGPI_LIBS) -c $(SRCS_DIR)/start.cpp -o $(OBJS_DIR)/start.o
-
 $(OBJS_DIR)/main.o:
-	$(CC) $(CFLAGS) $(PICAMERA_LIBS) -c $(SRCS_DIR)/main.cpp -o $(OBJS_DIR)/main.o
+	$(CC) $(CFLAGS) -c $(SRCS_DIR)/main.cpp -o $(OBJS_DIR)/main.o
 
 $(OBJS_DIR)/image.o:
 	$(CC) $(CFLAGS) $(OPENCV_LIBS) -c $(SRCS_DIR)/image.cpp -o $(OBJS_DIR)/image.o
@@ -49,7 +40,7 @@ $(OBJS_DIR)/ssd1306_i2c.o:
 	$(CC) $(CFLAGS) $(WIRINGPI_LIBS) -c $(SRCS_DIR)/ssd1306_i2c.c -o $(OBJS_DIR)/ssd1306_i2c.o
 
 $(OBJS_DIR)/util.o:
-	$(CC) -c $(SRCS_DIR)/util.cpp -o $(OBJS_DIR)/util.o
+	$(CC) $(CFLAGS) $(PICAMERA_LIBS) -c $(SRCS_DIR)/util.cpp -o $(OBJS_DIR)/util.o
 
 init:
 	make clean
@@ -60,6 +51,4 @@ init:
 
 clean:
 	rm -f $(DEST)
-	rm -f $(WRAPPER_DEST)
-	rm -f $(LED_OBJ_LIB)
 	sudo rm -rf $(ALL_DIRS)
