@@ -1,5 +1,17 @@
 # project
 
+&nbsp;
+
+## Specification
+
+* Raspberry Pi Zero W
+
+* Zero Spy Camera for Raspberry Pi Zero
+
+* Adafruit PiOLED - 128x32 Monochrome OLED Add-on for Raspberry Pi
+
+&nbsp;
+
 ## Installation
 
 1. Install `opencv` including `opencv_contrib` (ref: http://webnautes.tistory.com/916)
@@ -12,7 +24,11 @@
 
 5. `make` at the root of this repository folder
 
+&nbsp;
+
 ## Usage
+
+&nbsp;
 
 ## License Announcement
 
