@@ -157,7 +157,7 @@ Options parseSettingFile() {
 	Options opt;
 
 	// setting file
-	ifstream f("./conf/setting.conf");
+	ifstream f("./conf/setting.txt");
 
 	// execute with default setting
 	if (!f.is_open())
